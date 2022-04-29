@@ -1,0 +1,51 @@
+package kr.or.ddit.user.vo;
+
+public class EmailVO {
+
+	private String emlNo;
+	private String emlSndr;
+	private String emlTtl;
+	private String emlCtnt;
+	private String emlSndngDt;
+	
+	
+	public String getEmlNo() {
+		return emlNo;
+	}
+	public void setEmlNo(String emlNo) {
+		this.emlNo = emlNo;
+	}
+	public String getEmlSndr() {
+		return emlSndr;
+	}
+	public void setEmlSndr(String emlSndr) {
+		this.emlSndr = emlSndr;
+	}
+	public String getEmlTtl() {
+		return emlTtl;
+	}
+	public void setEmlTtl(String emlTtl) {
+		this.emlTtl = emlTtl;
+	}
+	public String getEmlCtnt() {
+		return emlCtnt;
+	}
+	public void setEmlCtnt(String emlCtnt) {
+		this.emlCtnt = emlCtnt;
+	}
+	public String getEmlSndngDt() {
+		return emlSndngDt;
+	}
+	public void setEmlSndngDt(String emlSndngDt) {
+		this.emlSndngDt = emlSndngDt;
+	}
+	
+	
+	@Override
+	public String toString() {
+		return "EmailVO [emlNo=" + emlNo + ", emlSndr=" + emlSndr + ", emlTtl=" + emlTtl + ", emlCtnt=" + emlCtnt
+				+ ", emlSndngDt=" + emlSndngDt + "]";
+	}
+	
+	
+}

@@ -1,0 +1,41 @@
+package kr.or.ddit.feed.vo;
+
+public class VtFrmtVO {
+	private String vtNo;
+	private String pstNo;
+	private String vtDt;
+	private String annYn;
+	
+	public String getVtNo() {
+		return vtNo;
+	}
+	public void setVtNo(String vtNo) {
+		this.vtNo = vtNo;
+	}
+	public String getPstNo() {
+		return pstNo;
+	}
+	public void setPstNo(String pstNo) {
+		this.pstNo = pstNo;
+	}
+	public String getVtDt() {
+		return vtDt;
+	}
+	public void setVtDt(String vtDt) {
+		this.vtDt = vtDt;
+	}
+	public String getAnnYn() {
+		return annYn;
+	}
+	public void setAnnYn(String annYn) {
+		this.annYn = annYn;
+	}
+	
+	@Override
+	public String toString() {
+		return "VtFrmtVO [vtNo=" + vtNo + ", pstNo=" + pstNo + ", vtDt=" + vtDt + ", annYn=" + annYn + "]";
+	}
+	
+	
+
+}

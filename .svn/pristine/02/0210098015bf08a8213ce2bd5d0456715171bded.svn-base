@@ -1,0 +1,83 @@
+package kr.or.ddit.user.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.MessageSource;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.stereotype.Controller;
+
+import kr.or.ddit.user.service.AlarmService;
+import kr.or.ddit.user.vo.AlarmVO;
+import kr.or.ddit.user.vo.MemberVO;
+/**
+ * 채팅,멘션,일감,메일,회의에 참여시 알림 메시지를 전달하는 컨트롤러
+ * @author 정신애
+ *
+ */
+@Controller
+public class AlarmController {
+
+	@Autowired
+	AlarmService service;
+	
+	//사용자가 안읽은 모든 메시지
+	public List<AlarmVO> getAllNotReadedMsg(String mbrId){
+		return service.getAllNotReadedMsg(mbrId);
+	}
+	
+	//사용자가 안읽은 모든 메시지의 갯수
+	public int getAllNotReadedCount(String mbrId) {
+//		int result = 0;
+//		System.out.println("getAllNotReadedCount service >> " + service.toString());
+//		result = Integer.parseInt(service.getAllNotReadedCount(mbrId));
+//		System.out.println("getAllNotReadedCount result >> " + result);
+		return service.getAllNotReadedCount(mbrId);
+	}
+	
+	/**
+	 * 채팅,멘션,일감,메일,회의에 참여시 알림 insert
+	 * @param sender 보내는 사람
+	 * @param CategoryCd 알림 분류 번호(A01 : 채팅알림, A02 : 멘션알림, A03 : 일감알림, A04 : 메일알림, A05 : 회의알림)
+	 * @param mbrId 받는 사람
+	 * @return insert 성공 시 1 리턴
+	 */
+	public int insertAlarmMsg(String sender, String CategoryCd, String mbrId) {
+		return service.insertAlarmMsg(sender, CategoryCd, mbrId);
+	}
+	
+	/**
+	 * 알림메시지 확인 시 읽음으로 변경
+	 * @param session 알림메시지 읽은 접속자
+	 * @param alrmNo 읽은 메시지의 번호
+	 * @return 업데이트 성공 시 1 리턴
+	 */
+	public int updateAlarmMsg(HttpSession session, String alrmNo) {
+		MemberVO vo = (MemberVO) session.getAttribute("member");
+		String mbrId = vo.getMbrId();
+
+		Map<String, String> map = new HashMap<String, String>();
+		map.put("alrmNo", alrmNo);
+		map.put("mbrId", mbrId);
+		return service.updateAlarmMsg(map);
+	}
+	
+	@Bean
+	public MessageSource messageSource() {
+		ResourceBundleMessageSource MS = new ResourceBundleMessageSource();
+	      // MesageSource의 인코딩 방식 설정
+	      MS.setDefaultEncoding("utf-8");
+	      // 메시지를 관리할 파일 이름 지정
+	      // messages라고 지정하면 src/main/resources/messages.properties 로 설정
+	      MS.setBasenames("messages");
+	      return MS;
+
+	}
+	
+	
+}

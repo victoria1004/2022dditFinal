@@ -1,0 +1,52 @@
+package kr.or.ddit.feed.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.feed.service.VtRsltService;
+import kr.or.ddit.feed.vo.VtRsltVO;
+
+@RequestMapping("/vote")
+@Controller
+public class VtRsltController {
+	private static final Logger logger = LoggerFactory.getLogger(VtRsltController.class);
+	
+	@Autowired
+	VtRsltService vtRsltService;
+
+	//투표 항목 선택 시 insert
+	@ResponseBody
+	@RequestMapping(value = "insertRslt.do", method = RequestMethod.POST)
+	public void insertRslt(Model model, @RequestParam String vtNo, @RequestParam String optnNo, @RequestParam String mbrId) {
+		logger.info("vtNo"+vtNo);
+		logger.info("optnNo"+optnNo);
+		
+		VtRsltVO vtRsltVO = new VtRsltVO();
+		
+		vtRsltVO.setVtNo(vtNo);
+		vtRsltVO.setOptnNo(optnNo);
+		vtRsltVO.setMbrId(mbrId);
+		
+		int insertVt = vtRsltService.insertRslt(vtRsltVO);
+
+	}
+	
+	//투표 선택 수정 
+	@RequestMapping(value = "updateRslt.do", method = RequestMethod.POST)
+	public String updateRslt() {
+		
+		return "";
+	}
+	
+}

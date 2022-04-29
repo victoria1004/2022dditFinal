@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.feed.mapper.pstCmntMapper">
+	<!-- 작성자 찾기 -->
+	<select id="findCmntWriter" resultType="pstCmntVO" parameterType="String">
+		SELECT A.MBR_ID, A.MBR_NM, A.MBR_IMG FROM MEMBER A,PST_CMNT B
+		WHERE A.MBR_ID = B.MBR_ID
+	</select>
+	
+	<!-- 댓글 등록 -->
+	<insert id="insert" parameterType="pstCmntVO">
+		<selectKey order="BEFORE" keyProperty="cmntNo" resultType="String">
+			SELECT NVL(MAX(TO_NUMBER(CMNT_NO)),0)+1 FROM PST_CMNT
+		</selectKey>
+		INSERT INTO PST_CMNT(PST_NO,CMNT_NO,MBR_ID,CMNT_CN,CMNT_DT)
+<!-- 		VALUES(#{pstNo},#{pjtNo},#{mbrId},#{pstCn},SYSDATE,#{ntcYn}) -->
+		VALUES(#{pstNo},#{cmntNo},#{mbrId},#{cmntCn},TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS'))
+	</insert>
+	
+	<!-- 댓글 목록 -->
+	<select id="select" resultType="pstCmntVO" parameterType="String">
+		SELECT PST_NO,CMNT_NO,MBR_ID,CMNT_CN,CMNT_DT FROM PST_CMNT
+		WHERE PST_NO = #{pstNo} ORDER BY TO_NUMBER(CMNT_NO) DESC
+	</select>
+	
+	<!-- 댓글 수정 -->
+	<update id="update" parameterType="pstCmntVO">
+		UPDATE PST_CMNT
+		SET CMNT_CN = #{cmntCn}, CMNT_DT = TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS')
+		WHERE CMNT_NO = #{cmntNo}
+	</update>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="delete" parameterType="String">
+		DELETE FROM PST_CMNT WHERE CMNT_NO = #{cmntNo}
+	</delete>
+
+	
+	
+</mapper>

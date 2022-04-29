@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.cloud.mapper.CloudMapper">
+
+	<!-- 프로젝트의 모든 파일 가져오기 (검색 시에도 가능)-->
+	<select id="selectAll" parameterType="map" resultType="strgVO">
+     SELECT RUM, STRG_FILE_NO, FILE_NM, STRG_FILE_NM, STRG_FILE_ADDR, STRG_DT 
+       FROM (SELECT ROWNUM RUM, A.* 
+		       FROM  ( SELECT STRG_FILE_NO, FILE_NM, STRG_FILE_NM, STRG_FILE_ADDR, STRG_DT 
+		                FROM STRG 
+		                WHERE PJT_NO = #{pjtNo}
+		              ) A
+		    )B      
+	   WHERE B.RUM BETWEEN #{start} AND #{end}
+		<if test="fileNm != null and fileNm != ''">
+		AND FILE_NM LIKE '%'||#{fileNm}||'%' 
+		</if>
+		ORDER BY STRG_FILE_NO DESC
+	</select>
+	
+	<!-- 클라우드에  파일 업로드 시작 -->
+	<insert id="insertFldr" parameterType="fldrVO">
+			INSERT INTO FLDR (PJT_NO, LEAF_FOLDER, PARENT_FOLDER)			
+				VALUES (#{pjtNo}, #{leafFolder}, #{parentFolder})
+	</insert>
+	<insert id="insert" parameterType="strgVO">
+		<selectKey order="BEFORE" keyProperty="strgFileNo" resultType="String">
+			select to_number(to_char(sysdate,'YYYYMMDD'))||strg_seq.NEXTVAL as STRG_FILE_NO
+			  from DUAL
+		</selectKey>
+		INSERT INTO STRG VALUES (
+			#{strgFileNo}, #{pjtNo}, #{fileNm}, #{strgFileNm}, #{strgFileSz}, #{strgFileAddr}, SYSDATE)
+	</insert>
+	<!-- 클라우드에  파일 업로드 끝  -->
+	
+	<!-- 클라우드의 현재 폴더(상위폴더) 가져오기 -->
+	<select id="getFolder" parameterType="map" resultType="String">
+	    SELECT DISTINCT(PARENT_FOLDER)
+        FROM FLDR
+        WHERE PJT_NO = #{pjtNo}
+        AND PARENT_FOLDER = #{folderNm}
+	</select>
+	
+	<!-- 상위폴더 클릭 시 하위 폴더 목록 가져오기 -->
+	<select id="getLowFolders" parameterType="map" resultType="fldrVO">  
+        SELECT LEAF_FOLDER
+        FROM FLDR
+        WHERE PJT_NO = #{pjtNo}
+        AND PARENT_FOLDER = #{folderNm}
+	</select>
+	
+	<!-- 파일 삭제 버튼 클릭 시 파일번호로 해당 파일을 삭제한다. -->
+	<delete id="fileDelete" parameterType="String">
+		DELETE 
+		 FROM STRG
+		 WHERE STRG_FILE_NO = #{strgFileNo} 
+	</delete>
+	
+	<!-- 파일 다운로드 버튼 클릭 시 파일번호로 파일경로와 파일이름을 가져온다. -->
+	<select id="getDownloadFile" parameterType="String" resultType="strgVO">
+		  SELECT STRG_FILE_ADDR, FILE_NM, STRG_FILE_NM
+			FROM STRG
+			WHERE STRG_FILE_NO = #{strgFileNo}
+	</select>
+	
+	<!-- 모든 하위폴더 목록 가져오기(좌측 메뉴용) -->
+	<select id="getAllLeafFolders" parameterType="String" resultType="fldrVO">
+	SELECT leaf_folder, parent_folder, pjt_no
+		FROM fldr
+		WHERE PJT_NO = #{pjtNo} 
+		START WITH parent_FOLDER IS NULL
+		CONNECT BY PRIOR LEAF_FOLDER = parent_FOLDER
+	</select>
+	
+	<!-- 하위폴더 가져오기 -->
+	<select id="getLeaf" parameterType="map" resultType="map">
+		SELECT leaf_folder
+		FROM FLDR
+		WHERE PJT_NO = #{pjtNo}
+		AND LEVEL = '1'
+		START WITH parent_FOLDER = #{parentFolder}
+		CONNECT BY PRIOR LEAF_FOLDER = parent_FOLDER
+	</select>
+	
+	<!-- 모든 파일의 갯수 가져오기(검색 시 해당 검색이름과 관련된 파일들의 총 갯수) -->
+	<select id="fileCount" parameterType="map" resultType="int">        
+        SELECT COUNT(*)
+        FROM STRG
+        WHERE PJT_NO = #{pjtNo}
+        <if test="keyword != null and keyword != ''">
+        AND FILE_NM LIKE '%'||#{keyword}||'%' 
+        </if>
+	</select>
+	
+	
+	
+	
+	
+	
+</mapper>

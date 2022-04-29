@@ -1,0 +1,14 @@
+package kr.or.ddit.reservation.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.reservation.vo.MtrRsvtVO;
+
+public interface MtrMapper {
+	//특정일 예약정보 조회
+	public List<Map<String,Object>> todayRes(String rsvtYmd);
+	
+	//예약 등록
+	public int resInsert(MtrRsvtVO mtrrVO);
+}

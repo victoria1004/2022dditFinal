@@ -1,0 +1,70 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<link rel="stylesheet" href="/resources/assets/css/apps/todolist.css" />
+<link rel="stylesheet" href="/resources/assets/css/jsa/projectMain.css" />
+<script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+<script src="/resources/assets/js/jquery-3.6.0.js"></script>
+<script src="/resources/assets/js/jsa/projectMain.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+  
+<script>
+var pjtNo = "1"; //세션에서 저장 시 가져오기
+var total = "<c:out value='${total}' />";
+total = parseInt(total);
+getSz = Math.round((total/1024/1024)*100)/100;
+
+   google.charts.load('current', {'packages':['gauge']});
+   google.charts.setOnLoadCallback(drawChart);
+	
+   
+   function drawChart() {
+
+     var data = google.visualization.arrayToDataTable([
+       ['Label', 'Value'],
+       ['Memory', 0]
+     ]);
+
+     var options = {
+       width: 480, height: 160,
+       redFrom: 90, redTo: 100,
+       yellowFrom:75, yellowTo: 90,
+       minorTicks: 5
+     };
+
+     var chart = new google.visualization.Gauge(document.getElementById('chart_div'));
+
+     chart.draw(data, options);
+
+     setInterval(function() {
+       data.setValue(0,1,getSz);
+       chart.draw(data, options);
+     }, 1000);
+
+   }
+   
+$(function(){
+	
+	getAllMbr(pjtNo); //프로젝트 메인페이지 접속 시 구성원 목록 보여주기
+	
+	
+	
+})
+</script>
+<!-- aside submenu space -->
+<div class="layout-px-spacing">
+<!-- aside submenu space -->
+	<div class="bodyDiv">
+		<div class="leftDiv">
+		
+		
+		</div>
+		<div class="rightDiv">
+			<div id="chart_div"></div>
+			<div id="pjtMbrList"></div>
+		</div>
+	</div>
+</div>    

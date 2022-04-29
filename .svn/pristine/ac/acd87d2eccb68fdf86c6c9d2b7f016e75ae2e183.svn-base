@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE configuration
+  PUBLIC "-//mybatis.org//DTD Config 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-config.dtd">
+<configuration>
+	<!--  
+		<마이바티스>
+		스프링에서 "_"을 컬럼명에 사용 시 테이블 컬럼명에 "_"가 있을 경우 카멜케이스로 읽어줌
+		member 테이블 컬럼명이 mem_id일 경우 memId로 사용가능하도록 도와줌
+		cart 테이블에 cart_prod -> cartProd
+	-->
+	<settings>
+		<setting name="mapUnderscoreToCamelCase" value="true" />
+	</settings>
+	
+	<!-- 자주 사용하는 타입의 별칭 -->
+	<typeAliases>
+ 		<typeAlias type="kr.or.ddit.user.vo.MemberVO" alias="memberVO" />
+		<typeAlias type="kr.or.ddit.feed.vo.PstVO" alias="pstVO" />
+		<typeAlias type="kr.or.ddit.project.vo.IssueVO" alias="issueVO" />
+		<typeAlias type="kr.or.ddit.project.vo.TodoVO" alias="todoVO" />
+		<typeAlias type="kr.or.ddit.project.vo.KanbanVO" alias="kanbanVO" />
+		<typeAlias type="kr.or.ddit.project.vo.KanbanCardVO" alias="kanbanCardVO" />
+		<typeAlias type="kr.or.ddit.cloud.vo.StrgVO" alias="strgVO" />
+		<typeAlias type="kr.or.ddit.project.vo.ScheduleVO" alias="scheduleVO" />
+		<typeAlias type="kr.or.ddit.cloud.vo.FldrVO" alias="fldrVO" />
+		<typeAlias type="kr.or.ddit.chat.vo.ChatVO" alias="chatVO" />
+		<typeAlias type="kr.or.ddit.feed.vo.LikesVO" alias="likesVO" />
+		<typeAlias type="kr.or.ddit.feed.vo.PstCmntVO" alias="pstCmntVO" />
+		<typeAlias type="kr.or.ddit.feed.vo.VoteVO" alias="voteVO" />
+		<typeAlias type="kr.or.ddit.feed.vo.VtFrmtVO" alias="vtFrmtVO" />
+		<typeAlias type="kr.or.ddit.feed.vo.VtRsltVO" alias="vtRsltVO" />
+		<typeAlias type="kr.or.ddit.project.vo.DevelopmentEnvmVO" alias="developmentEnvmVO"/>
+		<typeAlias type="kr.or.ddit.project.vo.ProjectParticipantVO" alias="pjtPrtpntVO"/>
+		<typeAlias type="kr.or.ddit.project.vo.ProjectVO" alias="projectVO"/>
+		<typeAlias type="kr.or.ddit.reservation.vo.MtrVO" alias="mtrVO"/>
+		
+	</typeAliases>
+	
+	<!-- 
+	[이거를  root-context.xml의 
+		<property name="configLocation"
+			value="/WEB-INF/mybatisAlias/mybatisAlias.xml" /> 에 넣어준다. ] -->
+			
+</configuration>

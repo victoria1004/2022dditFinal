@@ -1,0 +1,40 @@
+package kr.or.ddit.project.vo;
+
+public class TrsmFileVO {
+
+	private String fileNo;
+	private String trsmFileAddr;
+	private String trsmFileNm;
+	private String trsmFilePlc;
+	public String getFileNo() {
+		return fileNo;
+	}
+	public void setFileNo(String fileNo) {
+		this.fileNo = fileNo;
+	}
+	public String getTrsmFileAddr() {
+		return trsmFileAddr;
+	}
+	public void setTrsmFileAddr(String trsmFileAddr) {
+		this.trsmFileAddr = trsmFileAddr;
+	}
+	public String getTrsmFileNm() {
+		return trsmFileNm;
+	}
+	public void setTrsmFileNm(String trsmFileNm) {
+		this.trsmFileNm = trsmFileNm;
+	}
+	public String getTrsmFilePlc() {
+		return trsmFilePlc;
+	}
+	public void setTrsmFilePlc(String trsmFilePlc) {
+		this.trsmFilePlc = trsmFilePlc;
+	}
+	@Override
+	public String toString() {
+		return "TrsmFileVO [fileNo=" + fileNo + ", trsmFileAddr=" + trsmFileAddr + ", trsmFileNm=" + trsmFileNm
+				+ ", trsmFilePlc=" + trsmFilePlc + "]";
+	}
+	
+	
+}

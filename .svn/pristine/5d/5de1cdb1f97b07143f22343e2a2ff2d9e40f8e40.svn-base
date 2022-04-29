@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.feed.mapper.VtRsltMapper">
+
+<!-- 투표 항목 선택 -->
+	<insert id="insertRslt" parameterType="vtRsltVO">
+		INSERT INTO VT_RSLT (VT_NO, OPTN_NO, MBR_ID)
+		VALUES (#{vtNo}, #{optnNo}, #{mbrId})
+	</insert>
+
+<!-- 투표 선택 수정 -->
+	<update id="updateRslt" parameterType="vtRsltVO">
+		UPDATE VT_RSLT
+		SET OPTN_NO = #{optnNo}
+		WHERE MBR_ID = #{mbrId}
+	</update>
+
+<!-- 투표번호,선택지 번호별 투표 결과 출력 -->
+	<select id="rsltList" resultType="map">
+<!-- 		SELECT (SELECT COUNT(*) FROM VT_RSLT -->
+<!-- 		WHERE OPTN_NO = #{optnNo}) AS COUNT, A.VT_NO, A.OPTN_NO, A.MBR_ID, B.MBR_IMG, B.MBR_NM -->
+<!--         FROM VT_RSLT A, MEMBER B -->
+<!--         WHERE A.MBR_ID = B.MBR_ID -->
+<!--         AND A.VT_NO = #{vtNo} -->
+
+		SELECT A.VT_NO, A.OPTN_NO, B.MBR_NM
+        FROM VT_RSLT A, MEMBER B
+        WHERE A.MBR_ID = B.MBR_ID
+	</select>
+	
+<!-- 나의 투표여부 -->
+	<select id="checkRslt" parameterType="vtRsltVO" resultType="int">
+		SELECT COUNT(*)
+		FROM VT_RSLT
+		WHERE VT_NO = #{vtNo} 
+		AND OPTN_NO = #{optnNo}
+		AND MBR_ID = #{mbrId}
+	</select>
+	
+<!-- 투표 전체 결과 조회 -->
+	<select id="resultVote" resultType="vtRsltVO">
+		SELECT VT_NO, OPTN_NO, MBR_ID FROM VT_RSLT
+	</select>
+	
+<!-- 투표 수 카운트 -->
+	<select id="getCount" parameterType="vtRsltVO" resultType="int">
+		SELECT COUNT(OPTN_NO) AS CNT FROM VT_RSLT
+		WHERE OPTN_NO = #{optnNo}
+		AND VT_NO = #{vtNo}
+	</select>
+
+<!-- 투표한 멤버 이름 찾기 -->
+	<select id="getVoter" parameterType="vtRsltVO" resultType="map">
+		SELECT A.OPTN_NO, A.MBR_ID, B.MBR_NM
+		FROM VT_RSLT A, MEMBER B
+		WHERE A.MBR_ID = B.MBR_ID
+		AND OPTN_NO = #{optnNo}
+		AND VT_NO = #{vtNo}
+	</select>
+
+
+</mapper>

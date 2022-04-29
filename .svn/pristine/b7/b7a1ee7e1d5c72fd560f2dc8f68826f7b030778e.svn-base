@@ -1,0 +1,147 @@
+package kr.or.ddit.project.controller;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.google.gson.Gson;
+
+import kr.or.ddit.project.service.ProjectMakingService;
+import kr.or.ddit.project.vo.DevelopmentEnvmVO;
+import kr.or.ddit.project.vo.LayoutVO;
+import kr.or.ddit.project.vo.MarkerVO;
+import kr.or.ddit.project.vo.ProjectLanguageVO;
+import kr.or.ddit.project.vo.ProjectVO;
+import kr.or.ddit.user.vo.MemberVO;
+
+
+@Controller
+@RequestMapping("/project")
+public class ProjectMakingController {
+	@Autowired
+	ProjectMakingService service;
+	private static final Logger logger= LoggerFactory.getLogger(ProjectMakingController.class);
+
+	@RequestMapping("/projectMaking.do")
+	public String projectMaking() {
+		return "project/projectMaking";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/getInfo.do", method=RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<String> getInfo(@RequestParam Map<String, Object> nameArr) {
+		Gson gson = new Gson();
+		List<String> list = gson.fromJson((String)nameArr.get("nameArr"), List.class);
+		logger.info(list.toString());
+		List<String> deptList = new ArrayList<String>();
+		
+		  for(String mbrId : list) {
+			  deptList.add(service.getInfo(mbrId));
+		  }
+		  
+		  logger.info("소속명 모음:"+deptList);
+		  return deptList;
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/getLogo.do", method=RequestMethod.POST,produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<DevelopmentEnvmVO> getLogo(){
+		List<DevelopmentEnvmVO> list = service.getLogo();
+		
+		for(DevelopmentEnvmVO vo: list) {
+			logger.info("vo : " + vo.toString());
+		}
+		return list;
+				
+	}
+	
+	@ResponseBody
+	@RequestMapping(value="/getAll.do", method=RequestMethod.POST)
+	public void getAll(HttpSession session, ProjectVO pjtVO, @RequestParam Map<String, Object> layouts, @RequestParam Map<String, Object> idArr,
+			@RequestParam(required = false) Map<String, Object> langArr,@RequestParam(required = false) Map<String, Object> keywordArr,@RequestParam(required = false)  Map<String, Object> mkNameArr,
+			@RequestParam(required = false)  Map<String, Object> mkColorArr,@RequestParam(required = false) Map<String, Object> mkIconArr ) {
+		
+		//프로젝트 데이터 정리 및 인서트
+		MemberVO memberVO = (MemberVO) session.getAttribute("member");
+		if(memberVO.getMbrCtgrCd().equals("M01")) { //관리자일경우 공식 프로젝트 
+			pjtVO.setPjtCtgrNo("P01");
+		}else {
+			pjtVO.setPjtCtgrNo("P02");  //사용자일 경우 개인 프로젝트
+		}
+		
+		pjtVO.setPjtWrtrNm(memberVO.getMbrId());
+		  
+	    String[] Date = pjtVO.getPjtStrtYmd().split("~");
+	    logger.info("start:"+Date[0].trim()+"trimCheck");
+	    logger.info("end:"+Date[1].trim());
+	  
+	    pjtVO.setPjtStrtYmd(Date[0].trim()); 
+	    pjtVO.setPjtEndYmd(Date[1].trim());
+	  
+	    //pjtNo : null
+	    logger.info("projectVO:"+pjtVO.toString());
+	    //insert는 1행이 들어감 => return되는 값은 1
+	    int result = service.pjtInsert(pjtVO);
+	    //pjtNo : 6
+	    logger.info("projectVO:"+pjtVO.toString());
+	    
+	    //프로젝트 사용 모듈 데이터 정리 및 인서트
+		Gson gson = new Gson();
+		List<String> modules = gson.fromJson((String)layouts.get("layouts"), List.class);
+		
+		for(String module: modules) {
+			LayoutVO layoutVO = new LayoutVO();
+			layoutVO.setLytNo(module);
+			layoutVO.setPjtNo(pjtVO.getPjtNo());
+			
+			service.moduleInsert(layoutVO);
+		}
+
+		//프로젝트 개발언어 데이터 정리 및 인서트
+		List<String> languages = gson.fromJson((String)langArr.get("langArr"), List.class);
+		
+		for(String language : languages) {
+			ProjectLanguageVO langVO = new ProjectLanguageVO();
+			langVO.setDvlLng(language);
+			langVO.setPjtNo(pjtVO.getPjtNo());
+			
+			service.langInsert(langVO);
+		}
+		
+		//프로젝트 키워드 데이터 정리 및 인서트
+		/*
+		 * List<String> keywords = gson.fromJson((String)keywordArr.get("keywordArr"),
+		 * List.class);
+		 * 
+		 * for(String keyword: keywords) {
+		 * 
+		 * }
+		 */
+		
+		//이슈 마커 데이터 정리 및 인서트
+		List<String> mkNames = gson.fromJson((String)mkNameArr.get("mkNameArr"), List.class);
+		List<String> mkColors = gson.fromJson((String)mkColorArr.get("mkColorArr"), List.class);
+		List<String> mkIcons = gson.fromJson((String)mkIconArr.get("mkIconArr"), List.class);
+		
+		for(String mkName:mkNames) {
+			MarkerVO vo = new MarkerVO();
+			
+		}
+		
+	}
+
+}

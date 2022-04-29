@@ -1,0 +1,245 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
+<link rel="stylesheet" href="/resources/assets/css/apps/todolist.css" />
+<link rel="stylesheet" href="/resources/assets/css/jsa/projectMain.css" />
+<link rel="stylesheet" href="/resources/assets/bootstrap/css/bootstrap.min.css" />
+<link href="/resources/assets/css/plugins.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="/resources/assets/css/structure.css" />
+<link href="/resources/assets/css/scrollspyNav.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="/resources/assets/css/main.css" />
+<link href="/resources/assets/css/elements/avatar.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" href="/resources/assets/css/widgets/modules-widgets.css" />
+<link rel="stylesheet" href="/resources/plugins/animate/animate.css" />
+<link href="/resources/assets/css/components/custom-modal.css" rel="stylesheet" type="text/css">
+
+<script src="/resources/assets/js/jquery-3.6.0.js"></script>
+<script src="/resources/assets/js/jsa/projectMain.js"></script>
+<script src="https://d3js.org/d3.v4.js"></script>
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+
+<style>
+
+
+</style>  
+<script>
+var pjtNo = "1"; //세션에서 저장 시 가져오기
+var total = "<c:out value='${changeMb}' />";
+	var webSocket = null;
+
+      
+$(function(){
+	
+	getAllMbr(pjtNo); //프로젝트 메인페이지 접속 시 구성원 목록 보여주기
+
+	triggerTransition(); //프로젝트 사용량 
+	
+	$("#usingAmount").on("click",function(){
+		location.href="/cloud/main.do";
+	})
+	
+	var url = 'ws://' + window.location.host + '${pageContext.request.contextPath}/usersServerEndpoint';
+	console.log("위치",url);
+	webSocket = connection(url);
+	var connectionType;
+
+	webSocket.onopen = function(){ processOpen(); };
+	webSocket.onmessage = function(message) { processMessage(message); };
+			
+
+	
+	
+})
+
+	
+	function connection(url) {
+		var webSocket = null;
+		if ('WebSocket' in window) {
+			webSocket = new WebSocket(url);
+		} else if ('MozWebSocket' in window) {
+			webSocket = new MozWebSocket(url);
+		} else {
+			Console.log('Error: WebSocket is not supported by this browser.');
+            return null;
+		}
+		return webSocket;
+	}
+	
+	function processOpen() {
+		connectionType = "firstConnection";
+		username = "${member.mbrId}";
+		webSocket.send(JSON.stringify({ "connectionType" : connectionType, "username" : username }));
+	}
+	
+	var jsonDataTemp;
+	//server에서 메시지가 넘어왔을때
+	function processMessage(message) {
+		var jsonData = JSON.parse(message.data);
+		
+		/*
+		1. 들어왔을 때
+		jsonData.allUsers : mem001,A001
+		jsonData.disconnectedUser : undefined
+		
+		2. 나갔을 때
+		jsonData.allUsers : undefined
+		jsonData.disconnectedUser : A001
+		*/
+		console.log("jsonData.allUsers : " + jsonData.allUsers);
+		console.log("jsonData.disconnectedUser : " + jsonData.disconnectedUser);
+		
+// 		console.log("jsonData : " + JSON.stringify(jsonData));
+		
+		if (jsonData.allUsers != null) {
+// 			console.log("jsonData.allUsers : " + JSON.stringify(jsonData.allUsers));
+			jsonDataTemp = jsonData.allUsers;
+			//다른 사용자 접속 시,
+			displayUsers(jsonData.allUsers);
+		} 
+		
+		if (jsonData.disconnectedUser != null) {
+// 			alert("tt1");
+			console.log("jsonDataTemp : " + JSON.stringify(jsonDataTemp));	//백업
+			console.log("jsonData.disconnectedUser : " + JSON.stringify(jsonData.disconnectedUser)); //나간회원
+			
+			let jsonDataArr = new Array();
+			let cnt = 0;
+			let exitUser = JSON.stringify(jsonData.disconnectedUser);
+			exitUser = exitUser.replace(/\"/gi, "");
+			//백업 - 나간회원
+			$.each(jsonDataTemp,function(i,value){
+	// 				console.log("key : " + key);
+					console.log("value : " + value + ", value2 : " + exitUser);
+					if(value!=exitUser){
+						jsonDataArr[cnt] = value;
+						cnt = cnt + 1;
+					}
+			});
+			
+			console.log("jsonDataArr : " + jsonDataArr);
+			//json
+			jsonDataTemp = jsonDataArr;
+			
+			//다른 사용자가 접속을 끊을 때,
+			$("#"+jsonData.disconnectedUser).remove();
+			//배열
+			displayUsers(jsonDataTemp);
+			
+			webSocket.close();
+		}
+		
+		
+	}
+	
+	
+	function displayUsers(userList) {
+		console.log("userlist:",userList);
+		getAllMbr(pjtNo, userList);
+	}
+	
+	
+	window.onbeforeunload = function() {
+		webSocket.close();
+	};
+
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	
+function triggerTransition(){
+  d3.select("#rectArea")
+    .transition()
+    .delay(100)
+    .duration(3000)
+    .attr("width", total)
+ 
+    
+}
+    </script>
+<!-- aside submenu space -->
+<div class="layout-px-spacing">
+<!-- aside submenu space -->
+	<div class="bodyDiv">
+		<div class="leftDiv">
+
+
+		
+		
+		</div>
+		<div class="rightDiv">
+		
+		<div id="usingAmount" class="widget widget-table-two rightside" style="width : 300px; cursor: pointer;">
+			<p class="spantitle">클라우드 사용량</p>
+			<div id="chart_div">
+			  <svg width="300px" height="100px" >
+			      <rect
+			        id="rectArea2" x="40" y="10"
+			        width="210" height="30" stroke="#666978"
+			        fill="#a9d9ce" stroke-width="0.5"/>
+			      <rect
+			        id="rectArea" x="40" y="10"
+			        width="0" height="30" stroke="black"
+			        fill="#69b3a2" stroke-width="0.5"/>
+			      <text x="170" y="30" font-size="15" fill="white">${changeMb/200*100}%</text>
+					<text x="70" y="75" fill="#2a6143" font-weight="bold"  font-size="15">
+						    ${changeMb}MB
+						  </text>
+					<text x="140" y="75" fill="#888ea8" font-weight="bold"  font-size="15">
+						     / 200MB
+						  </text>
+			 		 </svg>
+				</div>
+			</div>
+<div class="widget widget-table-two rightside" id="pjtMbrList" style="width : 300px;">
+</div>
+			
+			
+			
+			
+			
+			
+			
+			
+			</div>
+		</div>
+	</div>
+	
+	
+	
+	
+	
+	
+	
+	
+
+<div class="modal fade profile-modal" id="profileModal" tabindex="-1" role="dialog" aria-labelledby="profileModalLabel" style="display: none;" aria-hidden="true">
+  <div class="modal-dialog modal-sm" role="document">
+    <div class="modal-content">
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">×</span>
+        </button>
+
+      <div class="modal-header justify-content-center" id="profileModalLabel">
+        <div class="modal-profile mt-4">
+            <img alt="avatar" src="assets/img/profile-2.jpeg" class="rounded-circle">
+        </div>
+      </div>
+      <div class="modal-body text-center">
+            <p class="mt-2">Click on view to access your profile.</p>
+      </div>
+      <div class="modal-footer justify-content-center mb-4">
+        <button type="button" class="btn">View</button>
+      </div>
+    </div>
+  </div>
+</div>	
+

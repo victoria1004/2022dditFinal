@@ -1,0 +1,40 @@
+package kr.or.ddit.project.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.project.mapper.ProjectUpdateMapper;
+import kr.or.ddit.project.service.ProjectUpdateService;
+import kr.or.ddit.project.vo.LayoutVO;
+import kr.or.ddit.project.vo.MarkerVO;
+import kr.or.ddit.project.vo.ProjectLanguageVO;
+import kr.or.ddit.project.vo.ProjectVO;
+
+@Service
+public class ProjectUpdateServiceImpl implements ProjectUpdateService {
+	@Autowired 
+	ProjectUpdateMapper mapper;
+
+	@Override
+	public ProjectVO getPjt(String pjtNo) {
+		return mapper.getPjt(pjtNo);
+	}
+
+	@Override
+	public List<LayoutVO> getModule(String pjtNo) {
+		return mapper.getModule(pjtNo);
+	}
+
+	@Override
+	public List<MarkerVO> getMarker(String pjtNo) {
+		return mapper.getMarker(pjtNo);
+	}
+
+	@Override
+	public List<ProjectLanguageVO> getLang(String pjtNo) {
+		return mapper.getLang(pjtNo);
+	}
+	
+}

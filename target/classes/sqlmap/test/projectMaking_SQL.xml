@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.project.mapper.ProjectMakingMapper">
+	<!-- 로그인한 사용자의 정보 가져오기 -->
+	<select id="basicTeam" parameterType="String" resultType="memberVO">
+		SELECT MBR_ID
+	      ,MBR_NM
+	      ,MBR_DEPT
+	      ,MBR_CTGR_CD
+		FROM MEMBER
+		WHERE MBR_ID=#{id}
+	</select>
+
+	<!-- 프로젝트에 추가한 멤버들의 소속 가져오기 -->
+	<select id="getInfo" parameterType="String" resultType="String">
+		SELECT MBR_DEPT
+		FROM MEMBER
+		WHERE MBR_ID=#{mbrId}
+	</select>
+	
+	<!-- 모든 개발언어 로고 가져오기 -->
+	<select id="getLogo" resultType="developmentEnvmVO">
+		SELECT DVL_LNG
+      		  ,DVL_LG
+              ,DVL_LG_ADDR
+        FROM DVL_ENVM
+	</select>
+	
+	<!-- 프로젝트 인서트 -->
+	<insert id="pjtInsert" parameterType="projectVO">
+		<!--pjtNo : null => projectVO에 pjtNo 멤버변수에 6. INSERT에는 6.   -->
+		<selectKey keyProperty="pjtNo" resultType="String" order="BEFORE">
+			SELECT NVL(MAX(TO_NUMBER(PJT_NO)),0)+1 FROM PROJECT
+		</selectKey>
+		INSERT INTO PROJECT(PJT_NO,PJT_CTGR_CD,PJT_NM,PJT_OL,PJT_EXPL,PJT_STRT_YMD,PJT_END_YMD,PJT_RCRT_STTS,PJT_WRTR_NM)
+		VALUES(#{pjtNo},#{pjtCtgrNo},#{pjtNm},#{pjtOl},#{pjtExpl},#{pjtStrtYmd},#{pjtEndYmd},#{pjtRcrtStts},#{pjtWrtrNm})
+	</insert>
+	
+	<!-- 모듈 인서트 -->
+	<insert id="moduleInsert" parameterType="layoutVO">
+		INSERT INTO LAYOUT VALUES(#{pjtNo},#{lytNo})
+	</insert>
+	
+	<!-- 프로젝트 개발 언어 인서트 -->
+	<insert id="langInsert">
+		INSERT INTO PJT_LNG VALUES(#{dvlLng},#{pjtNo})
+	</insert>
+	
+	<!-- 키워드 인서트 -->
+	<insert id="keywordInsert">
+		INSERT INTO KEYWORD VALUES((SELECT NVL(MAX(TO_NUMBER(KWD_NO)),0)+1 FROM KEYWORD),#{kwdNm},#{pjtNo})
+	</insert>
+	
+	<!-- 이슈 마커 인서트 -->
+	<insert id="markerInsert">
+		INSERT INTO MARKER VALUES((SELECT NVL(MAX(TO_NUMBER(MRKR_NO)),0)+1 FROM MARKER), #{pjtNo},#{mrkrNm},#{mrkrIcn},#{mrkrClr})
+	</insert>
+	
+	<!-- 프로젝트 구성원 인서트 -->
+	<insert id="teamInsert">
+		INSERT INTO PJT_PRTPNT VALUES(#{pjtNo},#{mbrId},#{pjtPrtpntRl})
+	</insert>
+	
+	<!-- 프로젝트 삭제 -->
+	<delete id="pjtDelete" parameterType="String">
+		DELETE PROJECT
+		WHERE PJT_NO=#{pjtNo}
+	</delete>
+	
+	<!-- 종료된 프로젝트 -->
+	<select id="endProject" parameterType="String" resultType="projectVO">
+		SELECT P.PJT_NO
+		      ,P.PJT_CTGR_CD
+		      ,P.PJT_NM
+		      ,P.PJT_OL
+		      ,P.PJT_STRT_YMD
+		      ,P.PJT_END_YMD
+		FROM PROJECT P, PJT_PRTPNT T
+		WHERE P.PJT_NO = T.PJT_NO
+		<![CDATA[ AND P.PJT_END_YMD<SYSDATE]]>
+		AND T.MBR_ID=#{id}
+		
+	</select>
+	
+	<!-- 일찍 종료된 프로젝트 -->
+	<select id="earlyEndProject" parameterType="String" resultType="projectVO">
+		SELECT R.PJT_NO        
+		      ,P.PJT_CTGR_CD
+		      ,P.PJT_NM
+		      ,P.PJT_OL
+		      ,P.PJT_STRT_YMD
+		      ,P.PJT_END_YMD
+		FROM REPORT R, PROJECT P, PJT_PRTPNT T
+		WHERE R.PJT_NO = P.PJT_NO
+		AND R.RPT_CTGR_NM='F'
+		AND P.PJT_NO = T.PJT_NO
+		<![CDATA[AND P.PJT_END_YMD>SYSDATE]]>
+		AND T.MBR_ID=#{id}
+	</select>
+		
+</mapper>

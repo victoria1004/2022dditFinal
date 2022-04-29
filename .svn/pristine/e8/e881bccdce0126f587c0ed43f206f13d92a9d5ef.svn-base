@@ -1,0 +1,13 @@
+package kr.or.ddit.project.mapper;
+
+
+import org.apache.ibatis.annotations.Mapper;
+
+
+@Mapper
+public interface ProjectMakingMapper {
+	//회원 아이디로 소속 찾기
+	public String getInfo(String mbrId);
+	
+	
+}

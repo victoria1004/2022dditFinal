@@ -1,0 +1,10 @@
+package kr.or.ddit.feed.mapper;
+
+import kr.or.ddit.feed.vo.VoteVO;
+
+public interface VoteMapper {
+	
+	//투표 등록
+	public int insertVote(VoteVO voteVO);
+
+}

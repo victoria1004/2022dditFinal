@@ -1,0 +1,25 @@
+package kr.or.ddit.reservation.vo;
+
+public class MtrVO {
+	private int mtrNo;
+	private String mtrNm;
+	
+	public int getMtrNo() {
+		return mtrNo;
+	}
+	public void setMtrNo(int mtrNo) {
+		this.mtrNo = mtrNo;
+	}
+	public String getMtrNm() {
+		return mtrNm;
+	}
+	public void setMtrNm(String mtrNm) {
+		this.mtrNm = mtrNm;
+	}
+	
+	@Override
+	public String toString() {
+		return "MtrVO [mtrNo=" + mtrNo + ", mtrNm=" + mtrNm + "]";
+	}
+	
+}

@@ -1,0 +1,38 @@
+package kr.or.ddit.user.mapper;
+
+import java.util.List;
+
+import kr.or.ddit.user.vo.EmailVO;
+
+public interface EmailMapper {
+
+	//이메일 목록 보기
+	public List<EmailVO> emailSelect(String mbrEml);
+	
+	//이메일 보내기(등록)
+	public int emailInsert(EmailVO emailVO);
+	
+	//이메일 번호 가져오기
+	public String emlNoSelect();
+	
+	//아이디 찾아서 가져오기
+	public String mbrIdSelect();
+	
+	//파일 번호
+	public String fileNoSelect();
+	
+	//보낸메일함
+	public List<EmailVO> emailSend(String mbrEml);
+	
+	//휴지통 조회
+	public List<EmailVO> emailTrash(String mbrEml);
+	
+	//휴지통으로 보내기
+	public int emailTrashUpdate(EmailVO emailVO);
+	
+	//이메일 임시저장
+	public int emailSave(EmailVO emailVO);
+	
+	//임시보관함
+	public List<EmailVO> draftList(String mbrEml);
+}

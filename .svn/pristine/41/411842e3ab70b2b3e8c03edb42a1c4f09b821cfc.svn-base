@@ -1,0 +1,27 @@
+package kr.or.ddit.user.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.user.mapper.GetUserMapper;
+import kr.or.ddit.user.service.GetUserService;
+import kr.or.ddit.user.vo.MemberVO;
+
+@Service
+public class GetUserServiceImpl implements GetUserService {
+
+	@Autowired GetUserMapper mapper;
+	
+	
+	@Override
+	public List<MemberVO> getAllUsers(String keyword) {
+		return mapper.getAllUsers(keyword);
+	}
+
+	
+	
+	
+	
+}

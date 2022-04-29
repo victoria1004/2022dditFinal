@@ -1,0 +1,25 @@
+package kr.or.ddit.user.vo;
+
+public class MbrAuthVO {
+	private String authNo;
+	private String authNm;
+	
+	public String getAuthNo() {
+		return authNo;
+	}
+	public void setAuthNo(String authNo) {
+		this.authNo = authNo;
+	}
+	public String getAuthNm() {
+		return authNm;
+	}
+	public void setAuthNm(String authNm) {
+		this.authNm = authNm;
+	}
+	
+	@Override
+	public String toString() {
+		return "MbrAuthVo [authNo=" + authNo + ", authNm=" + authNm + "]";
+	}
+	
+}

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.project.mapper.ScheduleMapper">
+
+<!-- 캘린더 일정 등록 -->
+<insert id="calendarInsert" parameterType="scheduleVO">
+	INSERT INTO SCHDL(SCHDL_NO, PJT_NO, SCHDL_CTGR_CD, SCHDL_TTL, SCHDL_CN, SCHDL_SRT_DT, SCHDL_ND_DT, SCHDL_WRTR_NM)
+	VALUES((SELECT NVL(MAX(SCHDL_NO),0)+1 FROM SCHDL),#{pjtNo}, #{schdlCtgrCd}, #{schdlTtl}, #{schdlCn}, #{schdlSrtDt},
+	 #{schdlNdDt},#{schdlWrtrNm})
+</insert>
+
+<!-- 해당 프로젝트에 등록되어있는 캘린더의 일감 모두 가져오기 -->
+<select id="getAllCalendar" parameterType="scheduleVO" resultType="scheduleVO">
+	SELECT SCHDL_NO, PJT_NO, SCHDL_CTGR_CD, SCHDL_TTL, SCHDL_CN, SCHDL_SRT_DT, SCHDL_ND_DT, SCHDL_WRTR_NM
+	FROM SCHDL WHERE PJT_NO=#{pjtNo} AND SCHDL_WRTR_NM=#{schdlWrtrNm}
+</select>
+
+<!-- 기존 일정 수정하기 -->
+<update id="calendarUpdate" parameterType="scheduleVO">
+	UPDATE SCHDL
+	SET SCHDL_CTGR_CD=#{schdlCtgrCd},SCHDL_TTL= #{schdlTtl},SCHDL_CN= #{schdlCn},SCHDL_SRT_DT=#{schdlSrtDt},SCHDL_ND_DT=#{schdlNdDt}
+	WHERE SCHDL_NO=#{schdlNo}
+</update>
+
+<!-- 필터된 일정 조회하기 -->
+<select id="calendarFiltering" parameterType="String" resultType="scheduleVO">
+	SELECT SCHDL_NO,PJT_NO,SCHDL_CTGR_CD,SCHDL_TTL,SCHDL_CN,SCHDL_SRT_DT,SCHDL_ND_DT,SCHDL_WRTR_NM
+	FROM SCHDL
+	WHERE SCHDL_CTGR_CD=#{schdlCtgrCd}
+</select>
+
+<!-- 일정 삭제하기 -->
+<delete id="calendarDelete" parameterType="String">
+	DELETE  FROM SCHDL
+	WHERE SCHDL_NO=#{schdlNo}
+</delete>
+
+</mapper>

@@ -1,0 +1,8 @@
+package kr.or.ddit.reservation.mapper;
+
+import kr.or.ddit.reservation.vo.MtrRsvtVO;
+
+public interface MbrMapper {
+	//특정일 예약정보 조회
+	public MtrRsvtVO todayRes(String rsvtYmd);
+}

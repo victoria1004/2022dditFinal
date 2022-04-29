@@ -1,0 +1,50 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<link href='//spoqa.github.io/spoqa-han-sans/css/SpoqaHanSansNeo.css' rel='stylesheet' type='text/css'>
+<script src="/resources/assets/js/jsa/projectMain.js"></script>
+
+
+<script>
+var mbrId = '<c:out value="${member.mbrId}" />';
+$(function(){
+	getMyPjtList(mbrId); //접속한 사용자가 참여 중인 프로젝트 목록
+
+
+})
+
+</script>
+
+
+<!--  BEGIN SIDEBAR  -->
+ <div class="sidebar-wrapper sidebar-theme">
+     <nav id="compactSidebar">
+         <ul class="menu-categories">
+             <li class="menu">
+                 <a href="/project/projectMaking.do" data-active="false" class="menu-toggle">
+                     <div class="base-menu">
+                         <div class="base-icons">
+                             <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-plus-circle"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                         </div>
+                         <span class="">프로젝트 생성</span>
+                     </div>
+                 </a>
+                 <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-left"><polyline points="15 18 9 12 15 6"></polyline></svg>
+             </li>
+         
+<!--              <li class="menu active"> -->
+<!--                  <a href="#dashboard" data-active="true" class="menu-toggle"> -->
+<!--                      <div class="base-menu"> -->
+<!--                          <div class="base-icons"> -->
+<!--                          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-airplay"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path><polygon points="12 15 17 21 7 21 12 15"></polygon></svg>               -->
+<!--                          </div> -->
+<!--                          <span>project</span> -->
+<!--                      </div> -->
+<!--                  </a> -->
+<!--                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-left"><polyline points="15 18 9 12 15 6"></polyline></svg> -->
+<!--              </li> -->
+             
+         </ul>
+     </nav>
+     
+ </div>
+ <!--  END SIDEBAR  -->

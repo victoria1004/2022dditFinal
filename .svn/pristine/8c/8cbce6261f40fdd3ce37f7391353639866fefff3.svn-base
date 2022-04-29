@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.project.mapper.KanbanMapper">
+
+	<!-- 칸반 등록 -->
+	<insert id="kanbanInsert" useGeneratedKeys="false" parameterType="kanbanVO">
+		<selectKey order="BEFORE" keyProperty="kbNo" resultType="String">
+			SELECT NVL(MAX(TO_NUMBER(KB_NO)),0)+1 FROM KANBAN 
+		</selectKey>
+		INSERT INTO KANBAN(KB_NO, PJT_NO, KB_NM) 
+		VALUES(#{kbNo}, '1', #{kbNm} )
+	</insert>
+
+	<!-- 칸반 조회 -->
+	<select id="kanbanSelect" resultType="kanbanVO" parameterType="kanbanVO">
+		SELECT KB_NO, PJT_NO, KB_NM, KB_PRIV_NO 
+		  FROM KANBAN
+	</select>
+
+	<!-- 칸반 삭제 -->
+	<delete id="kanbanDelete" parameterType="String">
+		DELETE FROM KANBAN WHERE KB_NO = #{kbNo}
+	</delete>
+	
+	<!-- 칸반 안에 있는 카드 삭제 -->
+	<delete id="kanbanNoDelete" parameterType="String">
+		DELETE FROM KANBAN_CARD WHERE KB_NO = #{kbNo}
+	</delete>
+	
+	<!-- 칸반 이름 수정 -->
+	<update id="kanbanUpdate" parameterType="kanbanVO">
+		UPDATE KANBAN 
+		   SET KB_NM = #{kbNm} 
+		 WHERE KB_NO = #{kbNo} 
+	</update>
+	
+</mapper>

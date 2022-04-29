@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.user.mapper.MbrMapper">
+	<select id="checkId" parameterType="String" resultType="int">
+		select count(*)
+		  from member
+		 where mbr_id=#{mbrId}
+	</select>
+	<insert id="mbrInsert" parameterType="memberVO">
+		INSERT INTO member 
+				  ( mbr_id
+				  , mbr_ctgr_cd
+				  , mbr_pw
+				  , mbr_nm
+				  , mbr_gender
+				  , mbr_telno
+				  , mbr_dept
+				  , mbr_eml
+				  , mbr_img
+				  , mbr_intro
+				  , mbr_img_path
+				  , mbr_stts)
+			 VALUES 
+			 	   (#{mbrId}
+			 	  , #{mbrCtgrCd}
+			 	  , #{mbrPw}
+			 	  , #{mbrNm}
+			 	  , #{mbrGender}
+			 	  , #{mbrTelno}
+			 	  , #{mbrDept}
+			 	  , #{mbrEml}
+			 	  , #{mbrImg}
+			 	  , #{mbrIntro}
+			 	  , #{mbrImgPath}
+			 	  , #{mbrStts})
+	</insert>
+	<update id="mbrUpdate" parameterType="memberVO">
+	   UPDATE member
+	    SET   mbr_pw =#{mbrPw}
+	        , mbr_nm =#{mbrNm}
+	        , mbr_gender =#{mbrGender}
+	        , mbr_telno =#{mbrTelno}
+	        , mbr_dept =#{mbrDept}
+	        , mbr_eml =#{mbrEml}
+	        , mbr_img =#{mbrImg}
+	        , mbr_intro =#{mbrIntro}
+	        , mbr_img_path =#{mbrImgPath}
+	  WHERE   mbr_id =#{mbrId}
+	</update>
+	
+	<update id="mbrNoImgUpdate" parameterType="memberVO">
+	   UPDATE member
+	    SET   mbr_pw =#{mbrPw}
+	        , mbr_nm =#{mbrNm}
+	        , mbr_gender =#{mbrGender}
+	        , mbr_telno =#{mbrTelno}
+	        , mbr_dept =#{mbrDept}
+	        , mbr_eml =#{mbrEml}
+	        , mbr_intro =#{mbrIntro}
+	  WHERE   mbr_id =#{mbrId}
+	</update>
+	
+	<select id="mbrSelect" parameterType="String" resultType="memberVO">
+		SELECT
+			    mbr_id
+			   ,mbr_ctgr_cd
+			   ,mbr_pw
+			   ,mbr_nm
+			   ,mbr_gender
+			   ,mbr_telno
+			   ,mbr_dept
+			   ,mbr_eml
+			   ,mbr_img
+			   ,mbr_intro
+			   ,mbr_img_path
+			   ,mbr_stts
+			FROM
+			    member
+			WHERE
+			    mbr_id=#{mbrId}
+	</select>
+</mapper>  

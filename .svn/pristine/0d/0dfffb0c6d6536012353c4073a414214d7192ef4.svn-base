@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.user.mapper.EmailMapper">
+	
+	<!-- 메일 -->
+	<resultMap type="emailVO" id="mailList">
+		<id property="emlNo" column="EML_NO"/>
+		<result property="emlSndr" column="EML_SNDR"/>
+		<result property="emlTtl" column="EML_TTL"/>
+		<result property="emlCtnt" column="EML_CTNT"/>
+		<result property="emlSndngDt" column="EML_SNDNG_DT"/>
+		<result property="rcvrEmlAddr" column="RCVR_EML_ADDR"/>
+	</resultMap>
+	
+	<!-- 회원 -->
+	<resultMap type="memberVO" id="memList">
+		<id property="mbrId" column="MBR_ID"/>
+		<result property="mbrEml" column="MBR_EML"/>
+	</resultMap>
+	
+	
+	<!-- 메일 보내기 -->
+	<insert id="emailInsert" useGeneratedKeys="false" parameterType="emailVO">
+		<selectKey order="BEFORE" keyProperty="emlNo" resultType="String">
+			SELECT NVL(MAX(TO_NUMBER(EML_NO)),0)+1 FROM EMAIL 
+		</selectKey>
+	        INSERT 
+			INTO EMAIL(EML_NO, EML_SNDR, EML_TTL, EML_CTNT, EML_SNDNG_DT, RCVR_EML_ADDR, SNDR_EML_ADDR, EML_YN) 
+			VALUES( LPAD(#{emlNo}, 2, '0'), #{emlSndr}, #{emlTtl}, #{emlCtnt}, TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS'), #{rcvrEmlAddr}, #{sndrEmlAddr}, 'N')
+	</insert>
+	
+	<!-- 이메일 번호 가져오기 -->
+	<select id="emlNoSelect" resultType="String">
+		SELECT MAX(TO_NUMBER(EML_NO)) FROM EMAIL
+	</select>
+	
+	<!-- 아이디 찾아서 가져오기 -->
+	<select id="mbrIdSelect" resultType="String">
+		SELECT MBR_ID
+		  FROM MEMBER
+		 WHERE MBR_EML = (SELECT MAX(RCVR_EML_ADDR) FROM EMAIL)
+	</select>
+	
+	<!-- 파일번호 가져오기 -->
+	<select id="fileNoSelect" resultType="String">
+		SELECT NVL(MAX(TO_NUMBER(FILE_NO)),0)+1 FROM TRSM_FILE 
+	</select>
+	
+	<!-- 전송파일 테이블에 이메일 첨부파일 저장 -->
+	<insert id="trsmFileEmailInsert" parameterType="trsmFileVO">
+		INSERT INTO TRSM_FILE(FILE_NO, TRSM_FILE_ADDR, TRSM_FILE_NM, TRSM_FILE_CTGR_NM, TD_NO, EML_NO, PST_NO)
+		VALUES (#{fileNo}, #{trsmFileAddr}, #{trsmFileNm}, #{trsmFileCtgrNm}, #{emlNo} )
+	</insert>
+	
+	
+	<!-- 받은 메일 조회 (메인) -->
+	<select id="emailSelect" resultType="emailVO" parameterType="emailVO">
+		SELECT EML_NO, EML_SNDR, EML_TTL, EML_CTNT, EML_SNDNG_DT, RCVR_EML_ADDR, SNDR_EML_ADDR, EML_YN
+		  FROM EMAIL
+		 WHERE RCVR_EML_ADDR = #{rcvrEmlAddr}
+		 ORDER BY EML_SNDNG_DT DESC 
+	</select>
+	
+	
+	<!-- 보낸 메일 조회 -->
+	<select id="emailSend" resultType="emailVO" parameterType="emailVO">
+		SELECT EML_NO, EML_SNDR, EML_TTL, EML_CTNT, EML_SNDNG_DT, RCVR_EML_ADDR, SNDR_EML_ADDR, EML_YN 
+		  FROM EMAIL
+		 WHERE SNDR_EML_ADDR = #{sndrEmlAddr}
+		   AND EML_CTGR = '보낸메일함'
+		 ORDER BY EML_SNDNG_DT DESC 
+	</select>
+	
+	<!-- 휴지통 조회 -->
+	<select id="emailTrash" resultType="emailVO" parameterType="emailVO">
+		SELECT EML_NO, EML_SNDR, EML_TTL, EML_CTNT, EML_SNDNG_DT, RCVR_EML_ADDR, SNDR_EML_ADDR, EML_YN
+		  FROM EMAIL
+		 WHERE RCVR_EML_ADDR = #{rcvrEmlAddr}
+		   AND EML_CTGR = '휴지통'
+		 ORDER BY EML_SNDNG_DT DESC
+	</select>
+	
+<!-- 	휴지통으로 이동 --> 
+<!-- 	<update id="emailTrashUpdate" parameterType="emailVO"> -->
+		
+<!-- 	</update> -->
+
+
+	<!-- 임시보관함에 저장 -->
+	<insert id="emailSave" useGeneratedKeys="false" parameterType="emailVO">
+		<selectKey order="BEFORE" keyProperty="emlNo" resultType="String">
+			SELECT NVL(MAX(TO_NUMBER(EML_NO)),0)+1 FROM EMAIL 
+		</selectKey>
+	        INSERT 
+			INTO EMAIL(EML_NO, EML_SNDR, EML_TTL, EML_CTNT, EML_SNDNG_DT, RCVR_EML_ADDR, SNDR_EML_ADDR, EML_CTGR) 
+			VALUES( LPAD(#{emlNo}, 2, '0'), #{emlSndr}, #{emlTtl}, #{emlCtnt}, TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS'), #{rcvrEmlAddr}, #{sndrEmlAddr}, #{emlCtgr})
+	</insert>
+	
+	<!-- 임시보관함 -->
+	<select id="draftList" resultType="emailVO" parameterType="emailVO">
+		SELECT EML_NO, EML_SNDR, EML_TTL, EML_CTNT, EML_SNDNG_DT, RCVR_EML_ADDR, SNDR_EML_ADDR, EML_YN
+		  FROM EMAIL
+		 WHERE SNDR_EML_ADDR = #{sndrEmlAddr}
+		   AND EML_CTGR = '작성임시보관'
+		 ORDER BY EML_SNDNG_DT DESC
+	</select>
+</mapper>
+
+

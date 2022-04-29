@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.project.mapper.ProjectUpdateMapper">
+
+<!-- 프로젝트 번호에 해당하는 프로젝트 객체 가져오기 -->
+<select id="getPjt" parameterType="String" resultType="projectVO">
+	SELECT PJT_NO
+	      ,PJT_CTGR_CD
+	      ,PJT_NM
+	      ,PJT_OL
+	      ,PJT_EXPL
+	      ,PJT_STRT_YMD
+	      ,PJT_END_YMD
+	      ,PJT_RCRT_STTS
+	      ,PJT_WRTR_NM
+	FROM PROJECT
+	WHERE PJT_NO=#{pjtNo}
+</select>
+
+<!-- 프로젝트 번호에 해당하는 모듈코드 가져오기 -->
+<select id="getModule" parameterType="String" resultType="layoutVO">
+	SELECT PJT_NO
+          ,LYT_NO
+	FROM LAYOUT
+	WHERE PJT_NO=#{pjtNo}
+</select>
+
+<!-- 프로젝트 번호에 해당하는 마커 가져오기 -->
+<select id="getMarker" parameterType="String" resultType="markerVO">
+	SELECT MRKR_NO
+    	  ,PJT_NO
+          ,MRKR_NM
+          ,MRKR_ICN
+          ,MRKR_CLR
+	FROM MARKER
+	WHERE PJT_NO=#{pjtNo}
+</select>
+
+<!-- 프로젝트 번호에 해당하는 개발언어 가져오기 -->
+<select id="getLang" parameterType="String" resultType="projectLanguageVO">
+	SELECT DVL_LNG
+          ,PJT_NO
+	FROM PJT_LNG
+	WHERE PJT_NO=#{pjtNo}
+</select>
+
+</mapper>

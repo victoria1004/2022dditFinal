@@ -1,0 +1,71 @@
+//프로젝트의 모든 구성원 출력
+function getAllMbr(pjtNo){
+	
+	$.ajax({
+		
+		url : "/project/getAllMbr",
+		data : {pjtNo : pjtNo},
+		type : "post",
+		success : function(res){
+		
+		var str = '<div class="table-responsive"><table class="table"><tbody><tr>';
+
+			$.each(res, function(i, v){
+			
+				console.log(i, v);
+			
+		        str += '<td><div class="td-content profileDiv"></div></td>';
+		        if (v.mbrImg == null){
+		        str += '<td><img src="/resources/profileImage/profileimage.png" style="width:40px; height:40px;" alt="'+v.mbrNm+'"></td>';
+		        } else {
+		        str += '<td><img src="/resources/profileImage/'+v.mbrImg+'" style="width:40px; height:40px;" alt="'+v.mbrNm+'"></td>';
+		        }
+		        str += '<td><div class="td-content customer-name profileDiv">'+v.mbrNm+'</div></td>';
+		        str += '<td><div class="td-content profileDiv"><span class="badge outline-badge-primary">Shipped</span></div></td>';
+                
+				})
+                str += '</tr></tbody></table></div>';
+				$("#pjtMbrList").append(str);
+
+		}, error : function(){
+			
+		}
+		
+	})
+}
+
+
+//접속한 사용자가 참여 중인 프로젝트 목록
+function getMyPjtList(mbrId){
+	
+	console.log("접속자", mbrId);
+	let data = {"mbrId":mbrId};
+	$.ajax({
+	
+		url : "/project/getMyPjtList?mbrId="+mbrId,
+		type : "get",
+		dataType : "json",
+		success : function(res){	
+			console.log("결과 : ", JSON.stringify(res));
+				
+			var str = "";
+			$.each(res, function(i, v){			
+				str += '<li class="menu">';
+	            str += '<a href="#dashboard" data-active="false" class="menu-toggle">';
+	            str += '<div class="base-menu"><div class="base-icons">';
+	            str += '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-airplay"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path><polygon points="12 15 17 21 7 21 12 15"></polygon></svg>';              
+	            str += '</div><span>' + v.pjtNm +'</span></div></a>';
+	            str += '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-left"><polyline points="15 18 9 12 15 6"></polyline></svg>';
+	            str += '</li>';
+			});
+			$(".menu-categories").append(str);
+		}
+	
+	
+	});
+
+
+           
+
+
+}

@@ -1,0 +1,23 @@
+package kr.or.ddit.goods.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.goods.mapper.GdsMapper;
+import kr.or.ddit.goods.service.GdsService;
+import kr.or.ddit.goods.vo.GdsMngVO;
+
+@Service
+public class GdsServiceImpl implements GdsService{
+	
+	@Autowired
+	GdsMapper gdsMapper;
+	
+	@Override
+	public List<GdsMngVO> goodsList() {
+		return this.gdsMapper.goodsList();
+	}
+
+}

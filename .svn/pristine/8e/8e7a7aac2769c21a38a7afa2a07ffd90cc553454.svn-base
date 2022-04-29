@@ -1,0 +1,9 @@
+package kr.or.ddit.feed.service;
+
+import kr.or.ddit.feed.vo.VtRsltVO;
+
+public interface VtRsltService {
+	//투표 내용 등록하기
+	public int insertRslt(VtRsltVO vtRsltVO);
+
+}

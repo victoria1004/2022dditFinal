@@ -1,0 +1,25 @@
+package kr.or.ddit.project.mapper;
+
+import java.util.List;
+
+import kr.or.ddit.project.vo.LayoutVO;
+import kr.or.ddit.project.vo.MarkerVO;
+import kr.or.ddit.project.vo.ProjectLanguageVO;
+import kr.or.ddit.project.vo.ProjectVO;
+
+public interface ProjectUpdateMapper {
+
+    //프로젝트 번호에 해당하는 프로젝트 객체 가져오기
+	public ProjectVO getPjt(String pjtNo); 
+	
+	//프로젝트 번호에 해당하는 모듈 가져오기
+	public List<LayoutVO> getModule(String pjtNo);
+	
+	//프로젝트 번호에 해당하는 마커 가져오기
+	public List<MarkerVO> getMarker(String pjtNo);
+	
+	//프로젝트 번호에 해당하는 개발언어 가져오기
+	public List<ProjectLanguageVO> getLang(String pjtNo);
+	
+	
+}

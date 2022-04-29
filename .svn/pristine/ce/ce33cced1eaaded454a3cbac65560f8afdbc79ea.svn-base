@@ -1,0 +1,10 @@
+package kr.or.ddit.reservation.service;
+
+import java.util.List;
+
+import kr.or.ddit.reservation.vo.MtrRsvtVO;
+
+public interface MtrService {
+	//특정일 예약정보 조회
+	public List<MtrRsvtVO> todayRes(String rsvtYmd);
+}

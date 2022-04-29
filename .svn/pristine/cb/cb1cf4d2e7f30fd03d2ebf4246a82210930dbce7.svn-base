@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.project.mapper.RecruitmentMapper">
+<!-- 모집중인 프로젝트 가져오기 -->
+<select id="getY" resultType="hashMap">
+	SELECT P.PJT_NO
+	      ,P.PJT_CTGR_CD
+	      ,P.PJT_NM
+	      ,P.PJT_OL
+	      ,P.PJT_EXPL
+	      ,P.PJT_STRT_YMD
+	      ,P.PJT_END_YMD
+	      ,P.PJT_RCRT_STTS
+	      ,P.PJT_WRTR_NM
+	      ,COUNT(M.MBR_ID) AS COUNTING
+	FROM PROJECT P, PJT_PRTPNT M
+	WHERE P.PJT_NO=M.PJT_NO
+	AND P.PJT_RCRT_STTS='Y'
+	GROUP BY M.PJT_NO
+	        ,P.PJT_NO
+	        ,P.PJT_CTGR_CD
+	        ,P.PJT_NM
+	        ,P.PJT_OL
+	        ,P.PJT_EXPL
+	        ,P.PJT_STRT_YMD
+	        ,P.PJT_END_YMD
+	        ,P.PJT_RCRT_STTS
+	        ,P.PJT_WRTR_NM
+</select>
+
+<!-- 지원 인서트 -->
+<insert id="applyInsert" parameterType="pjtApplyVO">
+	INSERT INTO PJT_APPLY(PJT_APPLY_NO,PJT_NO,PJT_APPLY_CN,PJT_APPLY_WRTR_ID,PJT_APPLY_DT,APPLY_APRV_YN,PJCT_RSN)
+	VALUES((SELECT NVL(MAX(TO_NUMBER(PJT_APPLY_NO)),0)+1 FROM PJT_APPLY),#{pjtNo},#{pjtApplyCn},#{pjtApplyWrtrId},SYSDATE,NULL,NULL)
+</insert>
+
+
+<!-- 이미 지원한 프로젝트인지 확인 -->
+<select id="checkApply" parameterType="pjtApplyVO" resultType="int">
+	SELECT COUNT(*)
+	FROM PJT_APPLY
+	WHERE PJT_NO=#{pjtNo} AND PJT_APPLY_WRTR_ID=#{pjtApplyWrtrId}
+</select>
+
+<!-- 해당 프로젝트의 구성원인지 확인 -->
+<select id="teamCheck" parameterType="pjtApplyVO" resultType="int">
+	SELECT COUNT(*)
+	FROM PJT_PRTPNT
+	WHERE PJT_NO=#{pjtNo} AND MBR_ID=#{pjtApplyWrtrId}
+</select>
+
+<!-- 내가 신청한 프로젝트 목록 -->
+<select id="applyList" parameterType="String" resultType="hashmap">
+	SELECT P.Pjt_Nm
+	      ,M.MBR_NM
+		  ,A.PJT_APPLY_DT
+		  ,A.APPLY_APRV_YN
+	FROM PJT_APPLY A, PROJECT P, MEMBER M
+	WHERE A.PJT_NO=P.PJT_NO
+	AND P.Pjt_Wrtr_Nm=M.MBR_ID
+	AND A.PJT_APPLY_WRTR_ID=#{id}
+</select>
+</mapper>

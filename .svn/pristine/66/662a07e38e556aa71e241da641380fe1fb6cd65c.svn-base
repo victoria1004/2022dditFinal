@@ -1,0 +1,68 @@
+package kr.or.ddit.goods.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+
+import kr.or.ddit.goods.ArticlePage;
+import kr.or.ddit.goods.service.GdsService;
+import kr.or.ddit.goods.vo.GdsMngVO;
+import kr.or.ddit.goods.vo.GdsRntVO;
+import kr.or.ddit.user.vo.MemberVO;
+
+@RequestMapping("/gds")
+@Controller
+public class GdsController {
+
+	private static final Logger logger = LoggerFactory.getLogger(GdsController.class);
+	
+	@Autowired
+	GdsService gdsService;
+	
+	@RequestMapping(value = "/gdsList.do", method = RequestMethod.GET)
+	public String gdsList(Model model
+			, @RequestParam(defaultValue = "1", required=false) int currentPage
+			, @RequestParam(defaultValue = "10", required=false) int size
+			, @RequestParam(required = false) String keyWord) {
+		Map<String, Object> map = new HashMap<String, Object>();
+		map.put("currentPage", currentPage);
+		map.put("size", size);
+		map.put("keyWord", keyWord);
+		
+		int total = this.gdsService.totalList(map);
+		List<GdsMngVO> list = gdsService.goodsList(map);
+		
+		model.addAttribute("list", new ArticlePage(total, currentPage, size, 5, list));
+		model.addAttribute("total", total);
+		
+		return "goods/goodsMain";
+	}
+	
+	@RequestMapping(value = "/rentGoods", method = RequestMethod.POST)
+	public String lentGoods(Model model
+			, @RequestParam Map<String, Object> map
+			, HttpSession session) {
+		GdsRntVO gds = new GdsRntVO();
+		
+		gds.setGdsNo((String) map.get("gdsNo"));
+		gds.setMbrId(((MemberVO)session.getAttribute("member")).getMbrId());
+		gds.setRtnPrnmntDt((String) map.get("rtnPrnmntDt"));
+		gds.setRntCnt(Integer.parseInt((String) map.get("demo_vertical")));
+		
+		this.gdsService.rentGoods(gds);
+		
+		return "redirect:/gds/gdsList.do";
+	}
+	
+}

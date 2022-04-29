@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.project.mapper.ProjectMakingMapper">
+	<!-- 프로젝트에 추가한 멤버들의 소속 가져오기 -->
+	<select id="getInfo" parameterType="String" resultType="String">
+		SELECT MBR_DEPT
+		FROM MEMBER
+		WHERE MBR_ID=#{mbrId}
+		
+	</select>
+</mapper>

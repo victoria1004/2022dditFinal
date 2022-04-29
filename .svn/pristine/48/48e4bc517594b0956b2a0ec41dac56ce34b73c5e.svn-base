@@ -1,0 +1,42 @@
+package kr.or.ddit.user.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.user.mapper.AlarmMapper;
+import kr.or.ddit.user.service.AlarmService;
+import kr.or.ddit.user.vo.AlarmVO;
+@Service
+public class AlarmServiceImpl implements AlarmService {
+
+	@Inject AlarmMapper mapper;
+
+	//사용자가 안읽은 모든 메시지
+	public List<AlarmVO> getAllNotReadedMsg(String mbrId){
+		return mapper.getAllNotReadedMsg(mbrId);
+	};
+	
+	//사용자가 안읽은 모든 메시지의 갯수
+	public int getAllNotReadedCount(String mbrId) {
+		return mapper.getAllNotReadedCount(mbrId);
+	}
+
+	@Override
+	public int insertAlarmMsg(Map<String, String> map) {
+		return mapper.insertAlarmMsg(map);
+	}
+
+	@Override
+	public int updateAlarmMsg(Map<String, String> map) {
+		return mapper.updateAlarmMsg(map);
+	};
+	
+	
+	
+	
+	
+}

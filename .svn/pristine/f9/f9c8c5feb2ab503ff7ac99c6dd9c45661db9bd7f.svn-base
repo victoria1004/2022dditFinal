@@ -1,0 +1,63 @@
+.bodyDiv {
+/* 	border: 1px solid red; */
+	margin-top:100px;
+	display: flex;
+}
+
+.leftDiv {
+	border:1px solid blue;
+	width : 1100px;
+	height:auto;
+}
+
+.rightDiv {
+	border : 1px sold yellow;
+	display : flex;
+	flex-direction: column;
+	width:400px;
+	height:auto;
+	position:relative;
+}
+.profileHeader{
+	border-bottom : 1px dashed #e0e6ed;
+	margin-left : 30px; 
+	margin-top : 5px; 
+	padding : 3px;
+	height : 30px;
+	
+}
+.profileDiv {
+	margin : 5px;
+	padding : 2px;
+}
+h6 {
+	font-size: 15px;
+	
+}
+.prtpntNm {
+	font-size : 16px;
+	padding : 5px;
+	
+}
+.prtpntDept {
+	color: #888ea8;
+	font-size : 13px;
+	padding : 3px;
+	
+}
+.rightside {
+	margin : 5px;
+	margin-bottom : 5px;
+	
+}
+#pjtMbrList {
+	margin-top : 5px;
+}
+.spantitle {
+	padding : 3px;
+	font-size : 17px;
+	font-weight: 600;
+	padding-left : 50px;
+	margin-top : 15px;
+	
+}

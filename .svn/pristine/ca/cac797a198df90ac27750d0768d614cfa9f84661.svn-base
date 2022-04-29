@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.cloud.mapper.CloudMapper">
+
+	<!-- 프로젝트의 모든 파일 가져오기 (검색 시에도 가능)-->
+	<select id="selectAll" parameterType="map" resultType="strgVO">
+     SELECT RUM
+     		, STRG_FILE_NO
+     		, FILE_NM
+     		, STRG_FILE_NM
+     		, STRG_FILE_ADDR
+     		, STRG_DT 
+     		, FILE_UPLOADER 
+       FROM (SELECT ROWNUM RUM, A.* 
+		       FROM  ( SELECT STRG_FILE_NO
+		       				  , FILE_NM
+		       				  , STRG_FILE_NM
+		       				  , STRG_FILE_ADDR
+		       				  , STRG_DT
+		       				  , FILE_UPLOADER 
+		                FROM STRG 
+		                WHERE PJT_NO = #{pjtNo}
+		                <if test="folderNm != null and folderNm != ''">
+		                  AND STRG_FILE_ADDR LIKE '%cloud%'||#{folderNm}
+		                </if>
+		              ) A
+		    ORDER BY RUM DESC)B      
+	   WHERE B.RUM BETWEEN #{start} AND #{end}
+		<if test="fileNm != null and fileNm != ''">
+		AND FILE_NM LIKE '%'||#{fileNm}||'%' 
+		</if>
+		ORDER BY STRG_FILE_NO DESC
+	</select>
+	
+	<!-- 클라우드에  파일 업로드 시작 -->
+	<insert id="insertFldr" parameterType="fldrVO">
+			INSERT INTO FLDR (PJT_NO, LEAF_FOLDER, PARENT_FOLDER)			
+				VALUES (#{pjtNo}, #{leafFolder}, #{parentFolder})
+	</insert>
+	
+	<insert id="insert" parameterType="strgVO">
+		<selectKey order="BEFORE" keyProperty="strgFileNo" resultType="String">
+			SELECT TO_NUMBER(TO_CHAR(SYSDATE,'YYYYMMDD'))||'F'||STRG_SEQ.NEXTVAL AS STRG_FILE_NO
+			  FROM DUAL
+		</selectKey>
+		INSERT INTO STRG 
+				(STRG_FILE_NO, PJT_NO, FILE_NM, STRG_FILE_NM, STRG_FILE_SZ, STRG_FILE_ADDR, STRG_DT, FILE_UPLOADER)
+			VALUES (
+			#{strgFileNo}, #{pjtNo}, #{fileNm}, #{strgFileNm}, #{strgFileSz}, #{strgFileAddr}, SYSDATE, #{fileUploader})
+	</insert>
+	<!-- 클라우드에  파일 업로드 끝  -->
+	
+	<!-- 클라우드의 현재 폴더(상위폴더) 가져오기 -->
+	<select id="getFolder" parameterType="map" resultType="String">
+<!-- 	    SELECT DISTINCT(PARENT_FOLDER) -->
+<!--         FROM FLDR -->
+<!--         WHERE PJT_NO = #{pjtNo} -->
+<!--         AND PARENT_FOLDER = #{folderNm} -->
+      SELECT DISTINCT(LEAF_FOLDER)
+        FROM FLDR
+        WHERE PJT_NO = #{pjtNo}
+        AND LEAF_FOLDER =  #{folderNm}
+	</select>
+	
+	<!-- 상위폴더 클릭 시 하위 폴더 목록 가져오기 -->
+	<select id="getLowFolders" parameterType="map" resultType="fldrVO">  
+        SELECT LEAF_FOLDER
+        FROM FLDR
+        WHERE PJT_NO = #{pjtNo}
+        AND PARENT_FOLDER = #{folderNm}
+	</select>
+	
+	<!-- 파일 삭제 버튼 클릭 시 파일번호로 해당 파일을 삭제한다. -->
+	<delete id="fileDelete" parameterType="String">
+		DELETE 
+		 FROM STRG
+		 WHERE STRG_FILE_NO = #{strgFileNo} 
+	</delete>
+	
+	<!-- 파일 다운로드 버튼 클릭 시 파일번호로 파일경로와 파일이름을 가져온다. -->
+	<select id="getDownloadFile" parameterType="String" resultType="strgVO">
+		  SELECT STRG_FILE_ADDR
+		  		, FILE_NM
+		  		, STRG_FILE_NM
+			FROM STRG
+			WHERE STRG_FILE_NO = #{strgFileNo}
+	</select>
+	
+	<!-- 모든 하위폴더 목록 가져오기(좌측 메뉴용) -->
+	<select id="getAllLeafFolders" parameterType="map" resultType="fldrVO">
+		SELECT LEAF_FOLDER
+		   , PARENT_FOLDER
+		   , PJT_NO
+		FROM (SELECT LEAF_FOLDER,
+            PARENT_FOLDER, PJT_NO
+            FROM FLDR
+            WHERE PJT_NO = #{pjtNo})
+		START WITH PARENT_FOLDER IS NULL
+		CONNECT BY PRIOR LEAF_FOLDER = PARENT_FOLDER
+	</select>
+	
+<!-- 좌측메뉴에서 폴더 클릭 시 해당 폴더의	하위폴더 가져와서 파일목록에 하위 폴더도 출력시킨다. -->
+	<select id="getLeaf" parameterType="map" resultType="String">
+		SELECT LEAF_FOLDER
+		FROM FLDR
+		WHERE PJT_NO = #{pjtNo}
+		AND PARENT_FOLDER = #{folderNm}
+	</select>
+	
+	<!-- 모든 파일의 갯수 가져오기(검색 시 해당 검색이름과 관련된 파일들의 총 갯수) -->
+	<select id="fileCount" parameterType="map" resultType="int">        
+        SELECT COUNT(*)
+        FROM STRG
+        WHERE PJT_NO = #{pjtNo}
+        <if test="keyword != null and keyword != ''">
+        AND FILE_NM LIKE '%'||#{keyword}||'%' 
+        </if>
+	</select>
+	
+	<!-- 프로젝트 메인에서 해당 프로젝트의 총 클라우드 사용량 -->
+	<select id="getAllSz" parameterType="String" resultType="int">
+		SELECT NVL(SUM(TO_NUMBER(STRG_FILE_SZ)),0) AS STRG_FILE_SZ 
+		FROM STRG 
+		WHERE PJT_NO = #{pjtNo}
+	</select>
+	
+	<!-- 프젝 생성 시 폴더 생성 -->
+	<insert id="mkCloud" parameterType="map">
+		INSERT INTO FLDR (PJT_NO, LEAF_FOLDER) VALUES (#{pjtNo}, #{pjtNm})
+	</insert>	
+	
+	
+</mapper>

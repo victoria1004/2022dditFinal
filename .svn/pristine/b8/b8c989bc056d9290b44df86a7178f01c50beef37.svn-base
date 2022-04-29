@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.project.mapper.TodoMapper">
+
+	<!-- 일감 세팅 시 마커 끌어오기 -->
+	<select id="getMarkers" parameterType="String" resultType="markerVO">
+		SELECT MRKR_NO
+				, PJT_NO
+				, MRKR_NM
+				, MRKR_ICN
+				, MRKR_CLR
+		FROM MARKER
+		WHERE PJT_NO = #{pjtNo}	
+	</select>
+	
+	<!-- 일감 추가 -->
+	<insert id="insertTodo" parameterType="todoVO">
+		<selectKey order="BEFORE" keyProperty="tdNo" resultType="String">
+			SELECT TO_NUMBER(TO_CHAR(SYSDATE,'YYYYMMDD'))||'T'||TODO_SEQ.NEXTVAL AS TD_NO
+			  FROM DUAL
+		</selectKey>
+		INSERT INTO TODO
+				    (TD_NO, PJT_NO, TD_CN, TD_STRT_DT, TD_END_DT, PRGRS, TD_IMPR_CD, TD_WRTR_ID, TD_PIC_ID, TD_CTGR_CD, TD_TTL, TD_WRT_DT, TD_STTS)
+			VALUES (#{tdNo}, #{pjtNo}, #{tdCn}, #{tdStrtDt}, #{tdEndDt}, #{prgrs}, #{tdImprCd}, #{tdWrtrId}, #{tdPicId}, #{tdCtgrCd}, #{tdTtl}, SYSDATE, #{tdStts})
+	</insert>
+	
+	<!-- 일감 수정 -->
+	<update id="updateTodo" parameterType="todoVO">
+		UPDATE TODO
+		SET TD_CN = #{tdCn}
+			, TD_STRT_DT = #{tdStrtDt}
+			, TD_END_DT = #{tdEndDt}
+			, PRGRS = #{prgrs}
+			, TD_IMPR_CD = #{tdImprCd}
+			, TD_PIC_ID = #{tdPicId}
+			, TD_CTGR_CD = #{tdCtgrCd}
+			, TD_TTL = #{tdTtl}
+			, TD_STTS = #{tdStts}
+		WHERE TD_NO = #{tdNo}
+	</update>
+	
+
+	<!-- 일감 유형, 중요도 코드 가져오기 -->
+	<select id="getTodoCd" parameterType="String" resultType="cmDvsnCtgrVO">
+		SELECT CM_DVSN_CTGR_CD
+			, CM_MJR_CTGR_CD
+			, CM_DVSN_CTGR_NM
+         FROM CM_DVSN_CTGR
+         WHERE CM_MJR_CTGR_CD = 'T'
+         ORDER BY DECODE(CM_DVSN_CTGR_NM, '보통', 1),
+         		  DECODE(CM_DVSN_CTGR_NM, '새기능', 2)
+	</select>
+	
+	<!-- 일감 목록 가져오기  -->
+	<select id="getAllTodos" parameterType="map" resultType="hashMap">
+		SELECT T.RNUM
+			, T.TD_NO
+			, T.PJT_NO
+			, T.TD_CN
+			, T.TD_STRT_DT
+			, T.TD_END_DT
+			, T.PRGRS
+			, T.TD_IMPR_CD
+			, T.TD_WRTR_ID
+			, T.TD_PIC_ID
+			, T.TD_CTGR_CD
+			, T.TD_TTL
+			, T.TD_STTS
+			, T.MBR_IMG
+			, T.TD_WRT_DT
+			, T.TD_CHILD
+		FROM(SELECT ROW_NUMBER() OVER(ORDER BY G.TD_NO) RNUM, G.TD_NO, G.PJT_NO, G.TD_CN, G.TD_STRT_DT, G.TD_END_DT, G.PRGRS, G.TD_IMPR_CD, G.TD_WRTR_ID, H.MBR_NM AS TD_PIC_ID, G.TD_CTGR_CD, G.TD_TTL, G.TD_STTS, H.MBR_IMG, G.TD_WRT_DT, G.TD_CHILD
+		 FROM (SELECT E.TD_NO, E.PJT_NO, E.TD_CN, E.TD_STRT_DT, E.TD_END_DT, E.PRGRS, E.TD_IMPR_CD, E.TD_WRTR_ID, E.TD_PIC_ID, E.TD_CTGR_CD, E.TD_TTL, F.TD_STTS, E.TD_WRT_DT, E.TD_CHILD
+					 FROM  (SELECT C.TD_NO, C.PJT_NO, C.TD_CN, C.TD_STRT_DT, C.TD_END_DT, C.PRGRS, C.CM_DVSN_CTGR_NM AS TD_IMPR_CD, C.TD_WRTR_ID, C.TD_PIC_ID, D.CM_DVSN_CTGR_NM AS TD_CTGR_CD, C.TD_TTL, C.TD_STTS, C.TD_WRT_DT, TD_CHILD
+						        FROM (SELECT A.TD_NO, A.PJT_NO, A.TD_CN, A.TD_STRT_DT, A.TD_END_DT, A.PRGRS, B.CM_DVSN_CTGR_NM, A.TD_WRTR_ID, A.TD_PIC_ID, A.TD_CTGR_CD, A.TD_TTL, A.TD_STTS, A.TD_WRT_DT, A.TD_CHILD
+						                FROM TODO A, CM_DVSN_CTGR B
+						                WHERE A.PJT_NO = #{pjtNo}
+						                AND A.TD_IMPR_CD = B.CM_DVSN_CTGR_CD) C INNER JOIN (SELECT A.TD_NO, A.PJT_NO, B.CM_DVSN_CTGR_NM
+						                                                                        FROM TODO A, CM_DVSN_CTGR B
+						                                                                        WHERE A.PJT_NO = #{pjtNo}
+						                                                                        AND A.TD_CTGR_CD = B.CM_DVSN_CTGR_CD) D
+						        ON (C.TD_NO = D.TD_NO))E INNER JOIN (SELECT A.TD_CHILD, A.TD_NO, A.PJT_NO, A.TD_CN, A.TD_STRT_DT, A.TD_END_DT, A.PRGRS, A.TD_IMPR_CD, A.TD_WRTR_ID, A.TD_PIC_ID, B.CM_DVSN_CTGR_NM AS TD_STTS, A.TD_TTL, A.TD_WRT_DT
+						                                                FROM TODO A, CM_DVSN_CTGR B
+						                                                WHERE A.PJT_NO = #{pjtNo}
+						                                                <if test="stts != null and stts != ''">
+						                                                AND A.TD_STTS = #{stts}
+						                                                </if>
+						                                                <if test="impr != null and impr != ''">
+						                                                AND A.TD_IMPR_CD = #{impr}
+						                                                </if>
+						                                                <choose>
+						                                                <when test="finish != null and finish != ''">
+						                                                AND A.TD_STTS IN 'TT04'
+						                                                </when>
+						                                                <otherwise>
+						                                                AND A.TD_STTS NOT IN 'TT04'
+						                                                </otherwise>
+						                                                </choose>
+						                                                AND A.TD_STTS = B.CM_DVSN_CTGR_CD) F                               
+					ON (E.TD_NO = F.TD_NO)) G, MEMBER H
+		WHERE G.TD_PIC_ID = H.MBR_ID
+		<if test="mbrId != null and mbrId != ''">
+		AND H.MBR_ID = #{mbrId}
+		</if>
+		<if test="tdNo != null and tdNo != ''">
+		AND G.TD_NO NOT IN #{tdNo}
+		</if>
+		<if test="keyWord!=null and keyWord!=''">
+		AND (G.TD_TTL LIKE '%' || #{keyWord} || '%')
+		</if>
+		ORDER BY G.TD_NO DESC) T
+		<where>
+		AND T.RNUM BETWEEN #{currentPage}*#{size}-#{size}+1 AND #{currentPage}*#{size}
+		</where>
+		ORDER BY T.TD_NO DESC
+	</select>
+	
+	<!-- 일감 상세 화면  -->
+	<select id="getTodo" parameterType="String" resultType="hashMap">
+   SELECT I.TD_NO, I.PJT_NO, I.TD_CN, I.TD_STRT_DT, I.TD_END_DT, I.PRGRS, I.TD_IMPR_CD, J.MBR_NM AS TD_WRTR_ID, I.TD_PIC_ID, I.TD_CTGR_CD, I.TD_TTL, I.TD_STTS, I.MBR_IMG, I.TD_WRT_DT, I.TD_CHILD      
+   FROM (SELECT G.TD_NO, G.PJT_NO, G.TD_CN, G.TD_STRT_DT, G.TD_END_DT, G.PRGRS, G.TD_IMPR_CD, G.TD_WRTR_ID, H.MBR_NM AS TD_PIC_ID, G.TD_CTGR_CD, G.TD_TTL, G.TD_STTS, H.MBR_IMG, G.TD_WRT_DT, G.TD_CHILD
+                  FROM (SELECT E.TD_NO, E.PJT_NO, E.TD_CN, E.TD_STRT_DT, E.TD_END_DT, E.PRGRS, E.TD_IMPR_CD, E.TD_WRTR_ID, E.TD_PIC_ID, E.TD_CTGR_CD, E.TD_TTL, F.TD_STTS, E.TD_WRT_DT, E.TD_CHILD
+                          FROM  (SELECT C.TD_NO, C.PJT_NO, C.TD_CN, C.TD_STRT_DT, C.TD_END_DT, C.PRGRS, C.CM_DVSN_CTGR_NM AS TD_CTGR_CD, C.TD_WRTR_ID, C.TD_PIC_ID, D.CM_DVSN_CTGR_NM AS TD_IMPR_CD, C.TD_TTL, C.TD_STTS, C.TD_WRT_DT, TD_CHILD
+                                   FROM (SELECT A.TD_NO, A.PJT_NO, A.TD_CN, A.TD_STRT_DT, A.TD_END_DT, A.PRGRS, B.CM_DVSN_CTGR_NM, A.TD_WRTR_ID, A.TD_PIC_ID, A.TD_CTGR_CD, A.TD_TTL, A.TD_STTS, A.TD_WRT_DT, A.TD_CHILD
+                                           FROM TODO A, CM_DVSN_CTGR B
+                                          WHERE A.TD_IMPR_CD = B.CM_DVSN_CTGR_CD) C INNER JOIN (SELECT A.TD_NO, A.PJT_NO, B.CM_DVSN_CTGR_NM
+                                                                                                  FROM TODO A, CM_DVSN_CTGR B
+                                                                                                 WHERE A.TD_CTGR_CD = B.CM_DVSN_CTGR_CD) D
+                                        ON (C.TD_NO = D.TD_NO))E INNER JOIN (SELECT A.TD_CHILD, A.TD_NO, A.PJT_NO, A.TD_CN, A.TD_STRT_DT, A.TD_END_DT, A.PRGRS, A.TD_IMPR_CD, A.TD_WRTR_ID, A.TD_PIC_ID, B.CM_DVSN_CTGR_NM AS TD_STTS, A.TD_TTL, A.TD_WRT_DT
+                                                                               FROM TODO A, CM_DVSN_CTGR B
+                                                                              WHERE A.TD_STTS = B.CM_DVSN_CTGR_CD) F                               
+                            ON (E.TD_NO = F.TD_NO)) G, MEMBER H
+                WHERE G.TD_PIC_ID = H.MBR_ID
+                AND G.TD_NO = #{tdNo}) I, MEMBER J
+    WHERE I.TD_WRTR_ID = J.MBR_ID
+	</select>
+	
+	<!-- 업데이트 전 기존 객체와 비교 -->
+	<select id="getBeforeTd" parameterType="String" resultType="todoVO">
+		SELECT TD_CN
+			, TD_STRT_DT
+			, TD_END_DT
+			, PRGRS
+			, TD_IMPR_CD
+			, TD_PIC_ID
+			, TD_CTGR_CD
+			, TD_TTL
+			, TD_STTS
+		FROM TODO
+		WHERE TD_NO = #{tdNo}	
+	</select>
+	
+	<!-- 일감 개수 -->
+	<select id="totalList" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*)
+		FROM TODO
+		WHERE PJT_NO = #{pjtNo}
+		<if test="keyWord!=null and keyWord!=''">
+		AND (TD_TTL LIKE '%' || #{keyWord} || '%')
+		</if>
+	</select>
+	
+	<!-- 하위일감 세팅 시 하위일감의 부모로 update -->
+	<update id="bemyParent" parameterType="map">
+		UPDATE TODO 
+		SET TD_PARENT = #{tdParent}
+		WHERE TD_NO = #{tdNo}
+	</update>
+	
+	<!-- 하위일감 세팅 시 하위일감의 부모로 update -->
+	<update id="bemyChild" parameterType="map">
+		UPDATE TODO 
+		SET TD_CHILD = #{tdNo}
+		WHERE TD_NO = #{tdParent}
+	</update>
+	
+	<!-- 기존 하위일감은 부모 지우기 -->
+	<update id="removeParent" parameterType="String">
+		UPDATE TODO
+		SET TD_PARENT = null
+		WHERE TD_NO = #{tdNo}
+	</update>
+	
+	<select id="myTodoCount" resultType="map" parameterType="map">
+		SELECT
+		    COUNT(A.TD_STTS) AS TD_STTS
+		    , B.CM_DVSN_CTGR_CD
+		    , B.CM_DVSN_CTGR_NM
+		FROM
+		    (SELECT TD_STTS
+		            , TD_PIC_ID
+		     FROM TODO
+		     WHERE TD_PIC_ID = #{mbrId}
+		     AND PJT_NO = #{pjtNo})A, (SELECT CM_DVSN_CTGR_CD
+		            , CM_DVSN_CTGR_NM
+		        FROM CM_DVSN_CTGR
+		        WHERE CM_DVSN_CTGR_CD LIKE 'TT%') B
+		WHERE A.TD_STTS(+) = B.CM_DVSN_CTGR_CD
+		GROUP BY B.CM_DVSN_CTGR_CD, B.CM_DVSN_CTGR_NM
+		ORDER BY 2
+	</select>
+
+	<select id="pjtMember" resultType="String" parameterType="String">
+		SELECT 
+			MBR_ID
+		FROM PJT_PRTPNT
+		WHERE PJT_NO = #{pjtNo}
+	</select>
+
+	<!-- 일감 삭제 -->
+	<delete id="deleteTodo" parameterType="String">
+		DELETE 
+		FROM TODO
+		WHERE TD_NO = #{tdNo}
+	</delete>
+
+	<!-- 프로젝트 진행률 -->
+	<select id="projectProgress" parameterType="String" resultType="int">
+		SELECT 
+			NVL(AVG(PRGRS), 0)
+		FROM TODO
+		WHERE PJT_NO = #{pjtNo}
+	</select>
+
+
+</mapper>

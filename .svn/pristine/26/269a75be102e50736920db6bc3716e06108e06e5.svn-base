@@ -1,0 +1,13 @@
+package kr.or.ddit.project.service;
+
+import java.util.List;
+
+import kr.or.ddit.user.vo.MemberVO;
+
+public interface ProjectService {
+
+	//해당 프로젝트의 모든 구성원 목록
+	public List<MemberVO> getAllMbr(String pjtNo);
+	
+	
+}

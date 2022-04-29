@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.project.mapper.KanbanCardMapper">
+
+	<!-- 칸반 카드 등록 -->
+	<insert id="kanbanCardInsert" useGeneratedKeys="false" parameterType="kanbanCardVO">
+	
+		<selectKey order="BEFORE" keyProperty="kbCardNo" resultType="String">
+			SELECT NVL(MAX(TO_NUMBER(KB_CARD_NO)),0)+1 AS KB_CARD_NO
+			FROM KANBAN_CARD 
+		</selectKey>
+		
+		INSERT INTO KANBAN_CARD(KB_CARD_NO, 
+								KB_NO, 
+								KB_CARD_WRTR_NM, 
+								KB_CARD_TTL, 
+								KB_CARD_CN, 
+								KB_CARD_STRT_DT, 
+								KB_CARD_END_DT, 
+								KB_PRGRS ) 
+		VALUES(#{kbCardNo}, 
+			   #{kbNo}, 
+			   '작성자', 
+			   #{kbCardTtl}, 
+			   #{kbCardCn}, 
+			   #{kbCardStrtDt}, 
+			   #{kbCardEndDt}, 
+			   #{kbPrgrs}  )
+		
+	</insert>
+
+	<!-- 칸반 카드 조회  -->
+	<select id="kanbanCardSelect" resultType="kanbanCardVO" parameterType="kanbanCardVO">
+		SELECT KB_CARD_NO, KB_NO, KB_CARD_PRIV_NO, KB_CARD_WRTR_NM, KB_CARD_TTL, KB_CARD_CN, KB_CARD_STRT_DT, KB_CARD_END_DT, KB_PRGRS 
+		  FROM KANBAN_CARD
+		 ORDER BY 3
+	</select>
+	
+	<!-- 칸반 카드 삭제  -->
+	<delete id="kanbanCardDelete" parameterType="String">
+		DELETE FROM KANBAN_CARD WHERE KB_CARD_NO = #{kbCardNo} 
+	</delete>
+	
+	
+	<!-- 칸반 카드 수정 -->
+	<update id="kanbanCardUpdate" parameterType="kanbanCardVO">
+		UPDATE KANBAN_CARD
+		   SET KB_CARD_TTL = #{kbCardTtl}, 
+		   	   KB_CARD_CN = #{kbCardCn}, 
+		   	   KB_CARD_STRT_DT = #{kbCardStrtDt}, 
+		   	   KB_CARD_END_DT = #{kbCardEndDt}, 
+		   	   KB_PRGRS = #{kbPrgrs}
+		 WHERE KB_CARD_NO = #{kbCardNo}
+	
+	</update>
+	
+</mapper>

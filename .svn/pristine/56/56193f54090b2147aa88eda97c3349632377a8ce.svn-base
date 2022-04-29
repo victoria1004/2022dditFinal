@@ -1,0 +1,119 @@
+package kr.or.ddit.project.controller;
+
+import java.util.Enumeration;
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.cloud.service.CloudService;
+import kr.or.ddit.project.service.ProjectService;
+import kr.or.ddit.project.vo.ProjectVO;
+import kr.or.ddit.user.vo.MemberVO;
+
+
+/**
+ * 좌측 메뉴에서 선택한 프로젝트의 상세 페이지
+ * @author 정신애
+ *
+ */
+@RequestMapping("/project")
+@Controller
+public class ProjectController {
+	
+	@Autowired CloudService cloudService;
+	@Autowired ProjectService service;
+
+	private static final Logger logger = LoggerFactory.getLogger(ProjectController.class);
+		/**
+		 * 프로젝트 클릭 시 해당 프로젝트의 메인 페이지(상세 페이지)
+		 * @param model
+		 * @return 프로젝트 메인 뷰
+		 */
+		@GetMapping("/main.do")
+		public String main(Model model, @RequestParam String pjtNo) {
+			logger.info(pjtNo);
+			int total = cloudService.getAllSz(pjtNo);
+			logger.info("total:"+total);
+			model.addAttribute("total", total);																																		
+			String changeMb = String.format("%.2f",(double)total/1024/1024); //MB로 변환
+			model.addAttribute("changeMb", changeMb);
+			
+			
+			return "project/main";
+		}
+		
+		/**
+		 * 프로젝트 메인 페이지 우측-해당 프로젝트의 구성원들 목록 출력
+		 * @param pjtNo 메뉴에서 클릭한 프로젝트의 번호
+		 * @return 해당 프로젝트의 구성원들 목록
+		 */
+		@ResponseBody
+		@RequestMapping(value="/getAllMbr", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+		public List<MemberVO>  getAllMbr(@RequestParam String pjtNo, HttpSession session){
+			
+			Enumeration<String> sessionNames = session.getAttributeNames();
+			List<MemberVO> list = service.getAllMbr(pjtNo); //해당 프로젝트의 모든 구성원 목록
+//			logger.info("list:" + list.toString()); 
+//			List<Map<String, Object>> rtnList = new ArrayList<Map<String,Object>>();
+//			
+//			Map<String, Object> map = new HashMap<String, Object>(); //온오프 객체 모두 담을 맵
+//			List<MemberVO> online = new ArrayList<MemberVO>(); //온라인 리스트
+//			List<MemberVO> offline = new ArrayList<MemberVO>();//오프라인 리스트
+//			Object data = new Object();
+//			logger.info("세션에 값 유무:" + sessionNames.hasMoreElements());
+//			while(sessionNames.hasMoreElements()) {
+//				String sessionKey = sessionNames.nextElement();
+//				
+//				//세션에는 다양한 형태들이 저장될 거라서 우선 오브젝트로 받기
+//				data = session.getAttribute(sessionKey);
+//				if(data instanceof MemberVO) {
+//					MemberVO member = (MemberVO) data; //세션 객체
+//					for(MemberVO vo : list) {
+//						if(member.getMbrId().equals(vo.getMbrId())){
+//							online.add(vo);
+//							logger.info("online vo:" + vo.toString());
+//						} else {
+//							offline.add(vo);
+//						}
+//					}
+//				}
+//			}
+//			
+//			map.put("onlineVO", online);
+//			map.put("offlineVO", offline);
+//			logger.info("map : " + map.toString());
+
+			return list;
+		}
+		
+		/**
+		 * 접속한 사용자가 참여 중인 프로젝트 목록 
+		 * @param mbrId 접속한 사용자
+		 * @return 참여 중인 프로젝트 목록
+		 */
+		@ResponseBody
+		@GetMapping("/getMyPjtList")
+		public List<ProjectVO> getMyPjtList(@RequestParam String mbrId){
+			return service.getMyPjtList(mbrId);
+		}
+		
+		
+		
+		
+		
+		
+}
+
+

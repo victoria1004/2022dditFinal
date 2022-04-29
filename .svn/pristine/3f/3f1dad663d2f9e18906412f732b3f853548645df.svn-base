@@ -1,0 +1,58 @@
+package kr.or.ddit.user.vo;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+public class AlarmVO {
+
+	private String alrmNo;
+	private String mbrId;
+	private String alrmCtgrNo;
+	private String alrmIdntyYn;
+	private String alrmRcvNo;
+	private String alrmSndId;
+	
+	public String getAlrmSndId() {
+		return alrmSndId;
+	}
+	public void setAlrmSndId(String alrmSndId) {
+		this.alrmSndId = alrmSndId;
+	}
+	public String getAlrmNo() {
+		return alrmNo;
+	}
+	public void setAlrmNo(String alrmNo) {
+		this.alrmNo = alrmNo;
+	}
+	public String getMbrId() {
+		return mbrId;
+	}
+	public void setMbrId(String mbrId) {
+		this.mbrId = mbrId;
+	}
+	public String getAlrmCtgrNo() {
+		return alrmCtgrNo;
+	}
+	public void setAlrmCtgrNo(String alrmCtgrNo) {
+		this.alrmCtgrNo = alrmCtgrNo;
+	}
+	public String getAlrmIdntyYn() {
+		return alrmIdntyYn;
+	}
+	public void setAlrmIdntyYn(String alrmIdntyYn) {
+		this.alrmIdntyYn = alrmIdntyYn;
+	}
+	public String getAlrmRcvNo() {
+		return alrmRcvNo;
+	}
+	public void setAlrmRcvNo(String alrmRcvNo) {
+		this.alrmRcvNo = alrmRcvNo;
+	}
+	
+	@Override
+	public String toString() {
+		return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+	}
+	
+	
+}

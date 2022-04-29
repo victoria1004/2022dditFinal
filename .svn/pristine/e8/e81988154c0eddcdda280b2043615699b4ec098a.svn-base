@@ -1,0 +1,68 @@
+package kr.or.ddit.project.controller;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.project.service.KanbanCardService;
+import kr.or.ddit.project.vo.KanbanCardVO;
+
+@RequestMapping("/project")
+@Controller
+public class KanbanCardController {
+
+	private static final Logger logger = LoggerFactory.getLogger(KanbanCardController.class);
+	
+	@Autowired
+	KanbanCardService kanbanCardService;
+	
+	
+	//칸반 카드 등록
+	@ResponseBody
+	@PostMapping("/kanbanCard/insert")
+	public String kbCardInsert(@ModelAttribute KanbanCardVO kanbanCardVO) {
+		
+		int result = kanbanCardService.kanbanCardInsert(kanbanCardVO);
+		
+		logger.info("칸반카드등록"+ result);
+		
+		return "redirect:/project/kanban.do";
+	}
+	
+	
+	//칸반 카드 삭제
+	@ResponseBody
+	@PostMapping("/kanbanCard/delete")
+	public String kbCardDelete(@RequestParam String kbCardNo) {
+		
+		int result = kanbanCardService.kanbanCardDelete(kbCardNo);
+		
+		logger.info("칸반카드삭제 ->" + result );
+		
+		
+		
+		return "redirect:/project/kanban.do";
+	}
+	
+	
+	//칸반 카드 수정
+	@ResponseBody
+	@PostMapping("/kanbanCard/update")
+	public String kanbanCardUpdate(@ModelAttribute KanbanCardVO kanbanCardVO) {
+		
+		int result = kanbanCardService.kanbanCardUpdate(kanbanCardVO);
+		
+		logger.info("칸반 카드 수정 : " + result );
+		
+		return "redirect:/project/kanban.do";
+	}
+	
+	
+	
+}

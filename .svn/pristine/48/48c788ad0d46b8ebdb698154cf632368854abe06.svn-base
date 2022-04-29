@@ -1,0 +1,78 @@
+//승인 회원목록 가져오기
+function getM02Users(keyword){
+	var ctgrCd = "M02";
+	$.ajax({
+		url : "/user/getM02Users",
+		type : "post",
+		data : {keyword : keyword},
+		success : function(res){
+			mkMbrCard(res, ctgrCd);
+		}
+	});
+}
+
+//미승인 회원목록 가져오기
+function getM03Users(keyword){
+	var ctgrCd = "M03";
+	$.ajax({
+		url : "/user/getM03Users",
+		data : {keyword : keyword},
+		type : "post",
+		success : function(res){
+			mkMbrCard(res, ctgrCd);
+		}
+	});
+}
+
+//회원목록 카드 만드는 메서드
+function mkMbrCard(res, ctgrCd){
+	var str = "";
+	var cd;
+	if (ctgrCd == "M03"){
+		cd = $("#left-defaults");
+	} else if (ctgrCd == "M02"){
+		cd = $("#right-defaults");
+	}
+	cd.empty();
+	$.each(res, function(i, v){
+
+              str += '<div class="media  d-md-flex d-block text-sm-left text-center" style="width : 520px;">';
+              if (v.mbrImg == null){
+              	str += '<img alt="'+v.mbrNm+'" src="/resources/profileImage/profileimage.png" class="img-fluid " />';              
+              } else {          
+	            str += '<img alt="'+v.mbrNm+'" src="/resources/profileImage/'+ v.mbrImg +'" class="img-fluid " />';
+              }
+              str += '<div class="media-body">';
+              str += '<div class="d-xl-flex d-block justify-content-between">';
+              str += '<div class="mem">';
+              str += '<span style="display:none;">'+v.mbrId+'</span><h6 class="">'+v.mbrNm + '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;' + v.mbrDept;
+              str += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'+ v.mbrTelno;
+			  if (v.mbrCtgrCd == 'M01'){
+			  str += '&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span class="badge badge-pills outline-badge-primary">관리자</span></h6>';	
+			    }
+			 6
+             // str += '<p class="">'+v.mbrDept+'</p></div></div></div></div>';		
+              str += '</div></div></div></div>';	
+             		
+
+ 
+
+             	
+	});		
+	cd.append(str);
+}
+
+//승인/미승인 업데이트 - custom-dragula.js에서 여기로 넘어옴!
+function updateUsers(mbrId, mbrCtgrCd){
+	  $.ajax({
+	  	url : "/user/updateUsersStts",
+	  	type : "post",
+	  	data : {mbrId : mbrId, mbrCtgrCd : mbrCtgrCd},
+	  	success : function(res){
+			getM02Users(); //업데이트 후에는 모든 승인/미승인 목록을 다시 뿌려준다.
+			getM03Users();
+	  	}
+	  });
+}
+
+

@@ -1,0 +1,110 @@
+package kr.or.ddit.user.controller;
+
+import java.util.Enumeration;
+import java.util.Hashtable;
+
+import javax.servlet.annotation.WebListener;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
+import javax.servlet.http.HttpSessionEvent;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.stereotype.Component;
+
+import kr.or.ddit.user.vo.MemberVO;
+import lombok.extern.slf4j.Slf4j;
+
+
+@Slf4j
+@Component
+@WebListener
+public class LoginUserCounter implements HttpSessionListener {
+
+	private int userCount;
+	private static final Logger logger = LoggerFactory.getLogger(LoginUserCounter.class);
+	
+	public static LoginUserCounter counter = null;
+	public static Hashtable loginSessionList = new Hashtable();
+	
+	public static synchronized LoginUserCounter getInstance() {
+		if(counter == null) {
+			counter = new LoginUserCounter();
+		}
+		return counter;
+	}
+	
+	
+	
+	@Override
+	public void sessionCreated(HttpSessionEvent se) {
+		
+		
+		++userCount;
+		logger.info("생성된 sessionId:", se.getSession().getAttribute("member"));
+		logger.info("로그인 사용자 수:" + userCount);
+	}
+
+	@Override
+	public void sessionDestroyed(HttpSessionEvent se) {
+		HttpSession session = se.getSession();
+		MemberVO member = (MemberVO) session.getAttribute("member");
+		--userCount;
+		logger.info("제거된 sessionId:", se.getSession().getAttribute("member"));
+		logger.info("로그인 사용자 수:" + userCount);
+		
+		synchronized (loginSessionList) {
+			loginSessionList.remove(se.getSession().getId());
+		}
+		
+		if(member != null) {
+			// updateUserCloseTime(member);
+		}
+		
+		currentSessionList();
+		
+		
+		
+	}
+	
+	
+	public void currentSessionList() {
+		Enumeration elements = loginSessionList.elements();
+		HttpSession session = null;
+		
+		while(elements.hasMoreElements()) {
+			session = (HttpSession) elements.nextElement();
+			MemberVO member = (MemberVO) session.getAttribute("member");
+			logger.info("current>>>" + member.toString());
+		}
+	}
+	
+	public void removeSession(HttpServletRequest request) {
+		
+		HttpSession session = request.getSession();
+		MemberVO member = (MemberVO) session.getAttribute("member");
+		
+		session.removeAttribute("member");
+		session.invalidate();
+	}
+	
+	public boolean isLoginUser(HttpServletRequest request, MemberVO member) {
+		
+		Enumeration elements = loginSessionList.elements();
+		HttpSession session = null;
+		while(elements.hasMoreElements()) {
+			session = (HttpSession) elements.nextElement();
+			MemberVO mem = (MemberVO)session.getAttribute("member");
+			if(member.getMbrId().equals(mem.getMbrId())) {
+				return true;
+			}
+			
+		}
+		return false;
+	}
+	
+	
+	
+	
+
+}

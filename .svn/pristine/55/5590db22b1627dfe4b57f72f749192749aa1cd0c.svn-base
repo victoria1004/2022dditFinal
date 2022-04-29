@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.project.mapper.IssueMapper">
+<!-- * selectKey?
+일련번호 처리
+마이바티스는 쿼리 실행 시 파라미터를 치환해줌 
+ -->
+<!-- 고객(1) 이미지(N) -->
+	
+
+
+	<!-- 이슈 등록 -->
+	<insert id="issueInsert" useGeneratedKeys="false" parameterType="issueVO">
+		<selectKey order="BEFORE" keyProperty="issueNo" resultType="String">
+			SELECT NVL(MAX(TO_NUMBER(ISSUE_NO)),0)+1 FROM ISSUE 
+		</selectKey>
+		INSERT INTO ISSUE(ISSUE_NO, MRKR_NO, PJT_NO, TD_NO, MBR_ID, ISSUE_TTL, ISSUE_CN, ISSUE_YMD) 
+		VALUES(#{issueNo}, #{mrkrNo}, #{pjtNo}, #{tdNo}, #{mbrId}, #{issueTtl}, #{issueCn}, TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS'))
+	</insert>
+	
+	
+	<!-- 이슈 조회 (메인) -->
+	<select id="issueSelect" resultType="issueVO" parameterType="issueVO">
+		SELECT ISSUE_NO, MRKR_NO, PJT_NO, TD_NO, MBR_ID, ISSUE_TTL, ISSUE_CN, ISSUE_YMD
+		  FROM ISSUE 
+		 WHERE PJT_NO = #{pjtNo}
+ 		 ORDER BY ISSUE_YMD DESC 
+	</select>
+	
+	<!-- 이슈 삭제 -->
+	<delete id="issueDelete" parameterType="String">
+		DELETE FROM ISSUE WHERE ISSUE_NO = #{issueNo} 
+	</delete>
+	
+	<!-- 이슈 수정 -->
+	<update id="issueUpdate" parameterType="issueVO">
+		UPDATE ISSUE
+		   SET ISSUE_NO = #{issueNo}, ISSUE_TTL = #{issueTtl}, ISSUE_CN = #{issueCn}, ISSUE_YMD = TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS')
+		 WHERE ISSUE_NO = #{issueNo}
+		 
+	</update>
+	
+	<!-- 프로젝트 멤버 가져오기 -->
+	<select id="memberList" resultType="memberVO" parameterType="memberVO">
+		 SELECT M.MBR_ID, M.MBR_NM, M.MBR_IMG	   
+		   FROM MEMBER M, (SELECT MBR_ID
+		                     FROM PJT_PRTPNT 
+			                WHERE PJT_NO = #{pjtNo} ) A
+		  WHERE M.MBR_ID = A.MBR_ID
+	</select>
+	
+	<!-- 일감 목록 가져오기 -->
+	<select id="todoList" resultType="todoVO" parameterType="todoVO">
+		SELECT TD_NO, PJT_NO, TD_TTL
+		  FROM TODO
+		 WHERE PJT_NO = #{pjtNo}
+		 ORDER BY 1 DESC
+	</select>
+	
+	<!-- issueNo가져오기 -->
+	<select id="issueNoSelect" resultType="String">
+		SELECT NVL(MAX(TO_NUMBER(ISSUE_NO)),0)+1 AS ISSUE_NO
+		FROM ISSUE 
+	</select>
+	
+	<!-- issue 글번호 가져오기 -->
+	<select id="issueNoGet" resultType="String">
+		SELECT ISSUE_NO
+		  FROM ISSUE
+		 WHERE PJT_NO = #{pjtNo}
+	</select>
+	
+	<!-- 이슈번호와 같은 마커  -->
+	<select id="markerSelect" resultType="markerVO" parameterType="markerVO">
+		SELECT MRKR_NO, PJT_NO, MRKR_NM, MRKR_ICN, MRKR_CLR
+		  FROM MARKER
+         WHERE MRKR_NO = (SELECT MRKR_NO
+                           FROM ISSUE
+                          WHERE ISSUE_NO = '#{issueNo}');
+	</select>
+</mapper>
+
+
+

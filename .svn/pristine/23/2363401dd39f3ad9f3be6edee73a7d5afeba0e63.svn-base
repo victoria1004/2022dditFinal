@@ -1,0 +1,36 @@
+.bodyDiv {
+/* 	border: 1px solid red; */
+	margin-top:100px;
+	display: flex;
+}
+
+.leftDiv {
+	border:1px solid blue;
+	width : 1100px;
+	height:auto;
+}
+
+.rightDiv {
+	border : 1px sold yellow;
+	display : flex;
+	flex-direction: column;
+	width:400px;
+	height:auto;
+	position:relative;
+}
+.profileHeader{
+	border-bottom : 1px dashed #e0e6ed;
+	margin-left : 30px; 
+	margin-top : 5px; 
+	padding : 3px;
+	height : 30px;
+	
+}
+.profileDiv {
+	margin : 5px;
+	padding : 2px;
+}
+h6 {
+	font-size: 15px;
+	
+}

@@ -1,0 +1,61 @@
+//승인 회원목록 가져오기
+function getM02Users(){
+	
+	$.ajax({
+	
+		url : "/user/getM02Users",
+		type : "post",
+		success : function(res){
+			console.log("m02>>", res);
+			var str = "";
+			$.each(res, function(i, v){
+				
+              str += '<div class="media  d-md-flex d-block text-sm-left text-center">';
+              if (v.mbrImg == null){
+              	str += '<img alt="avatar" src="/resources/profileImage/profileimage.png" class="img-fluid " />';              
+              } else {          
+	            str += '<img alt="avatar" src="/resources/profileImage/'+ v.mbrImg +'" class="img-fluid " />';
+              }
+              str += '<div class="media-body">';
+              str += '<div class="d-xl-flex d-block justify-content-between">';
+              str += '<div class="">';
+              str += '<h6 class="">'+v.mbrNm+'</h6>';
+              str += '<p class="">'+v.mbrDept+'</p></div></div></div></div>';				
+			});		
+			$("#right-defaults").append(str);
+		}
+	
+	
+	});
+}
+//미승인 회원목록 가져오기
+function getM03Users(){
+	
+	$.ajax({
+	
+		url : "/user/getM03Users",
+		type : "post",
+		success : function(res){
+			console.log("m03>>", res);
+			var str = "";
+			$.each(res, function(i, v){
+				
+              str += '<div class="media  d-md-flex d-block text-sm-left text-center">';
+              if (v.mbrImg == null){
+              	str += '<img alt="avatar" src="/resources/profileImage/profileimage.png" class="img-fluid " />';              
+              } else {          
+	            str += '<img alt="avatar" src="/resources/profileImage/'+ v.mbrImg +'" class="img-fluid " />';
+              }
+              str += '<div class="media-body">';
+              str += '<div class="d-xl-flex d-block justify-content-between">';
+              str += '<div class="">';
+              str += '<h6 class="">'+v.mbrNm+'</h6>';
+              str += '<p class="">'+v.mbrDept+'</p></div></div></div></div>';				
+			});		
+			$("#left-defaults").append(str);
+		
+		}
+	
+	
+	});
+}

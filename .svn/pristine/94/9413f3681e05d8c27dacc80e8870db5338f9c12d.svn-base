@@ -1,0 +1,97 @@
+package kr.or.ddit.project.controller;
+
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.project.service.KanbanCardService;
+import kr.or.ddit.project.service.KanbanService;
+import kr.or.ddit.project.vo.KanbanCardVO;
+import kr.or.ddit.project.vo.KanbanVO;
+
+@RequestMapping("/project")
+@Controller
+public class KanbanController {
+	private static final Logger logger = LoggerFactory.getLogger(KanbanController.class);
+	
+	@Autowired
+	KanbanService kanbanService;
+	
+	@Autowired
+	KanbanCardService kanbanCardService;
+	
+	//칸반 조회(칸반 메인)
+	@RequestMapping("/kanban.do")
+	public String kanbanSelect(Model model) {
+		
+		
+		//칸반 조회(칸반 메인)
+		List<KanbanVO> list = this.kanbanService.kanbanSelect();
+		
+		model.addAttribute("list", list);
+		
+		//logger.info("칸반조회:: " + list);
+		
+		
+		//칸반 카드 조회
+		List<KanbanCardVO> kbCardlist = this.kanbanCardService.kanbanCardSelect();
+		
+		model.addAttribute("kbCardlist", kbCardlist);
+		
+		//logger.info("칸반 카드 조회 : " + kbCardlist);
+		
+		return "project/kanban";
+		
+		
+	}
+	
+	//칸반 추가
+	@PostMapping("/kanban/insert")
+	public String kanbanInsert(@ModelAttribute KanbanVO kanbanVO){
+		
+		int result = kanbanService.kanbanInsert(kanbanVO);
+		
+		logger.info("칸반 추가 : " + result);
+		
+		return "redirect:/project/kanban.do";
+	}
+	
+	
+	
+	//칸반 삭제
+	@ResponseBody
+	@PostMapping("/kanban/delete")
+	public String kanbanDelete(@RequestParam String kbNo) {
+		
+		 int result = kanbanService.kanbanDelete(kbNo);
+		 
+		 logger.info("칸반 삭제 : " + result );
+		
+		return "redirect:/project/kanban.do";
+	}
+	
+	
+	//칸반 수정
+	@ResponseBody
+	@PostMapping("/kanban/update")
+	public String kanbanUpdate(@ModelAttribute KanbanVO kanbanVO) {
+		
+		int result = kanbanService.kanbanUpdate(kanbanVO);
+		
+		logger.info("칸반 수정" + result);
+		
+		
+		return "redirect:/project/kanban.do";
+		
+	}
+	
+}

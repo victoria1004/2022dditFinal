@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.project.mapper.ProjectMapper">
+	<!-- 프로젝트 모든 구성원 목록 -->
+	<select id="getAllMbr" parameterType="String" resultType="memberVO">
+		SELECT A.MBR_ID
+			, A.MBR_NM
+			, A.MBR_IMG
+			, A.MBR_EML
+		FROM MEMBER A, (SELECT MBR_ID, APLY_APRV_YN 
+	                    FROM PJT_PRTPNT 
+	                    WHERE PJT_NO = #{pjtNo}) B
+		WHERE A.MBR_ID = B.MBR_ID
+	</select>
+	
+	<!-- 사용자가 참여중인 프로젝트 리스트  -->
+	<select id="getMyPjtList" parameterType="String" resultType="projectVO">
+		SELECT D.PJT_NO
+			, D.PJT_NM
+			, D.PJT_CTGR_CD
+		FROM PROJECT D, (SELECT PJT_NO
+		                    FROM PJT_PRTPNT
+		                    WHERE MBR_ID = #{mbrId}) C
+		WHERE D.PJT_NO = C.PJT_NO
+	</select>
+
+
+
+
+
+</mapper>

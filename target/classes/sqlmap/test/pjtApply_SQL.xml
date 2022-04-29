@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.project.mapper.PjtApplyMapper">
+	
+	<!-- 신청받은 모든 사용자들 -->
+	<select id="getAllApplicant" parameterType="map" resultType="hashMap">
+		  SELECT D.MBR_ID
+			  , D.MBR_NM
+			  , D.MBR_IMG
+			  , D.MBR_DEPT
+			  , D.MBR_TELNO
+			  , C.PJT_NO
+			  , C.PJT_NM
+			  , C.PJT_APPLY_CN
+			  , C.PJT_APPLY_DT
+		    FROM  (SELECT A.PJT_NO, B.PJT_NM, A.PJT_APPLY_WRTR_ID, A.PJT_APPLY_CN, A.PJT_APPLY_DT
+		            FROM PJT_APPLY A, PROJECT B
+		            WHERE B.PJT_WRTR_NM = #{mbrId}
+		            AND A.PJT_NO = B.PJT_NO
+		            AND A.APPLY_APRV_YN IS NULL) C, MEMBER D
+		    WHERE D.MBR_ID = C.PJT_APPLY_WRTR_ID
+		    <if test="user != null and user != ''">
+		    AND D.MBR_ID = #{user}
+		    </if>
+	</select>
+	
+	<!-- 너 나의 구성원이 되어보거라! -->
+	<update id="becomePrtpnt" parameterType="String">
+		UPDATE PJT_APPLY
+		SET APPLY_APRV_YN = 'Y'
+		WHERE PJT_APPLY_WRTR_ID = #{mbrId}
+	</update>
+
+	<!-- 승인 거절 -->
+	<update id="denyUser" parameterType="map">
+		 UPDATE PJT_APPLY
+	        SET APPLY_APRV_YN = 'N', PJCT_RSN = #{rsn}
+	      WHERE PJT_APPLY_WRTR_ID = #{user}
+	        AND PJT_NO = #{pjtNo}
+	</update>
+
+
+
+
+
+</mapper>

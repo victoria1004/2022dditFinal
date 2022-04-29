@@ -1,0 +1,9 @@
+package kr.or.ddit.goods.service;
+
+import java.util.List;
+
+import kr.or.ddit.goods.vo.GdsMngVO;
+
+public interface GdsService {
+	public List<GdsMngVO> goodsList();
+}

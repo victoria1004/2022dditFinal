@@ -1,0 +1,34 @@
+package kr.or.ddit.goods.controller;
+
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+import kr.or.ddit.goods.service.GdsService;
+import kr.or.ddit.goods.vo.GdsMngVO;
+
+@RequestMapping("/gds")
+@Controller
+public class GdsController {
+
+	private static final Logger logger = LoggerFactory.getLogger(GdsController.class);
+	
+	@Autowired
+	GdsService gdsService;
+	
+	@RequestMapping(value = "/gdsList.do")
+	public String gdsList(Model model) {
+		
+		List<GdsMngVO> list = gdsService.goodsList();
+		
+		model.addAttribute("list", list);
+		
+		return "goods/goodsMain";
+	}
+	
+}

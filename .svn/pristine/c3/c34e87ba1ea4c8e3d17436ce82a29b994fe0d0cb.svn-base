@@ -1,0 +1,81 @@
+package kr.or.ddit.project.vo;
+
+public class KanbanCardVO {
+
+	
+	private String kbCardNo;
+	private String kbNo;
+	private String kbCardPrivNo;
+	private String kbCardWrtrNm;
+	private String kbCardTtl;
+	private String kbCardCn;
+	private String kbCardStrtDt;
+	private String kbCardEndDt;
+	private String kbPrgrs;
+	
+	
+	public String getKbCardNo() {
+		return kbCardNo;
+	}
+	public void setKbCardNo(String kbCardNo) {
+		this.kbCardNo = kbCardNo;
+	}
+	public String getKbNo() {
+		return kbNo;
+	}
+	public void setKbNo(String kbNo) {
+		this.kbNo = kbNo;
+	}
+	public String getKbCardPrivNo() {
+		return kbCardPrivNo;
+	}
+	public void setKbCardPrivNo(String kbCardPrivNo) {
+		this.kbCardPrivNo = kbCardPrivNo;
+	}
+	public String getKbCardWrtrNm() {
+		return kbCardWrtrNm;
+	}
+	public void setKbCardWrtrNm(String kbCardWrtrNm) {
+		this.kbCardWrtrNm = kbCardWrtrNm;
+	}
+	public String getKbCardTtl() {
+		return kbCardTtl;
+	}
+	public void setKbCardTtl(String kbCardTtl) {
+		this.kbCardTtl = kbCardTtl;
+	}
+	public String getKbCardCn() {
+		return kbCardCn;
+	}
+	public void setKbCardCn(String kbCardCn) {
+		this.kbCardCn = kbCardCn;
+	}
+	public String getKbCardStrtDt() {
+		return kbCardStrtDt;
+	}
+	public void setKbCardStrtDt(String kbCardStrtDt) {
+		this.kbCardStrtDt = kbCardStrtDt;
+	}
+	public String getKbCardEndDt() {
+		return kbCardEndDt;
+	}
+	public void setKbCardEndDt(String kbCardEndDt) {
+		this.kbCardEndDt = kbCardEndDt;
+	}
+	public String getKbPrgrs() {
+		return kbPrgrs;
+	}
+	public void setKbPrgrs(String kbPrgrs) {
+		this.kbPrgrs = kbPrgrs;
+	}
+	
+	
+	@Override
+	public String toString() {
+		return "KanbanCardVO [kbCardNo=" + kbCardNo + ", kbNo=" + kbNo + ", kbCardPrivNo=" + kbCardPrivNo
+				+ ", kbCardWrtrNm=" + kbCardWrtrNm + ", kbCardTtl=" + kbCardTtl + ", kbCardCn=" + kbCardCn
+				+ ", kbCardStrtDt=" + kbCardStrtDt + ", kbCardEndDt=" + kbCardEndDt + ", kbPrgrs=" + kbPrgrs + "]";
+	}
+	
+	
+}

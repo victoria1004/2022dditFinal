@@ -1,0 +1,313 @@
+package kr.or.ddit.feed.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.google.gson.Gson;
+
+import kr.or.ddit.feed.service.LikesService;
+import kr.or.ddit.feed.service.MapService;
+import kr.or.ddit.feed.service.PstService;
+import kr.or.ddit.feed.service.VoteService;
+import kr.or.ddit.feed.service.VtFrmtService;
+import kr.or.ddit.feed.service.VtRsltService;
+import kr.or.ddit.feed.vo.LikesVO;
+import kr.or.ddit.feed.vo.MapVO;
+import kr.or.ddit.feed.vo.PstCmntVO;
+import kr.or.ddit.feed.vo.PstVO;
+import kr.or.ddit.feed.vo.VoteVO;
+import kr.or.ddit.feed.vo.VtFrmtVO;
+import kr.or.ddit.feed.vo.VtRsltVO;
+import kr.or.ddit.project.service.ProjectService;
+import kr.or.ddit.project.vo.ProjectVO;
+import kr.or.ddit.user.service.LoginService;
+import kr.or.ddit.user.service.MbrService;
+import kr.or.ddit.user.vo.MemberVO;
+
+@RequestMapping("/feed")
+@Controller
+public class PstController {
+	private static final Logger logger = LoggerFactory.getLogger(PstController.class);
+	
+	@Autowired
+	PstService pstService;
+	@Autowired
+	LikesService likesService;
+	@Autowired
+	VoteService voteService;
+	@Autowired
+	VtFrmtService vtFrmtService;
+	@Autowired
+	VtRsltService vtRsltService;
+	@Autowired
+	LoginService loginService;
+	@Autowired
+	MapService mapService;
+	@Autowired
+	MbrService mbrService;
+	@Autowired
+	ProjectService service;
+	
+	// 피드 목록
+	@RequestMapping("/main.do")
+	public String select(Model model, HttpSession session, @RequestParam String pjtNo) {
+//		logger.info("등록");
+		logger.info("pjtNo : " + pjtNo);
+		
+		List<Map<String, Object>> list = pstService.select(pjtNo);
+		logger.info(">>>>" + list.size());
+		
+		MemberVO memberVO = (MemberVO) session.getAttribute("member");
+		MemberVO member = this.loginService.loginPost(memberVO);
+		//세션에 member객체 세팅
+		session.setAttribute("member", member);
+		logger.info("피드 세션 member: " + member.toString());
+		
+		//세션에 project세팅
+		ProjectVO vo = service.getPjt(pjtNo);
+		session.setAttribute("project", vo);
+		logger.info("프로젝트 세션 project :", vo.toString());
+		
+		//좋아요 확인
+		List<LikesVO> like = likesService.findLikes(member.getMbrId());
+		logger.info("like",like);
+		
+		for(int i = 0 ; i<list.size(); i++) {
+			//피드별 좋아요 개수
+			int count = likesService.selectLikes((String) list.get(i).get("PST_NO"));
+			list.get(i).put("count", count);
+			list.get(i).put("yn", false);
+			for(int j = 0; j<like.size(); j++) {
+				if(list.get(i).get("PST_NO").equals(like.get(j).getPstNo())) {
+					list.get(i).put("yn", true);
+					break;
+				}
+			}
+		}
+		
+		//피드별 댓글 목록 출력
+		List<Map<String, Object>> cmnt = pstService.cmntList();
+		
+		for(int i = 0; i<list.size(); i++) {
+			list.get(i).put("cmntyn",false);
+			for(int j = 0; j<cmnt.size(); j++) {
+				if(list.get(i).get("PST_NO").equals(cmnt.get(j).get("PST_NO"))){
+					list.get(i).put("cmntyn",true);
+					break;
+				}
+			}
+		}
+		
+		//투표 형식 출력
+		List<VtFrmtVO> frmt = vtFrmtService.selectVtFrmt();
+		logger.info("frmt :"+frmt);
+		
+		for(int i = 0; i<list.size(); i++) {
+			list.get(i).put("frmtyn",false);
+			for(int j = 0; j<frmt.size(); j++) {
+				if(list.get(i).get("PST_NO").equals(frmt.get(j).getPstNo())) {
+					list.get(i).put("frmtyn",true);
+					break;
+				}
+			}
+ 		}
+		
+		//투표 내용 출력
+		List<VoteVO> vote = vtFrmtService.selectVote();
+		logger.info("vote :"+vote);
+		
+		for(int i=0; i<frmt.size(); i++) {
+			frmt.get(i).setVoteYn(false);
+			for(int j=0; j<vote.size(); j++) {
+				if(frmt.get(i).getVtNo().equals(vote.get(j).getVtNo())) {
+					frmt.get(i).setVoteYn(true);
+					break;
+				}
+			}
+		}
+		
+		//투표 결과 출력
+		List<VtRsltVO> res = vtRsltService.resultVote();
+		List<Map<String, Object>> resList = new ArrayList<Map<String,Object>>();
+		for(int i=0; i<res.size();i++) {
+			resList = vtRsltService.rsltList(res.get(i));
+		}
+		
+		//지도 내용 출력
+		List<MapVO> mapInfo = mapService.selectMap();
+		logger.info("mapInfo"+mapInfo);
+		
+		//피드
+		model.addAttribute("list", list);
+		//좋아요
+		model.addAttribute("like", like);
+		//댓글
+		model.addAttribute("cmnt", cmnt);
+		//투표형식
+		model.addAttribute("frmt", frmt);
+		//투표내용
+		model.addAttribute("vote", vote);
+		//지도
+		model.addAttribute("map", mapInfo);
+		//투표결과
+		model.addAttribute("rsList", resList);
+		
+		return "feed/main";
+
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/insert.do", method = RequestMethod.POST, produces = "application/text; charset=UTF-8")
+	public void insertPost(Model model, @RequestParam Map<String, Object> data, HttpSession session){
+		logger.info("insertPost----------------------------------");
+		
+		//json 객체를 java 객체로 변환해준다.
+		Gson gson = new Gson();
+		List<String> strList = gson.fromJson((String) data.get("data"), List.class);
+		//작성자 아이디 담을 변수
+		String mbrId = "";
+		//프로젝트 번호 담을 변수
+		String pjtNo = "";
+		//피드내용 담을 변수
+		String str = "";
+		//공지 담을 변수
+		String nyn = "";
+		//익명여부 담을 변수
+		String ann = "";
+		//마감일 담을 변수
+		String ddate = "";
+		//지도 정보 담을 리스트
+		List<String> mapInfo = new ArrayList<String>();
+		//투표항목 담을 리스트
+		List<String> vote = new ArrayList<String>();
+		
+		for(int i=0; i<strList.size(); i++) {
+			System.out.println("결과 : " + strList.get(i));
+			mbrId = strList.get(0);
+			pjtNo =	strList.get(1);	
+			str = strList.get(2);
+			nyn = strList.get(3);
+			ann = strList.get(4);
+			ddate = strList.get(5);
+			mapInfo.add(strList.get(6));
+			mapInfo.add(strList.get(7));
+			mapInfo.add(strList.get(8));
+		}
+		//투표 항목 담기
+		for(int i=9; i<strList.size(); i++) {
+			vote.add(strList.get(i));
+		}
+		
+		//피드 부분을 담을 객체
+		PstVO pstVO = new PstVO();
+
+		//프젝 번호넣기
+		pstVO.setPjtNo(pjtNo);
+		//피드 작성자 아이디 넣기
+		pstVO.setMbrId(mbrId);
+		//피드 내용 넣기
+		pstVO.setPstCn(str);
+		//공지여부 넣기
+		pstVO.setNtcYn(nyn);
+		
+		int insertPst = pstService.insert(pstVO);
+		
+		//방금 등록된 피드번호 가져오기
+		String pstNo = pstService.selectPstNo();
+		logger.info("insert된 pstNo"+pstNo);
+		
+//		//마감일, 익명여부를 담을 객체
+		VtFrmtVO vtFrmtVO = new VtFrmtVO();
+		vtFrmtVO.setVtDt(ddate);
+		vtFrmtVO.setAnnYn(ann);
+		vtFrmtVO.setPstNo(pstNo);
+		
+		int insertFrmt = vtFrmtService.insertVtFrmt(vtFrmtVO);
+		
+		//방금 등록된 투표번호 가져오기
+		String vtNo = vtFrmtService.selectVtNo();
+		logger.info("insert된 vtNo"+vtNo);
+		
+		//투표 항목을 담을 객체
+		VoteVO voteVO = new VoteVO();
+		voteVO.setVtNo(vtNo);
+		
+		for(int i = 0; i < vote.size(); i++) {
+			voteVO.setVtItm(vote.get(i));
+			int insertVote = voteService.insertVote(voteVO);
+		}
+		
+		//지도 내용을 담을 객체
+		MapVO mapVO = new MapVO();
+		mapVO.setPstNo(pstNo);
+		
+		for(int i=0; i<mapInfo.size(); i++) {
+			mapVO.setMapAddr(mapInfo.get(0));
+			mapVO.setMapLat(mapInfo.get(1));
+			mapVO.setMapLot(mapInfo.get(2));
+		}
+		
+		int insertMap = mapService.insertMap(mapVO);
+		
+		model.addAttribute("pstVO", new PstVO());
+		model.addAttribute("voteVO", new VoteVO());
+		model.addAttribute("vtFrmtVO", new VtFrmtVO());
+		model.addAttribute("mapVO", new MapVO());
+		model.addAttribute("vtRsltVO", new VtRsltVO());
+		// forwarding
+//		return "redirect:/feed/main.do";
+	}
+	
+	// 피드 수정하기
+	@ResponseBody
+	@RequestMapping(value = "/update.do", method = RequestMethod.POST)
+	public String updatePost(@RequestParam String pstCn, @RequestParam String pstNo, @RequestParam String ntcYn) {
+		logger.info("------------------------------");
+//		logger.info("수정");
+		logger.info("update pstCn : " + pstCn);
+		logger.info("update pstNo : " + pstNo);
+		logger.info("update ntcYn : " + ntcYn);
+		
+		PstVO pstVO = new PstVO();
+		pstVO.setPstNo(pstNo);
+		pstVO.setPstCn(pstCn);
+		pstVO.setNtcYn(ntcYn);;
+
+		int updateRes = this.pstService.update(pstVO);
+		if (updateRes < 0) { // 수정 실패 시
+			return "feed/main";
+		}
+		return "redirect:/feed/main.do";
+	}
+
+	// 피드 삭제하기
+	@RequestMapping(value = "/delete.do", method = RequestMethod.POST)
+	public String delete(@RequestParam String pstNo) {
+//		logger.info("삭제");		
+		logger.info("delete pstNo : " + pstNo);
+
+		int deleteRes = this.pstService.delete(pstNo);
+		if (deleteRes < 0) { // 삭제 실패 시
+			return "feed/main";
+		}
+		return "redirect:/feed/main.do";
+
+	}
+	
+	
+	
+
+}

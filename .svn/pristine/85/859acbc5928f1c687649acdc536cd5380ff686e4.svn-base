@@ -1,0 +1,20 @@
+package kr.or.ddit.project.service.impl;
+
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.project.mapper.ProjectMakingMapper;
+import kr.or.ddit.project.service.ProjectMakingService;
+
+@Service
+public class ProjectMakingServiceImpl implements ProjectMakingService {
+	@Autowired 
+	ProjectMakingMapper mapper;
+	
+	@Override
+	public String getInfo(String mbrId) {
+		return mapper.getInfo(mbrId);
+	}
+
+}

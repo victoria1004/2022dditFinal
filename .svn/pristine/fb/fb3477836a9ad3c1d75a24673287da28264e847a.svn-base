@@ -1,0 +1,78 @@
+package kr.or.ddit.cloud.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.cloud.mapper.CloudMapper;
+import kr.or.ddit.cloud.service.CloudService;
+import kr.or.ddit.cloud.vo.FldrVO;
+import kr.or.ddit.cloud.vo.StrgVO;
+
+@Service
+public class CloudServiceImpl implements CloudService {
+
+	@Inject CloudMapper mapper;
+	
+	@Override
+	public int insert(StrgVO vo) {
+		return mapper.insert(vo);
+	}
+
+	@Override
+	public List<StrgVO> selectAll(Map<String, Object> map) {
+		return mapper.selectAll(map);
+	}
+
+	@Override
+	public String getFolder(Map<String, String> map) {
+		return mapper.getFolder(map);
+	}
+
+	@Override
+	public List<FldrVO> getLowFolders(Map<String, String> map) {
+		return mapper.getLowFolders(map);
+	}
+
+	@Override
+	public int insertFldr(FldrVO vo) {
+		return mapper.insertFldr(vo);
+	}
+
+	@Override
+	public int fileDelete(String strgFileNo) {
+		return mapper.fileDelete(strgFileNo);
+	}
+
+	@Override
+	public StrgVO getDownloadFile(String strgFileNo) {
+		return mapper.getDownloadFile(strgFileNo);
+	}
+
+	@Override
+	public List<FldrVO> getAllLeafFolders(String pjtNo) {
+		return mapper.getAllLeafFolders(pjtNo);
+	}
+
+	@Override
+	public List<String> getLeaf(Map<String, String> map) {
+		return mapper.getLeaf(map);
+	}
+
+	@Override
+	public int fileCount(Map<String, Object> map) {
+		return mapper.fileCount(map);
+	}
+
+	
+	
+	
+	
+	
+	
+}
+
+

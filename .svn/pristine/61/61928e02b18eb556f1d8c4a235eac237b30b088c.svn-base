@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.feed.mapper.PstMapper">
+	<!-- 피드와 댓글은 1:N 관계 -->
+	<resultMap type="pstVO" id="pstMap">
+		<id property="pstNo" column="PST_NO"/>
+		<result property="pjtNo" column="PJT_NO"/>
+		<result property="mbrId" column="MBR_ID"/>
+		<result property="pstCn" column="PST_CN"/>
+		<result property="pstWrtDt" column="PST_WRT_DT"/>
+		<result property="ntcYn" column="NTC_YN"/>
+		<collection property="pstCmntVO" resultMap="cmntMap">
+		</collection>
+	</resultMap>
+	
+	<resultMap type="pstCmntVO" id="cmntMap">
+		<id property="pstNo" column="PST_NO"/>
+		<id property="cmntNo" column="CMNT_NO"/>
+		<result property="mbrId" column="MBR_ID"/>
+		<result property="cmntCn" column="CMNT_CN"/>
+		<result property="mntDt" column="CMNT_DT"/>
+	</resultMap>
+
+<!-- 피드 -->
+	<!-- 피드 등록 -->
+	<insert id="insert" parameterType="pstVO">
+		<selectKey order="BEFORE" keyProperty="pstNo" resultType="String">
+			SELECT NVL(MAX(TO_NUMBER(PST_NO)),0)+1 FROM PST
+		</selectKey>
+		INSERT INTO PST(PST_NO,PJT_NO,MBR_ID,PST_CN,PST_WRT_DT,NTC_YN)
+<!-- 		VALUES(#{pstNo},#{pjtNo},#{mbrId},#{pstCn},SYSDATE,#{ntcYn}) -->
+		VALUES(#{pstNo},'1','A001',#{pstCn},TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS'),'N')
+	</insert>
+	
+	<!-- 피드 목록 -->
+	<select id="select" resultMap="pstMap" parameterType="String">
+		SELECT PST_NO,PJT_NO,MBR_ID,PST_CN,PST_WRT_DT,NTC_YN FROM PST
+		WHERE PJT_NO = #{pjtNo} ORDER BY TO_NUMBER(PST_NO) DESC
+	</select>
+	
+	<!-- 피드 수정 -->
+	<update id="update" parameterType="pstVO">
+		UPDATE PST
+		SET PST_CN = #{pstCn}, PST_WRT_DT = TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS'), NTC_YN = 'Y'
+		WHERE PST_NO = #{pstNo}
+	</update>
+	
+	<!-- 피드 삭제 -->
+	<delete id="delete" parameterType="String">
+		DELETE FROM PST WHERE PST_NO = #{pstNo}
+	</delete>
+	
+<!-- 댓글 -->
+		<!-- 댓글 등록 -->
+	<insert id="cmntInsert" parameterType="pstCmntVO">
+		<selectKey order="BEFORE" keyProperty="cmntNo" resultType="String">
+			SELECT NVL(MAX(TO_NUMBER(CMNT_NO)),0)+1 FROM PST_CMNT
+		</selectKey>
+		INSERT INTO PST_CMNT(PST_NO,CMNT_NO,MBR_ID,CMNT_CN,CMNT_DT)
+<!-- 		VALUES(#{pstNo},#{pjtNo},#{mbrId},#{pstCn},SYSDATE,#{ntcYn}) -->
+		VALUES(#{pstNo},#{cmntNo},'A001',#{cmntCn},TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS'))
+	</insert>
+
+	<!-- 댓글 목록 -->
+	<select id="cmntSelect" resultMap="cmntMap">
+		SELECT PST_NO,CMNT_NO,MBR_ID,CMNT_CN,CMNT_DT FROM PST_CMNT
+		WHERE PST_NO = #{pstNo} ORDER BY TO_NUMBER(CMNT_NO) DESC
+	</select>
+	
+	<!-- 댓글 수정 -->
+	<update id="cmntUpdate" parameterType="pstCmntVO">
+		UPDATE PST_CMNT
+		SET CMNT_CN = #{cmntCn}, CMNT_DT = TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS')
+		WHERE CMNT_NO = #{cmntNo}
+	</update>
+	
+	<!-- 댓글 삭제 -->
+	<delete id="cmntDelete" parameterType="String">
+		DELETE FROM PST_CMNT WHERE CMNT_NO = #{cmntNo}
+	</delete>
+	
+
+</mapper>

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.project.mapper.KanbanMapper">
+<!-- * selectKey?
+일련번호 처리
+마이바티스는 쿼리 실행 시 파라미터를 치환해줌 
+ -->
+<!-- 고객(1) 이미지(N) -->
+	
+
+
+	<!-- 칸반 등록 -->
+	<insert id="kanbanInsert" useGeneratedKeys="false" parameterType="kanbanVO">
+		<selectKey order="BEFORE" keyProperty="kbNo" resultType="String">
+			SELECT NVL(MAX(TO_NUMBER(KB_NO)),0)+1 FROM KANBAN 
+		</selectKey>
+		INSERT INTO KANBAN(KB_NO, PJT_NO, KB_NM) 
+		VALUES(#{kbNo}, '1', #{kbNm} )
+	</insert>
+
+	<select id="kanbanSelect" resultType="kanbanVO" parameterType="kanbanVO">
+		SELECT KB_NO, PJT_NO, KB_NM, KB_PRIV_NO 
+		  FROM KANBAN
+	</select>
+
+	<delete id="kanbanDelete" parameterType="String">
+		DELETE FROM KANBAN WHERE KB_NO = #{kbNo}
+		DELETE FROM KANBAN_CARD WHERE KB_NO = #{kbNo}
+	</delete>
+	
+	
+	<update id="kanbanUpdate" parameterType="kanbanVO">
+		UPDATE KANBAN 
+		   SET KB_NM = #{kbNm} 
+		 WHERE KB_NO = #{kbNo} 
+	</update>
+	
+</mapper>

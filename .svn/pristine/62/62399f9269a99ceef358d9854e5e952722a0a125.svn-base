@@ -1,0 +1,12 @@
+package kr.or.ddit.user.service;
+
+import kr.or.ddit.user.vo.MemberVO;
+
+public interface MbrService {
+
+	//아이디 중복확인
+	public int checkId(String mbrId);
+	
+	//회원 등록
+	public int mbrInsert(MemberVO memberVO);
+}

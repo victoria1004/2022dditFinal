@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.goods.mapper.GdsMapper">
+	<select id="goodsList" parameterType="hashMap" resultType="kr.or.ddit.goods.vo.GdsMngVO">
+		SELECT T.RNUM
+		, T.GDS_NO
+		, T.GDS_NM
+		, T.GDS_STOCK
+		, NVL(U.RNT_CNT, 0) AS RNT_CNT 
+		FROM (
+			SELECT ROW_NUMBER() OVER(ORDER BY TO_NUMBER(GDS_NO)) RNUM
+				, GDS_NO
+				, GDS_NM
+				, GDS_STOCK
+			FROM GDS_MNG
+			WHERE GDS_YN = 'Y'
+			<if test="keyWord!=null and keyWord!=''">
+			AND (GDS_NM LIKE '%' || #{keyWord} || '%')
+			</if>
+			
+		) T
+		, (SELECT SUM(RNT_CNT) AS RNT_CNT
+				, GDS_NO
+			 FROM GDS_RNT
+			 WHERE RTN_DT IS NULL
+		    GROUP BY GDS_NO) U
+		WHERE T.GDS_NO = U.GDS_NO(+)
+		AND T.RNUM BETWEEN #{currentPage}*#{size}-#{size}+1 AND #{currentPage}*#{size}
+		ORDER BY 1
+	</select>
+	
+	<select id="totalList" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*)
+		FROM GDS_MNG
+		<where>
+		<if test="keyWord!=null and keyWord!=''">
+		AND (GDS_NM LIKE '%' || #{keyWord} || '%')
+		</if>
+		</where>
+	</select>
+	
+	<insert id="rentGoods" parameterType="kr.or.ddit.goods.vo.GdsRntVO">
+		<selectKey order="BEFORE" keyProperty="rntNo" resultType="int">
+			SELECT NVL(MAX(RNT_NO), 0)+1
+			FROM GDS_RNT
+		</selectKey>
+		INSERT INTO GDS_RNT(RNT_NO
+						, MBR_ID
+						, GDS_NO
+						, RNT_DT
+						, RTN_PRNMNT_DT
+						, RNT_CNT)
+		VALUES (#{rntNo}
+			, #{mbrId}
+			, #{gdsNo}
+			, TO_CHAR(SYSDATE, 'YYYY/MM/DD')
+			, #{rtnPrnmntDt}
+			, #{rntCnt}) 
+	</insert>
+	
+	<select id="userRent" parameterType="String" resultType="kr.or.ddit.goods.vo.GdsRntVO">
+		SELECT SUM(RNT_CNT) AS RNT_CNT
+				, GDS_NO
+		 FROM GDS_RNT
+		 WHERE MBR_ID = #{mbrId}
+	    GROUP BY GDS_NO
+	</select>
+	
+	<select id="rentUserTb" parameterType="String" resultType="kr.or.ddit.goods.vo.GdsRntVO">
+		SELECT
+		    A.RNT_NO
+		    , A.MBR_ID
+		    , A.GDS_NO
+		    , A.RNT_DT
+		    , A.RTN_PRNMNT_DT
+		    , A.RNT_CNT
+		    , B.MBR_NM
+		FROM
+		    GDS_RNT A
+		    , MEMBER B
+		WHERE A.MBR_ID = B.MBR_ID
+		AND   A.GDS_NO = #{gdsNo}
+		AND   A.RTN_DT IS NULL
+	</select>
+	
+	<update id="rtnUser" parameterType="String">
+		UPDATE GDS_RNT
+		    SET
+		        RTN_DT = TO_CHAR(SYSDATE, 'YYYY/MM/DD')
+		WHERE
+		    RNT_NO = #{rntNo}
+	</update>
+	
+	<update id="goodsDelete" parameterType="String">
+		UPDATE gDS_MNG
+		    SET
+		        GDS_YN = 'N'
+		WHERE
+		    GDS_NO = #{gdsNo}
+	</update>
+	
+</mapper>

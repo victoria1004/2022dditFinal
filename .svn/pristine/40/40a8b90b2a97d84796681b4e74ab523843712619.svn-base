@@ -1,0 +1,48 @@
+package kr.or.ddit.project.service.impl;
+
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.project.mapper.ProjectMakingMapper;
+import kr.or.ddit.project.service.ProjectMakingService;
+import kr.or.ddit.project.vo.DevelopmentEnvmVO;
+import kr.or.ddit.project.vo.LayoutVO;
+import kr.or.ddit.project.vo.ProjectLanguageVO;
+import kr.or.ddit.project.vo.ProjectVO;
+
+@Service
+public class ProjectMakingServiceImpl implements ProjectMakingService {
+	@Autowired 
+	ProjectMakingMapper mapper;
+	
+	@Override
+	public String getInfo(String mbrId) {
+		return mapper.getInfo(mbrId);
+	}
+
+	@Override
+	public List<DevelopmentEnvmVO> getLogo() {
+		return mapper.getLogo();
+	}
+
+	@Override
+	public int pjtInsert(ProjectVO vo) {
+		return mapper.pjtInsert(vo);
+	}
+
+	@Override
+	public int moduleInsert(LayoutVO vo) {
+		return mapper.moduleInsert(vo);
+	}
+
+	@Override
+	public int langInsert(ProjectLanguageVO vo) {
+		return mapper.langInsert(vo);
+	}
+	
+	
+
+}

@@ -1,0 +1,15 @@
+package kr.or.ddit.project.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@Controller
+@RequestMapping("/project")
+public class ProjectMakingController {
+
+	@RequestMapping("/projectMaking.do")
+	public String projectMaking() {
+		return "project/projectMaking";
+	}
+
+}

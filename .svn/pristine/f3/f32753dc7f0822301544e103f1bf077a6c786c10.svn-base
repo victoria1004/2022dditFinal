@@ -1,0 +1,54 @@
+package kr.or.ddit.project.service.impl;
+
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.project.mapper.IssueMapper;
+import kr.or.ddit.project.service.IssueService;
+import kr.or.ddit.project.vo.IssueVO;
+import kr.or.ddit.user.vo.MemberVO;
+
+@Service
+public class IssueServiceImpl implements IssueService {
+	
+	private static final Logger logger = LoggerFactory.getLogger(IssueServiceImpl.class);
+	
+	@Autowired
+	private IssueMapper issueMapper;
+
+	@Override
+	public List<IssueVO> issueSelect(String pjtNo) {
+		
+		return issueMapper.issueSelect(pjtNo);
+	}
+
+	@Override
+	public int issueInsert(IssueVO issueVO) {
+		return issueMapper.issueInsert(issueVO);
+	}
+
+	@Override
+	public int issueUpdate(IssueVO issueVO) {
+		return issueMapper.issueUpdate(issueVO);
+	}
+
+	@Override
+	public int issueDelete(String issueNo) {
+		return issueMapper.issueDelete(issueNo);
+	}
+
+	//프로젝트 멤버 가져오기
+	@Override
+	public List<MemberVO> memberList(String pjtNo) {
+		return issueMapper.memberList(pjtNo);
+	}
+
+
+
+
+
+}

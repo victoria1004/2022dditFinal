@@ -1,0 +1,895 @@
+<%@page import="kr.or.ddit.user.vo.MemberVO"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="tiles" uri="http://tiles.apache.org/tags-tiles" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
+    <title>회의실 예약</title>
+    <link href="/resources/assets/img/favicon.ico" rel="icon" type="image/x-icon"/>
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+<!--     <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,600,700&display=swap" rel="stylesheet"> -->
+    <link href="/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <link href="/resources/assets/css/plugins.css" rel="stylesheet" type="text/css" />
+    <link href="/resources/assets/css/structure.css" rel="stylesheet" type="text/css" class="structure" />
+    <!-- END GLOBAL MANDATORY STYLES -->
+
+	<!-- BEGIN THEME GLOBAL STYLES -->
+    <link href="/resources/assets/css/scrollspyNav.css" rel="stylesheet" type="text/css" />
+    <link href="/resources/plugins/animate/animate.css" rel="stylesheet" type="text/css" />
+    <link href="/resources/assets/css/components/custom-sweetalert.css" rel="stylesheet" type="text/css" />
+    <!-- END THEME GLOBAL STYLES -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.min.css" integrity="sha512-u7ppO4TLg4v6EY8yQ6T6d66inT0daGyTodAi6ycbw9+/AU8KMLAF7Z7YGKPMRA96v7t+c7O1s6YCTGkok6p9ZA==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+	<link rel="stylesheet" href="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.css">
+	
+   
+	
+</head>
+<style>
+.reserv-table select { border-radius:0; -webkit-appearance:none; -moz-appearance:none; appearance:none; border: 1px solid #eee; color: #fff;}
+.reserv-table select option { color: #fff;}
+
+.reserv-table {table-layout: fixed; margin-top: 5%;}
+.reserv-table th,
+.reserv-table td {text-align: center; vertical-align: middle !important;}
+.reserv-table thead th {padding-top: 1rem; padding-bottom: 1rem; background-color: #eee; color: #000;}
+
+.reserv-table tbody th,
+.reserv-table tbody td {padding: 0.5rem; text-align: center;}
+.reserv-table tbody th {background-color: #eee;}
+
+.reserv-table tbody td .reserv-text {overflow: hidden; display: inline-block; width: 100%; cursor: zoom-in;} 
+.reserv-table tbody td .reserv-text-admin { width: calc(100% - 1.8rem);} 
+.reserv-table tbody td.disable {background-color: #eee; color: #fff; cursor: default; }
+.reserv-table tbody td.reservated {background-color: #f08503; color: #fff; cursor: default;}
+.reserv-table tbody td.reservated a {cursor: zoom-in; color: #fff; }
+.reserv-table tbody td.reservated input[type="checkbox"]:checked {background-color: #f08503;}
+.reserv-table tbody td.reservated input[type="checkbox"] + label { display: inline-block; width: 1.2rem; height: 1.2rem; border: 1px solid #eee; cursor: pointer; margin-bottom: -1px; background-color: #fff; }
+.reserv-table tbody td.reservated input[type="checkbox"]:checked + label { background-color: #00c50f; }
+.reserv-table tbody td:not(.reservated):not(.disable):hover {background-color: #E0F2F7;}
+
+.equi-icon {color: #ccc;}
+.equi-icon.active {color: #f08503;}
+.equi-icon-small {color: #ccc; font-size: 1.1rem;}
+.equi-icon-small.active {color: #333; display: inline-block;}
+@media (max-width: 768px){
+	.reserv-table thead td img {max-width: 100%;}
+	.reserv-table tbody td a {font-size: 1.1rem;}
+	#reservation_form_modal .input-group {display: flex;}
+	#reservation_form_modal .pl-1 {padding-left: 0px !important;}
+	#reservation_form_modal .pr-1 {padding-right: 0px !important;}
+}
+.tui-datepicker-input.tui-has-focus{min-width: 35%; border: none;}
+#datepicker-input{ background: none; font-size: 2.0em; font-weight: 900;}
+.tui-datepicker{margin-left: 28%; margin-top: 10px;}
+.tui-calendar-body-header tr th{font-size: 1.2em; font-weight: 600;}
+.tui-calendar-header-info p{color: #515365 !important;}
+.tui-calendar-body-header tr th:first-child{color: #DF0101;}
+.tui-calendar-body-header tr th:last-child{color: #0101DF;}
+#rno td{padding: 0px; color: #4b96e6; font-size: 1.8rem; font-weight: bold;}
+#widbox{margin-top: 7%;}
+#widarea{border-top-left-radius: 6px; border-top-right-radius: 6px;}
+.backslash {background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg"><line x1="0" y1="0" x2="100%" y2="100%" stroke="white" stroke-width="2" /></svg>');}
+#tab1 th{border-bottom: 1px solid white;}
+#tab1 tbody td {cursor: pointer; font-size: 1.1em;}
+.test1 label, .test1 label i{color: #333;}
+</style>
+<body>
+<!-- 게시판 목록 시작 { -->
+<div id="bo_list" class="boardWrap">
+	<div class="container clearfix">
+
+<!-- 콘텐츠 시작 { -->
+<div id="tableHover" class="col-lg-12 col-12 layout-spacing">
+     <div class="statbox widget box box-shadow" id="widbox">
+         <div class="widget-content widget-content-area" id="widarea">
+         <div class="widget-header">
+             <div class="row">
+                 <div class="col-xl-12 col-md-12 col-sm-12 col-12">
+                     <h4>회의실 예약</h4>
+                 </div>                 
+             </div>
+         </div>
+<div class="table-responsive">
+    <table class="table table-sm table-bordered reserv-table" id="tab1">
+		<thead>
+		<tr>
+					<th style="width: 5rem;"></th>
+					<th colspan="5">                            
+					<div class="row no-gutters justify-content-center mb-3">
+	<div class="col-lg-12 text-center">
+    <div class="tui-datepicker-input tui-datetime-input tui-has-focus">
+        <input type="text" id="datepicker-input" aria-label="Date-Time">
+        <span class="tui-ico-date"></span>
+    </div>
+    <div id="wrapper" style="margin-top: -1px;"></div>
+	</div>
+</div>
+</th>
+		</tr>
+		<tr id="rno">
+			<th>구분</th>
+			<td>101</td>
+			<td>102</td>
+			<td>103</td>
+			<td>104</td>
+			<td>105</td>
+		</tr>
+		<tr>
+			<th class="backslash" style="text-align: left;">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;비품<br><br>&nbsp;시간</th>
+			<td class="pb-3" data-toggle="modal" data-target="#icon_info_modal">
+				<span title="의자" class="drr-313 equi-icon-chair equi-icon-small active"><i class="fas fa-chair"></i></span>
+				<span title="책상" class="drr-313 equi-icon-desk equi-icon-small active"><i class="fas fa-inbox"></i></span>
+				<span title="프로젝터" class="drr-313 equi-icon-projector equi-icon-small active"><i class="fas fa-video"></i></span>
+			<br><span title="화이트보드" class="drr-313 equi-icon-whiteboard equi-icon-small active"><i class="fas fa-chalkboard"></i></span>
+				<span title="스크린" class="drr-313 equi-icon-screen equi-icon-small active"><i class="fas fa-chalkboard-teacher"></i></span>
+				<span title="소화기" class="drr-313 equi-icon-extinguisher equi-icon-small active"><i class="fas fa-fire-extinguisher"></i></span>
+			</td>
+			<td class="pb-3" data-toggle="modal" data-target="#icon_info_modal">
+				<span title="의자" class="drr-314 equi-icon-chair equi-icon-small active"><i class="fas fa-chair"></i></span>
+				<span title="책상" class="drr-314 equi-icon-desk equi-icon-small active"><i class="fas fa-inbox"></i></span>
+				<span title="프로젝터" class="drr-314 equi-icon-projector equi-icon-small active"><i class="fas fa-video"></i></span>
+			<br><span title="화이트보드" class="drr-314 equi-icon-whiteboard equi-icon-small active"><i class="fas fa-chalkboard"></i></span>
+				<span title="스크린" class="drr-314 equi-icon-screen equi-icon-small active"><i class="fas fa-chalkboard-teacher"></i></span>
+				<span title="소화기" class="drr-314 equi-icon-extinguisher equi-icon-small "><i class="fas fa-fire-extinguisher"></i></span>
+			</td>
+			<td class="pb-3" data-toggle="modal" data-target="#icon_info_modal">
+				<span title="의자" class="drr-315 equi-icon-chair equi-icon-small active"><i class="fas fa-chair"></i></span>
+				<span title="책상" class="drr-315 equi-icon-desk equi-icon-small "><i class="fas fa-inbox"></i></span>
+				<span title="프로젝터" class="drr-315 equi-icon-projector equi-icon-small active"><i class="fas fa-video"></i></span>
+			<br><span title="화이트보드" class="drr-315 equi-icon-whiteboard equi-icon-small "><i class="fas fa-chalkboard"></i></span>
+				<span title="스크린" class="drr-315 equi-icon-screen equi-icon-small active"><i class="fas fa-chalkboard-teacher"></i></span>
+				<span title="소화기" class="drr-315 equi-icon-extinguisher equi-icon-small "><i class="fas fa-fire-extinguisher"></i></span>
+			</td>
+			<td class="pb-3" data-toggle="modal" data-target="#icon_info_modal">
+				<span title="의자" class="drr-316 equi-icon-chair equi-icon-small active"><i class="fas fa-chair"></i></span>
+				<span title="책상" class="drr-316 equi-icon-desk equi-icon-small "><i class="fas fa-inbox"></i></span>
+				<span title="프로젝터" class="drr-316 equi-icon-projector equi-icon-small active"><i class="fas fa-video"></i></span>
+			<br><span title="화이트보드" class="drr-316 equi-icon-whiteboard equi-icon-small "><i class="fas fa-chalkboard"></i></span>
+				<span title="스크린" class="drr-316 equi-icon-screen equi-icon-small "><i class="fas fa-chalkboard-teacher"></i></span>
+				<span title="소화기" class="drr-316 equi-icon-extinguisher equi-icon-small "><i class="fas fa-fire-extinguisher"></i></span>
+			</td>
+			<td class="pb-3" data-toggle="modal" data-target="#icon_info_modal">
+				<span title="의자" class="drr-307 equi-icon-chair equi-icon-small active"><i class="fas fa-chair"></i></span>
+				<span title="책상" class="drr-307 equi-icon-desk equi-icon-small active"><i class="fas fa-inbox"></i></span>
+				<span title="프로젝터" class="drr-307 equi-icon-projector equi-icon-small active"><i class="fas fa-video"></i></span>
+			<br><span title="화이트보드" class="drr-307 equi-icon-whiteboard equi-icon-small "><i class="fas fa-chalkboard"></i></span>
+				<span title="스크린" class="drr-307 equi-icon-screen equi-icon-small active"><i class="fas fa-chalkboard-teacher"></i></span>
+				<span title="소화기" class="drr-307 equi-icon-extinguisher equi-icon-small active"><i class="fas fa-fire-extinguisher"></i></span>
+			</td>
+		</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<th>9</th>
+				<td class=" 21" id="room_101_9" data-drr_num="101" data-drr_type="01" data-drt_time="9" data-drr_idx="1" data-drt_idx="1" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 31px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_102_9" data-drr_num="102" data-drr_type="01" data-drt_time="9" data-drr_idx="2" data-drt_idx="1" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 31px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_103_9" data-drr_num="103" data-drr_type="01" data-drt_time="9" data-drr_idx="3" data-drt_idx="1" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_104_9" data-drr_num="104" data-drr_type="01" data-drt_time="9" data-drr_idx="4" data-drt_idx="1" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 16" id="room_105_9" data-drr_num="105" data-drr_type="02" data-drt_time="9" data-drr_idx="10" data-drt_idx="1" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th>10</th>
+				<td class=" 21" id="room_101_10" data-drr_num="101" data-drr_type="01" data-drt_time="10" data-drr_idx="1" data-drt_idx="2" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_102_10" data-drr_num="102" data-drr_type="01" data-drt_time="10" data-drr_idx="2" data-drt_idx="2" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_103_10" data-drr_num="103" data-drr_type="01" data-drt_time="10" data-drr_idx="3" data-drt_idx="2" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_104_10" data-drr_num="104" data-drr_type="01" data-drt_time="10" data-drr_idx="4" data-drt_idx="2" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_105_10" data-drr_num="105" data-drr_type="02" data-drt_time="10" data-drr_idx="10" data-drt_idx="2" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th>11</th>
+				<td class=" 21" id="room_101_11" data-drr_num="101" data-drr_type="01" data-drt_time="11" data-drr_idx="1" data-drt_idx="3" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_102_11" data-drr_num="102" data-drr_type="01" data-drt_time="11" data-drr_idx="2" data-drt_idx="3" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_103_11" data-drr_num="103" data-drr_type="01" data-drt_time="11" data-drr_idx="3" data-drt_idx="3" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_104_11" data-drr_num="104" data-drr_type="01" data-drt_time="11" data-drr_idx="4" data-drt_idx="3" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_105_11" data-drr_num="105" data-drr_type="02" data-drt_time="11" data-drr_idx="10" data-drt_idx="3" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th>12</th>
+				<td class=" 21" id="room_101_12" data-drr_num="101" data-drr_type="01" data-drt_time="12" data-drr_idx="1" data-drt_idx="4" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_102_12" data-drr_num="102" data-drr_type="01" data-drt_time="12" data-drr_idx="2" data-drt_idx="4" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_103_12" data-drr_num="103" data-drr_type="01" data-drt_time="12" data-drr_idx="3" data-drt_idx="4" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_104_12" data-drr_num="104" data-drr_type="01" data-drt_time="12" data-drr_idx="4" data-drt_idx="4" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_105_12" data-drr_num="105" data-drr_type="02" data-drt_time="12" data-drr_idx="10" data-drt_idx="4" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th>13</th>
+				<td class=" 21" id="room_101_13" data-drr_num="101" data-drr_type="01" data-drt_time="13" data-drr_idx="1" data-drt_idx="5" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_102_13" data-drr_num="102" data-drr_type="01" data-drt_time="13" data-drr_idx="2" data-drt_idx="5" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_103_13" data-drr_num="103" data-drr_type="01" data-drt_time="13" data-drr_idx="3" data-drt_idx="5" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_104_13" data-drr_num="104" data-drr_type="01" data-drt_time="13" data-drr_idx="4" data-drt_idx="5" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_105_13" data-drr_num="105" data-drr_type="02" data-drt_time="13" data-drr_idx="10" data-drt_idx="5" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th>14</th>
+				<td class=" 21" id="room_101_14" data-drr_num="101" data-drr_type="01" data-drt_time="14" data-drr_idx="1" data-drt_idx="6" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_102_14" data-drr_num="102" data-drr_type="01" data-drt_time="14" data-drr_idx="2" data-drt_idx="6" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+				<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+					<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_103_14" data-drr_num="103" data-drr_type="01" data-drt_time="14" data-drr_idx="3" data-drt_idx="6" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+						<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_104_14" data-drr_num="104" data-drr_type="01" data-drt_time="14" data-drr_idx="4" data-drt_idx="6" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_105_14" data-drr_num="105" data-drr_type="02" data-drt_time="14" data-drr_idx="10" data-drt_idx="6" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th>15</th>
+				<td class=" 21" id="room_101_15" data-drr_num="101" data-drr_type="01" data-drt_time="15" data-drr_idx="1" data-drt_idx="7" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_102_15" data-drr_num="102" data-drr_type="01" data-drt_time="15" data-drr_idx="2" data-drt_idx="7" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_103_15" data-drr_num="103" data-drr_type="01" data-drt_time="15" data-drr_idx="3" data-drt_idx="7" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_104_15" data-drr_num="104" data-drr_type="01" data-drt_time="15" data-drr_idx="4" data-drt_idx="7" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_105_15" data-drr_num="105" data-drr_type="02" data-drt_time="15" data-drr_idx="10" data-drt_idx="7" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th>16</th>
+				<td class=" 21" id="room_101_16" data-drr_num="101" data-drr_type="01" data-drt_time="16" data-drr_idx="1" data-drt_idx="8" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_102_16" data-drr_num="102" data-drr_type="01" data-drt_time="16" data-drr_idx="2" data-drt_idx="8" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_103_16" data-drr_num="103" data-drr_type="01" data-drt_time="16" data-drr_idx="3" data-drt_idx="8" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_104_16" data-drr_num="104" data-drr_type="01" data-drt_time="16" data-drr_idx="4" data-drt_idx="8" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_105_16" data-drr_num="105" data-drr_type="02" data-drt_time="16" data-drr_idx="10" data-drt_idx="8" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<th>17</th>
+				<td class=" 21" id="room_101_17" data-drr_num="101" data-drr_type="01" data-drt_time="17" data-drr_idx="1" data-drt_idx="9" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_102_17" data-drr_num="102" data-drr_type="01" data-drt_time="17" data-drr_idx="2" data-drt_idx="9" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_103_17" data-drr_num="103" data-drr_type="01" data-drt_time="17" data-drr_idx="3" data-drt_idx="9" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+				<td class=" 21" id="room_104_17" data-drr_num="104" data-drr_type="01" data-drt_time="17" data-drr_idx="4" data-drt_idx="9" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+					<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);"></a>
+					</div>
+				</td>
+									<td class=" 21" id="room_105_17" data-drr_num="105" data-drr_type="02" data-drt_time="17" data-drr_idx="10" data-drt_idx="9">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+								</tr>
+						<tr>
+				<th>18</th>
+									<td class=" 21" id="room_101_18" data-drr_num="101" data-drr_type="01" data-drt_time="18" data-drr_idx="1" data-drt_idx="10" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+									<td class=" 21" id="room_102_18" data-drr_num="102" data-drr_type="01" data-drt_time="18" data-drr_idx="2" data-drt_idx="10" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+									<td class=" 21" id="room_103_18" data-drr_num="103" data-drr_type="01" data-drt_time="18" data-drr_idx="3" data-drt_idx="10" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+									<td class=" 21" id="room_104_18" data-drr_num="104" data-drr_type="01" data-drt_time="18" data-drr_idx="4" data-drt_idx="10" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+									<td class=" 21" id="room_105_18" data-drr_num="105" data-drr_type="02" data-drt_time="18" data-drr_idx="10" data-drt_idx="10">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+								</tr>
+						<tr>
+				<th>19</th>
+									<td class=" 21" id="room_101_19" data-drr_num="101" data-drr_type="01" data-drt_time="19" data-drr_idx="1" data-drt_idx="11" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+									<td class=" 21" id="room_102_19" data-drr_num="102" data-drr_type="01" data-drt_time="19" data-drr_idx="2" data-drt_idx="11" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+									<td class=" 21" id="room_103_19" data-drr_num="103" data-drr_type="01" data-drt_time="19" data-drr_idx="3" data-drt_idx="11" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+									<td class=" 21" id="room_104_19" data-drr_num="104" data-drr_type="01" data-drt_time="19" data-drr_idx="4" data-drt_idx="11" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+									<td class="21" id="room_105_19" data-drr_num="105" data-drr_type="02" data-drt_time="19" data-drr_idx="10" data-drt_idx="11">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+								</tr>
+						<tr>
+				<th>20</th>
+									<td class=" 21" id="room_101_20" data-drr_num="101" data-drr_type="01" data-drt_time="20" data-drr_idx="1" data-drt_idx="12" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+									<td class=" 21" id="room_102_20" data-drr_num="102" data-drr_type="01" data-drt_time="20" data-drr_idx="2" data-drt_idx="12" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+									<td class=" 21" id="room_103_20" data-drr_num="103" data-drr_type="01" data-drt_time="20" data-drr_idx="3" data-drt_idx="12" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+									<td class=" 21" id="room_104_20" data-drr_num="104" data-drr_type="01" data-drt_time="20" data-drr_idx="4" data-drt_idx="12" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+									<td class="21" id="room_105_20" data-drr_num="105" data-drr_type="02" data-drt_time="20" data-drr_idx="10" data-drt_idx="12">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+								</tr>
+						<tr>
+				<th>21</th>
+									<td class=" 21" id="room_101_21" data-drr_num="101" data-drr_type="01" data-drt_time="21" data-drr_idx="1" data-drt_idx="13" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+									<td class=" 21" id="room_102_21" data-drr_num="102" data-drr_type="01" data-drt_time="21" data-drr_idx="2" data-drt_idx="13" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+									<td class=" 21" id="room_103_21" data-drr_num="103" data-drr_type="01" data-drt_time="21" data-drr_idx="3" data-drt_idx="13" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+									<td class=" 21" id="room_104_21" data-drr_num="104" data-drr_type="01" data-drt_time="21" data-drr_idx="4" data-drt_idx="13" onclick="modal_setval($(this));" data-toggle="modal" data-target="#reservation_form_modal">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" data-toggle="modal" data-target="#reservation_form_modal" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+									<td class="21" id="room_105_21" data-drr_num="105" data-drr_type="02" data-drt_time="21" data-drr_idx="10" data-drt_idx="13">
+											<div class="reserv-text" onclick="modal_setval($(this).closest('td'));" style="text-indent: 32px; overflow: hidden; white-space: nowrap;">
+						<a href="javascript:void(0);">
+														</a>
+					</div>
+				</td>
+								</tr>
+					</tbody>
+		</table>
+                          
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        
+<!-- 비품설명 모달 -->
+<div class="modal fade" id="icon_info_modal" tabindex="-1" aria-labelledby="icon_info_label" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="icon_info_label">비품 아이콘 설명</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<div class="row no-gutters">
+					<div class="col-12 test1">
+						<label class="mx-3 mb-3"><i class="fas fa-chair"></i> 의자</label>
+						<label class="mx-3 mb-3"><i class="fas fa-inbox"></i> 책상</label>
+						<label class="mx-3 mb-3"><i class="fas fa-video"></i> 프로젝터</label>
+						<label class="mx-3 mb-3"><i class="fas fa-chalkboard"></i> 화이트보드</label>
+						<label class="mx-3 mb-3"><i class="fas fa-chalkboard-teacher"></i> 스크린</label>
+						<label class="mx-3 mb-3"><i class="fas fa-fire-extinguisher"></i> 소화기</label>
+					</div>
+				</div>
+			</div>
+			<div class="modal-footer">
+			</div>
+		</div>
+	</div>
+</div>
+
+<!-- 예약 모달 -->
+<div class="modal fade" id="reservation_form_modal" tabindex="-1" aria-labelledby="reservation_form_label" aria-hidden="true">
+	<div class="modal-dialog modal-dialog-centered">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="reservation_form_label">회의실 예약</h5>
+				<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+					<span aria-hidden="true">×</span>
+				</button>
+			</div>
+			<div class="modal-body">
+				<input type="hidden" class="" id="drr_idx" readonly="readonly">
+				<input type="hidden" class="" id="drt_idx" readonly="readonly">
+				<div class="row no-gutters mb-3">
+					<div class="col-lg-6 pr-1">
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text">예약 호실</span>
+							</div>
+							<input type="text" class="form-control text-center" id="drr_num" readonly="readonly">
+						</div>
+					</div>
+					<div class="col-lg-6 pl-1">
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text">예약 시간</span>
+							</div>
+							<input type="text" class="form-control text-center" id="drt_time" readonly="readonly">
+						</div>
+					</div>
+				</div>
+				<div class="row no-gutters mb-3"> 
+					<div class="col-lg-12">
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text">예약자정보</span>
+							</div>
+							<input type="text" class="form-control text-center" id="drl_user" value="<%=((MemberVO)session.getAttribute("member")).getMbrNm()%>" readonly="readonly">
+						</div>
+					</div>
+				</div>
+				<!-- 
+				<div class="row no-gutters mb-3">
+					<div class="col-lg-12">
+						<div class="input-group">
+							<div class="input-group-prepend">
+								<span class="input-group-text">취소용 비밀번호</span>
+							</div>
+							<input type="text" class="form-control text-center" id="drl_user_pw" placeholder="숫자만 최대 10자리" oninput="this.value = this.value.replace(/[^0-9.]/g, '').replace(/(\..*)\./g, '$1');" onkeyup="if($(this).val().length > 10) $(this).val($(this).val().substring(0, 10));">
+						</div>
+					</div>
+				</div>
+				 -->
+				
+			</div>
+			<div class="modal-footer">
+			</div>
+		</div>
+	</div>
+</div>
+</div>
+	
+	</div>
+<%
+	session = request.getSession();
+	MemberVO memVO = (MemberVO)session.getAttribute("member");
+	String mbrId = memVO.getMbrId();
+%>
+<script>
+$(document).ready(function () {
+	
+	//상단 달력 표시
+	var datepicker = new tui.DatePicker('#wrapper',
+        {
+        language: 'ko',
+        date: new Date(),
+        input: {
+            element: '#datepicker-input',
+            format: 'yyyy-MM-dd'
+        }
+    });
+	datepicker.on('change', function(){
+		clean();
+		loading();
+	});
+	loading();
+});
+	//예약정보 표시영역 초기화
+	function clean(){
+		$(".21").each(function(){
+			$(this).attr("style", "background: white;");
+			$(this).empty();
+		});
+	}
+	//예약정보 표시
+	function loading(){
+		var drl_date = $('#datepicker-input').val();
+	    //swal("",drl_date); //2022-03-31
+	    $.ajax({
+	    	type: 'post',
+	    	dataType: 'json',
+	    	url: '/resSelect.do',
+	    	data: { rsvt_ymd : drl_date },
+	    	success: function(data){
+	    		//swal("","성공");	
+	    		console.log(data);
+	    		if(data.length==0){
+	    			swal("","해당일 예약 정보가 없습니다.")	
+	    		}else{
+	    			$(data).each(function(){
+	    				var resId = "room_" + this.MTR_NM + "_" + this.RSVT_STRT_HR;
+	    				var resUser = this.MBR_DEPT + "_" + this.MBR_NM;
+	    				console.log(resId);
+	    				$('table.reserv-table tr td[id="' + resId + '"]').attr("style", "background: #4B96E6; color: white;");
+	    				$('table.reserv-table tr td[id="' + resId + '"]').html(resUser);
+	    			});
+	    		}
+	    	},
+			error: function(jqXHR, textStatus, errorThrown) {
+				swal("","예약 정보를 읽어오지 못했습니다.");
+				console.log(textStatus);
+				console.log(errorThrown);
+			}
+	    });  
+	};
+
+function delete_reservation(drt_time){
+	var drr_idx = $('#drr_idx').val();
+	var drt_idx = $('#drt_idx').val();
+	var drl_user_pw = $('#drl_user_pw').val();
+	if(drl_user_pw.trim() == ''){
+		alert('취소용 비밀번호를 입력해 주세요.');
+		return false;
+	}
+	$.ajax({
+		type: 'post',
+		dataType: 'json',
+		url: '/ddit/function/reservation_func.php?divide=delete_reservation',
+		data: {
+			drr_idx : drr_idx,
+			drt_idx : drt_idx,
+			drt_time : drt_time,
+			drl_user_pw : drl_user_pw,
+			drl_date : '2022-03-29',
+					},
+		async: false,
+		success: function(data){
+			console.log(data);
+			if(data.length==0){
+				swal("","자료없음");
+			}else{
+				swal("","성공");
+					
+			}
+		},error: function(jqXHR, textStatus, errorThrown) {
+			swal("","전송 시 오류가 발생했습니다.");
+			console.log(textStatus);
+			console.log(errorThrown);
+		}
+	});
+}
+function insert_reservation(drt_time){
+	/* var drr_idx = $('#drr_idx').val();
+	var drt_idx = $('#drt_idx').val(); 
+	var drl_user = $('#drl_user').val(); */
+	var roomNo = $('#drr_num').val;
+	alert(roomNo);
+	if($('#drr_num').val=="101호"){
+		var mtrNo = "1";
+	}else if($('#drr_num').val=="102호"){
+		var mtrNo = "2";
+	}else if($('#drr_num').val=="103호"){
+		var mtrNo = "3";
+	}else if($('#drr_num').val=="104호"){
+		var mtrNo = "4";
+	}else{
+		var mtrNo = "5";
+	}
+	var mbrId = "<%=mbrId %>";
+	var rsvtStrtHr = drt_time;
+	var rsvtYmd = $('#datepicker-input').val();
+	//alert("mtrNo : "+mtrNo);
+	//console.log("mtrNo : "+mtrNo);
+	console.log("mbrId : "+mbrId);
+	console.log("time : "+drt_time);
+	console.log("ymd : "+rsvtYmd);
+	
+	$.ajax({
+		type: 'post',
+		dataType: 'json',
+		url: '/resInsert.do',
+		data: {
+			mtrNo : mtrNo,
+			mbrId : mbrId,
+			rsvtStrtHr : drt_time,
+			rsvtYmd : rsvtYmd
+		},
+		async: false,
+		success: function(data){
+			console.log(data);
+			if(data.sta=="fail"){ 
+				swal({
+					title : "",
+					html : "회의실 예약에 실패했습니다.<br>다시 예약해주세요."
+				});
+				
+			}else{
+				swal({
+					title : "",
+					text : "회의실 예약에 성공했습니다."
+				});
+			}
+			location.reload();
+		},error: function(jqXHR, textStatus, errorThrown) {
+			swal({
+				title : "",
+				html : "데이터 전송에 실패했습니다.<br>다시 예약해주세요."
+			});
+			console.log(textStatus);
+			console.log(errorThrown);
+		}
+	});
+}
+
+function modal_setval_icon(el){
+	var drr_num = el.data('drr_num');
+	var drr_idx = el.data('drr_idx');
+	$.ajax({
+		type: 'post',
+		dataType: 'json',
+		url: '/ddit/function/reservation_func.php?divide=get_room_info',
+		data: {
+			drr_idx : el.data('drr_idx'),
+		},
+		async: false,
+		success: function(data){
+			var obj = {};
+			obj['chair'] = ['의자', '<i class="fas fa-chair"></i>'];
+			obj['desk'] = ['책상', '<i class="fas fa-inbox"></i>'];
+			obj['projector'] = ['프로젝터', '<i class="fas fa-video"></i>'];
+			obj['whiteboard'] = ['화이트보드', '<i class="fas fa-chalkboard"></i>'];
+			obj['screen'] = ['스크린', '<i class="fas fa-chalkboard-teacher"></i>'];
+			obj['extinguisher'] = ['소화기', '<i class="fas fa-fire-extinguisher"></i>'];
+			var html = '';
+			html += '<div class="row no-gutters">';
+			html += '<div class="col-12 text-center" style="font-size: 2rem;">';
+			$.each(obj, function(i, v){
+				html += '<input type="checkbox" class="d-none drr-'+drr_num+' equi-checkbox" data-drr_idx="'+drr_idx+'" data-drr_num="'+drr_num+'" data-icon_target="'+i+'" id="drr_equi_'+i+'" '+(data.info['drr_equi_'+i] == 'Y' ? 'checked="checked"' : '');
+				html += '  onchange="icon_toggle($(this), \''+(data.info['drr_equi_'+i] == 'Y' ? 'N' : 'Y')+'\');"';
+				html += '>';
+				html += '<label class="mr-5 drr-'+drr_num+' equi-icon equi-icon-'+i+' '+(data.info['drr_equi_'+i] == 'Y' ? 'active' : '')+'" for="drr_equi_'+i+'" title="'+v[0]+'">'+v[1]+'</label>';
+			});
+			html += '</div>';
+			html += '</div>';
+			$('#icon_form_modal .modal-body').html(html);
+		}
+	});
+}
+function modal_setval(el){
+	$('#drr_idx').val(el.data('drr_idx'));
+	$('#drt_idx').val(el.data('drt_idx'));
+	var drr_type = el.data('drr_type');
+	
+	$('#drr_num').val(el.data('drr_num')+'호');
+	$('#drt_time').val(el.data('drt_time')+'시 부터 '+((el.data('drt_time')*1)+1)+'시 전 까지');
+	$('#drl_user_pw').val('');
+		var html = '';
+		if(el.hasClass('disable')){
+	}else 
+			if(el.hasClass('reservated')){
+		$('#drl_user').attr('readonly', true);
+		$('#drl_user').val(el.find('a').text().trim()); 
+				html += '<button type="button" class="btn btn-danger" onclick="delete_reservation(\''+el.data('drt_time')+'\');">예약 취소</button>';
+	}else{
+		//$('#drl_user').attr('readonly', false);
+		//$('#drl_user').val();
+		html += '<button type="button" class="btn btn-info" onclick="insert_reservation(\''+el.data('drt_time')+'\');">예약하기</button>';
+	}
+	$('#reservation_form_modal .modal-footer').html(html);
+	
+}
+</script>	
+
+<!-- } 게시판 목록 끝 -->
+<!-- } 콘텐츠 끝 -->
+
+    <!-- END MAIN CONTAINER -->
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <script src="/resources/assets/js/libs/jquery-3.1.1.min.js"></script>
+    <script src="/resources/bootstrap/js/popper.min.js"></script>
+    <script src="/resources/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/resources/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="/resources/assets/js/app.js"></script>
+    <script src="/resources/plugins/highlight/highlight.pack.js"></script>
+    <script src="/resources/assets/js/custom.js"></script>
+    <!-- END GLOBAL MANDATORY STYLES -->
+    
+    <!-- BEGIN THEME GLOBAL STYLE -->
+    <script src="/resources/plugins/sweetalerts/sweetalert2.min.js"></script>
+<!--     <script src="/resources/plugins/sweetalerts/custom-sweetalert.js"></script> -->
+    <!-- END THEME GLOBAL STYLE -->    
+    <script src="/resources/assets/js/ie11fix/fn.fix-padStart.js"></script>
+    <script src="/resources/plugins/editors/quill/quill.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+	<script src="https://uicdn.toast.com/tui.date-picker/latest/tui-date-picker.js"></script>
+</body>
+</html>

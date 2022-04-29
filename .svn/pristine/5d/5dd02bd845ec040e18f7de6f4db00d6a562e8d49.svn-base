@@ -1,0 +1,11 @@
+package kr.or.ddit.goods.mapper;
+
+import java.util.List;
+
+import kr.or.ddit.goods.vo.GdsMngVO;
+
+public interface GdsMapper {
+	
+	public List<GdsMngVO> goodsList();
+	
+}

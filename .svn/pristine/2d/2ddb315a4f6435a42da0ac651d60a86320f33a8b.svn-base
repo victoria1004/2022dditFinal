@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.user.mapper.LoginMapper">
+<select id="loginPost" parameterType="memberVO" resultType="memberVO">
+		SELECT  mbr_id, mbr_ctgr_cd, mbr_pw, mbr_nm, mbr_gender, mbr_telno,
+		        mbr_dept, mbr_eml, mbr_img, mbr_intro, mbr_img_path
+		  FROM  member
+		 WHERE  mbr_id=#{mbrId}
+		   and  mbr_pw=#{mbrPw}
+</select>
+<select id="findId" parameterType="memberVO" resultType="memberVO">
+		SELECT  mbr_id, mbr_nm, mbr_eml
+		  FROM  member
+		 WHERE mbr_nm=#{mbrNm}
+		   and mbr_eml=#{mbrEml}
+	</select>
+	
+	<select id="findPw" parameterType="memberVO" resultType="memberVO">
+		SELECT mbr_id, mbr_nm, mbr_eml
+		  FROM member
+		 WHERE mbr_id=#{mbrId} 
+		   and mbr_nm=#{mbrNm}
+		   and mbr_eml=#{mbrEml}
+	</select>
+	
+	<update id="pwUpdate" parameterType="memberVO">
+		UPDATE member
+    	   SET mbr_pw = #{mbrPw}
+		 WHERE mbr_id =#{mbrId}
+    	   AND mbr_eml =#{mbrEml}
+	</update>
+</mapper>	

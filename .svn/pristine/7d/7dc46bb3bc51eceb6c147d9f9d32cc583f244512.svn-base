@@ -1,0 +1,6 @@
+package kr.or.ddit.project.service;
+
+public interface ProjectMakingService {
+	//회원 아이디로 소속 찾기
+	public String getInfo(String mbrId);
+}

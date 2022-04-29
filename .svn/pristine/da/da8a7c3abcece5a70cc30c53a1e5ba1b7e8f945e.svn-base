@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.project.mapper.LayoutMapper">
+	<select id="projectSubmenu" parameterType="String" resultType="map">
+		SELECT
+		    A.PJT_NO
+		    , A.LYT_NO
+		    , B.CM_DVSN_CTGR_NM
+		    , C.PJT_NM
+		FROM
+		    LAYOUT A
+		    , CM_DVSN_CTGR B
+		    , PROJECT C
+		WHERE A.LYT_NO = B.CM_DVSN_CTGR_CD
+		AND A.PJT_NO = C.PJT_NO
+		AND A.PJT_NO = #{pjtNo}
+	</select>
+	
+</mapper>

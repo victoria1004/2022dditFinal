@@ -1,0 +1,11 @@
+package kr.or.ddit.feed.service;
+
+import kr.or.ddit.feed.vo.VoteVO;
+
+public interface VoteService {
+	
+	//투표 등록
+	public int insertVote(VoteVO voteVO);
+
+
+}

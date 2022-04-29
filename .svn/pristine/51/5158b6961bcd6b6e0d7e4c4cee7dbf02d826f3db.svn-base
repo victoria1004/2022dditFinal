@@ -1,0 +1,37 @@
+package kr.or.ddit.feed.mapper;
+
+import java.util.List;
+
+import kr.or.ddit.feed.vo.PstCmntVO;
+import kr.or.ddit.feed.vo.PstVO;
+
+public interface PstMapper {
+	
+	//피드 등록
+	public int insert(PstVO pstVO);
+	
+	//피드 목록
+	public List<PstVO> select(String pjtNo);
+	
+	//피드 수정
+	public int update(PstVO pstVO);
+	
+	//피드 삭제
+	public int delete(String pstNo);
+	
+	//댓글 목록
+	public List<PstCmntVO> cmntList();
+	
+	//한 개의 피드에 한명의 멤버가 쓴 댓글 조회
+	public List<PstCmntVO> cmntMbr(PstCmntVO cmntVO);
+	
+	//댓글 등록
+	public int cmntInsert(PstCmntVO cmntVO);
+	
+	//댓글 수정
+	public int cmntUpdate(PstCmntVO cmntVO);
+	
+	//댓글 삭제
+	public int cmntDelete(String cmntNo);
+
+}

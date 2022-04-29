@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.project.mapper.IssueMapper">
+<!-- * selectKey?
+일련번호 처리
+마이바티스는 쿼리 실행 시 파라미터를 치환해줌 
+ -->
+<!-- 고객(1) 이미지(N) -->
+	
+
+
+	<!-- 이슈 등록 -->
+	<insert id="issueInsert" useGeneratedKeys="false" parameterType="issueVO">
+		<selectKey order="BEFORE" keyProperty="issueNo" resultType="String">
+			SELECT NVL(MAX(TO_NUMBER(ISSUE_NO)),0)+1 FROM ISSUE 
+		</selectKey>
+		INSERT INTO ISSUE(ISSUE_NO, MRKR_NO, PJT_NO, TD_NO, MBR_ID, ISSUE_TTL, ISSUE_CN, ISSUE_YMD) 
+		VALUES(#{issueNo}, '1', '1', '1', 'A001', #{issueTtl}, #{issueCn}, TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS'))
+	</insert>
+	
+	<select id="issueSelect" resultType="issueVO" parameterType="issueVO">
+		SELECT ISSUE_NO, ISSUE_TTL, ISSUE_CN, ISSUE_YMD
+		  FROM ISSUE 
+ 		 ORDER BY ISSUE_YMD DESC 
+	</select>
+	
+	<delete id="issueDelete" parameterType="String">
+		DELETE FROM ISSUE WHERE ISSUE_NO = #{issueNo} 
+	</delete>
+	
+	<update id="issueUpdate" parameterType="issueVO">
+		UPDATE ISSUE
+		   SET ISSUE_NO = #{issueNo}, ISSUE_TTL = #{issueTtl}, ISSUE_CN = #{issueCn}, ISSUE_YMD = TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS')
+		 WHERE ISSUE_NO = #{issueNo}
+		 
+	</update>
+</mapper>
+
+
+

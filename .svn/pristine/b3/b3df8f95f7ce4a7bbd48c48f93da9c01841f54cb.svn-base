@@ -1,0 +1,68 @@
+package kr.or.ddit.project.controller;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.cloud.contoller.CloudController;
+import kr.or.ddit.cloud.service.CloudService;
+import kr.or.ddit.project.service.ProjectService;
+import kr.or.ddit.user.vo.MemberVO;
+
+
+/**
+ * 좌측 메뉴에서 선택한 프로젝트의 상세 페이지
+ * @author 정신애
+ *
+ */
+@RequestMapping("/project")
+@Controller
+public class ProjectController {
+	
+	@Inject CloudService cloudService;
+	@Inject ProjectService service;
+
+	private static final Logger logger = LoggerFactory.getLogger(CloudController.class);
+	private static final String pjtNo = "1"; //세션에서 세팅해주기
+		/**
+		 * 프로젝트 클릭 시 해당 프로젝트의 메인 페이지(상세 페이지)
+		 * @param model
+		 * @return 프로젝트 메인 뷰
+		 */
+		@GetMapping("/main.do")
+		public String main(Model model) {
+			
+			int total = cloudService.getAllSz(pjtNo);
+			logger.info("total:"+total);
+			model.addAttribute("total", total);
+			
+			return "/project/main";
+		}
+		
+		/**
+		 * 프로젝트 메인 페이지 우측-해당 프로젝트의 구성원들 목록 출력
+		 * @param pjtNo 메뉴에서 클릭한 프로젝트의 번호
+		 * @return 해당 프로젝트의 구성원들 목록
+		 */
+		@ResponseBody
+		@RequestMapping(value="/getAllMbr", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+		public List<MemberVO> getAllMbr(@RequestParam String pjtNo){
+			return service.getAllMbr(pjtNo);
+		}
+		
+		
+		
+}
+
+

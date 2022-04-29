@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.chat.mapper.ChatMapper">
+	<select id="roomList" parameterType="String" resultType="kr.or.ddit.chat.vo.ChatRoomVO">
+		SELECT CHATRM_NO
+			, MBR_ID
+			, CHATRM_NM
+			, CHATRM_TM
+		FROM CHATROOM
+		WHERE MBR_ID = #{mbrId}
+		ORDER BY 1 DESC
+	</select>
+	
+	<select id="chatContent" parameterType="String" resultType="kr.or.ddit.chat.vo.ChatVO">
+		SELECT A.CHAT_NO
+			, A.CHATRM_NO
+			, A.MBR_ID
+			, A.CHAT_DT
+			, A.CHAT_CN
+			, B.MBR_IMG_PATH
+			, B.MBR_IMG
+		FROM CHAT A, MEMBER B
+		WHERE A.MBR_ID = B.MBR_ID
+		AND CHATRM_NO = #{chatrmNo}
+		ORDER BY TO_NUMBER(CHAT_NO)
+	</select>
+	
+	<insert id="chatBubbleInsert" parameterType="kr.or.ddit.chat.vo.ChatVO">
+		<selectKey order="BEFORE" keyProperty="chatNo" resultType="String">
+			SELECT NVL(MAX(TO_NUMBER(CHAT_NO)),0)+1 FROM CHAT
+		</selectKey>
+		INSERT INTO CHAT(CHAT_NO
+						, CHATRM_NO
+						, MBR_ID
+						, CHAT_DT
+						, CHAT_CN)
+		VALUES(#{chatNo}
+				, #{chatrmNo}
+				, #{mbrId}
+				, TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS')
+				, #{chatCn})
+	</insert>
+	
+	<select id="chatMaxNum" resultType="int">
+		SELECT
+		    NVL(MAX(TO_NUMBER(CHATRM_NO)),0)+1
+		FROM
+		    CHATROOM
+	</select>
+	
+	<insert id="chatRoomMake" parameterType="kr.or.ddit.chat.vo.ChatRoomVO" >
+		INSERT INTO CHATROOM (
+		    CHATRM_NO
+		    , MBR_ID
+		    , CHATRM_NM
+		    , CHATRM_TM
+		) VALUES (
+		    #{chatrmNo}
+		    , #{mbrId}
+		    , #{chatrmNm}
+		    , TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS')
+		)
+	</insert>
+	
+	<insert id="userInsert" parameterType="kr.or.ddit.chat.vo.ChatRoomVO" >
+		<selectKey order="BEFORE" keyProperty="chatrmNm" resultType="String">
+			SELECT DISTINCT CHATRM_NM
+			FROM CHATROOM
+			WHERE CHATRM_NO = #{chatrmNo}
+		</selectKey>
+		
+		INSERT INTO CHATROOM (
+			CHATRM_NO
+		    , MBR_ID
+		    , CHATRM_NM
+		    , CHATRM_TM
+		) VALUES (
+			#{chatrmNo}
+		    , #{mbrId}
+		    , #{chatrmNm}
+		    , TO_CHAR(SYSDATE, 'YYYY/MM/DD HH24:MI:SS')
+		)
+	</insert>
+	
+	<select id="memInfo" parameterType="String" resultType="kr.or.ddit.user.vo.MemberVO">
+		SELECT
+		    MBR_ID,
+		    MBR_CTGR_CD,
+		    MBR_PW,
+		    MBR_NM,
+		    MBR_GENDER,
+		    MBR_TELNO,
+		    MBR_DEPT,
+		    MBR_EML,
+		    MBR_IMG,
+		    MBR_INTRO,
+		    MBR_IMG_PATH,
+		    MBR_STTS
+		FROM
+		    MEMBER
+		WHERE MBR_ID=#{mbrId}  
+	</select>
+	
+</mapper>

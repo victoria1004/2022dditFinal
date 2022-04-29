@@ -1,0 +1,21 @@
+package kr.or.ddit.project.mapper;
+
+import java.util.List;
+
+import kr.or.ddit.project.vo.ProjectVO;
+import kr.or.ddit.user.vo.MemberVO;
+
+public interface ProjectMapper {
+
+
+	//해당 프로젝트의 모든 구성원 목록
+	public List<MemberVO> getAllMbr(String pjtNo);
+	
+	//사용자가 참여 중인 프로젝트 목록
+	public List<ProjectVO> getMyPjtList(String mbrId);
+	
+	
+	
+	
+	
+}

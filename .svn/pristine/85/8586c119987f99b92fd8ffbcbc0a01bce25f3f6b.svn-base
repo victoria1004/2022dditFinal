@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.reservation.mapper.MtrMapper">
+	<select id="todayRes" parameterType="String" resultType="HashMap">
+		SELECT
+		    A.rsvt_no
+		   ,B.MTR_NM
+		   ,C.MBR_DEPT
+		   ,C.mbr_NM
+		   ,A.rsvt_strt_hr
+		   ,A.rsvt_ymd
+		FROM
+		    mtr_rsvt A INNER JOIN MTR B ON(A.mtr_no = B.MTR_NO)
+		    INNER JOIN MEMBER C ON(A.MBR_ID=C.MBR_ID)
+		WHERE A.RSVT_YMD=#{rsvtYmd}
+	</select>
+
+
+</mapper>

@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.project.mapper.ReportMapper">
+	<!-- 업무보고와 파일은 1:N관계 -->
+	<resultMap type="reportVO" id="reportMap">
+		<id property="rptNo" column="RPT_NO"/>
+		<result property="pjtNo" column="PJT_NO"/>
+		<result property="rptTtl" column="RPT_TTL"/>
+		<result property="rptCn" column="RPT_CN"/>
+		<result property="rptDt" column="RPT_DT"/>
+		<result property="rptWrtrId" column="RPT_WRTR_ID"/>
+		<result property="rptCtgrNm" column="RPT_CTGR_NM"/>
+		<result property="rptStts" column="RPT_STTS"/>
+		<result property="rptRjctCn" column="RPT_RJCT_CN"/>
+		<collection property="trsmFileVO" resultMap="trsmFileMap">
+		</collection>
+	</resultMap>
+	
+	<resultMap type="trsmFileVO" id="trsmFileMap">
+		<id property="fileNo" column="FILE_NO"/>
+		<result property="trsmFileAddr" column="TRSM_FILE_ADDR"/>
+		<result property="trsmFileNm" column="TRSM_FILE_NM"/>
+		<result property="trsmFileCtgrNm" column="TRSM_FILE_CTGR_NM"/>
+		<result property="emlNo" column="EML_NO"/>
+		<result property="pstNo" column="PST_NO"/>
+		<result property="rptNo" column="RPT_NO"/>
+	</resultMap>
+
+
+	<!-- 업무보고 목록 전체 조회-->
+	<select id="reportList" parameterType="hashMap" resultType="map">
+		SELECT T.RNUM, T.PJT_NO, T.RPT_NO, T.RPT_TTL, T.RPT_CN, T.RPT_DT, T.RPT_WRTR_ID, T.RPT_CTGR_NM, T.RPT_STTS, T.RPT_RJCT_CN, M.MBR_NM
+		FROM 
+		    (
+		        SELECT ROW_NUMBER() OVER(ORDER BY TO_NUMBER(RPT_NO) DESC) RNUM
+		            , PJT_NO
+		            , RPT_NO
+		            , RPT_TTL
+		            , RPT_CN
+		            , RPT_DT
+		            , RPT_WRTR_ID
+		            , RPT_CTGR_NM
+		            , RPT_STTS
+		            , RPT_RJCT_CN
+		        FROM REPORT
+		        <where>
+		        <if test="keyWord!=null and keyWord!=''">
+		        AND (RPT_CTGR_NM LIKE '%' || #{keyWord} || '%')
+		        </if>
+		        </where>
+		        ORDER BY RNUM
+		    )T, MEMBER M
+		WHERE T.RPT_WRTR_ID = M.MBR_ID AND T.RNUM BETWEEN #{currentPage}*#{size}-#{size}+1 AND #{currentPage}*#{size}
+		
+	</select>
+	
+	<!-- 업무보고 등록 -->
+	<insert id="reportInsert" parameterType="reportVO">
+		<selectKey order="BEFORE" keyProperty="rptNo" resultType="String">
+			SELECT NVL(MAX(TO_NUMBER(RPT_NO)),0)+1 FROM REPORT
+		</selectKey>
+		INSERT INTO REPORT(PJT_NO, RPT_NO, RPT_TTL, RPT_CN, RPT_DT, RPT_WRTR_ID, RPT_CTGR_NM)
+<!-- 		VALUES(#{pjtNo},#{rptNo},#{rptTtl},#{rptCn},TO_CHAR(SYSDATE, 'YYYY/MM/DD'),#{rptFileNm, jdbcType=VARCHAR},#{rptFilePath, jdbcType=VARCHAR},#{rptWrtrId},#{rptCtgrNm}) -->
+		VALUES(#{pjtNo},#{rptNo},#{rptTtl},#{rptCn},TO_CHAR(SYSDATE, 'YYYY/MM/DD'),#{rptWrtrId},#{rptCtgrNm})
+	</insert>
+	
+	<!-- 방금 등록한 업무보고 번호 뽑아오기 -->
+	<select id="selectRptNo" resultType="String">
+		SELECT MAX(TO_NUMBER(RPT_NO)) FROM REPORT
+	</select>
+	
+	<!-- 전송파일 테이블에 업무보고 첨부파일 저장 -->
+	<insert id="trsmFileUpload" parameterType="trsmFileVO">
+		<selectKey order="BEFORE" keyProperty="fileNo" resultType="String">
+			SELECT NVL(MAX(TO_NUMBER(FILE_NO)),0)+1 FROM TRSM_FILE 
+		</selectKey>
+		INSERT INTO TRSM_FILE(FILE_NO, TRSM_FILE_ADDR, TRSM_FILE_NM, TRSM_FILE_CTGR_NM, EML_NO, PST_NO, RPT_NO)
+		VALUES (#{fileNo}, #{trsmFileAddr}, #{trsmFileNm}, 'R', #{emlNo,jdbcType=VARCHAR}, #{pstNo,jdbcType=VARCHAR}, #{rptNo})
+	</insert>
+	
+	<!-- 전송파일 테이블에서 업무보고 첨부파일 가져오기 -->
+	<select id="getTrsmFile" parameterType="String" resultType="trsmFileVO">
+		SELECT FILE_NO, TRSM_FILE_ADDR, TRSM_FILE_NM, TRSM_FILE_CTGR_NM, EML_NO, PST_NO, RPT_NO
+		FROM TRSM_FILE
+		WHERE RPT_NO = #{rptNo}
+	</select>
+	
+	<!-- 첨부파일 클릭 시 해당 파일 다운로드 -->
+	<select id="downTrsmFile" parameterType="String" resultType="trsmFileVO">
+		SELECT TRSM_FILE_ADDR, TRSM_FILE_NM
+		FROM TRSM_FILE
+		WHERE FILE_NO = #{fileNo}
+	</select>
+	
+	<!-- 업무보고 조회 -->
+	<select id="reportDetail" resultType="map" parameterType="reportVO">
+		SELECT A.PJT_NO, A.RPT_NO, A.RPT_TTL, A.RPT_CN, A.RPT_DT, A.RPT_CTGR_NM, B.MBR_NM, A.RPT_STTS, A.RPT_RJCT_CN
+		FROM REPORT A, MEMBER B
+        WHERE A.RPT_WRTR_ID = B.MBR_ID
+        AND A.PJT_NO = #{pjtNo}
+        AND A.RPT_NO = #{rptNo}
+	</select>
+	
+	<!-- 업무보고 수정 -->
+	<update id="reportUpdate" parameterType="reportVO">
+		UPDATE REPORT
+		SET RPT_TTL = #{rptTtl}, RPT_CN = #{rptCn}, RPT_DT = TO_CHAR(SYSDATE, 'YYYY/MM/DD'), RPT_CTGR_NM = #{rptCtgrNm}
+		WHERE RPT_NO = #{rptNo}
+	</update>
+	
+	<!-- PL, 관리자의 업무보고 승인/반려 -->
+	<update id="reportConfirm" parameterType="reportVO">
+		UPDATE REPORT
+		SET RPT_STTS = #{rptStts}, RPT_RJCT_CN = #{rptRjctCn,jdbcType=VARCHAR}
+		WHERE RPT_NO = #{rptNo}
+	</update>
+	
+	<!-- 업무보고 승인/반려를 위한 아이디 찾기 -->
+	<select id="getMember" parameterType="String" resultType="map">
+		SELECT A.PJT_NO, A.MBR_ID, A.PJT_PRTPNT_RL, B.PJT_NM, B.PJT_WRTR_NM
+        FROM PJT_PRTPNT A, PROJECT B 
+        WHERE A.PJT_NO = B.PJT_NO 
+        AND A.PJT_NO = #{pjtNo}
+	</select>
+	
+	
+	<!-- 업무보고 삭제 -->
+	<delete id="reportDelete" parameterType="String">
+		DELETE FROM REPORT WHERE RPT_NO = #{rptNo}
+	</delete>
+	
+	<!-- 업무보고 개수 -->
+	<select id="reportTotal" resultType="int" parameterType="String">
+		SELECT COUNT(*) FROM REPORT
+        <where>
+        <if test="keyWord!=null and keyWord!=''">
+        AND (RPT_CTGR_NM LIKE '%' || #{keyWord} || '%')
+        </if>
+        </where>
+	</select>
+
+</mapper>

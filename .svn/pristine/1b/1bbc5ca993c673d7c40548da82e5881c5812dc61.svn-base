@@ -1,0 +1,28 @@
+package kr.or.ddit.project.mapper;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.project.vo.ReportVO;
+
+public interface ReportMapper {
+	
+	//업무보고 목록
+	public List<Map<String,Object>> reportList(String pjtNo) ;
+	
+	//업무보고 작성
+	public int reportInsert(ReportVO reportVO);
+	
+	//업무보고 수정
+	public int reportUpdate(ReportVO reportVO);
+	
+	//업무보고 삭제
+	public int reportDelete(String rptNo);
+	
+	//업무보고 상세조회
+	public List<Map<String,Object>> reportDetail(String rptNo);
+	
+	//업무보고 개수 가져오기
+	public int reportTotal(String pjtNo);
+
+}

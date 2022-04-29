@@ -1,0 +1,33 @@
+package kr.or.ddit.goods.vo;
+
+public class GdsMngVO {
+	
+	private String gdsNo;
+	private String gdsNm;
+	private String gdsStock;
+	
+	public String getGdsNo() {
+		return gdsNo;
+	}
+	public void setGdsNo(String gdsNo) {
+		this.gdsNo = gdsNo;
+	}
+	public String getGdsNm() {
+		return gdsNm;
+	}
+	public void setGdsNm(String gdsNm) {
+		this.gdsNm = gdsNm;
+	}
+	public String getGdsStock() {
+		return gdsStock;
+	}
+	public void setGdsStock(String gdsStock) {
+		this.gdsStock = gdsStock;
+	}
+	
+	@Override
+	public String toString() {
+		return "GdsMngVO [gdsNo=" + gdsNo + ", gdsNm=" + gdsNm + ", gdsStock=" + gdsStock + "]";
+	}
+	
+}

@@ -1,0 +1,58 @@
+package kr.or.ddit.project.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.project.mapper.ReportMapper;
+import kr.or.ddit.project.service.ReportService;
+import kr.or.ddit.project.vo.ReportVO;
+
+@Service
+public class ReportServiceImpl implements ReportService {
+	private static final Logger logger = LoggerFactory.getLogger(ReportService.class);
+		
+	@Autowired
+	private ReportMapper reportMapper;
+	
+	//업무보고 목록
+	@Override
+	public List<Map<String, Object>> reportList(Map<String, Object> map) {
+		return reportMapper.reportList(map);
+	}
+	
+	//업무보고 등록
+	@Override
+	public int reportInsert(ReportVO reportVO) {
+		return reportMapper.reportInsert(reportVO);
+	}
+	
+	//업무보고 수정
+	@Override
+	public int reportUpdate(ReportVO reportVO) {
+		return reportMapper.reportUpdate(reportVO);
+	}
+	
+	//업무보고 삭제
+	@Override
+	public int reportDelete(String rptNo) {
+		return reportMapper.reportDelete(rptNo);
+	}
+	
+	//업무보고 상세조회
+	@Override
+	public List<Map<String,Object>> reportDetail(String rptNo) {
+		return reportMapper.reportDetail(rptNo);
+	}
+	
+	//업무보고 개수 가져오기
+	@Override
+	public int reportTotal(Map<String, Object> map) {
+		return reportMapper.reportTotal(map);
+	}
+
+}

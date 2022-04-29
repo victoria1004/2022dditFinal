@@ -1,0 +1,25 @@
+package kr.or.ddit.feed.service;
+
+import java.util.List;
+import java.util.Map;
+
+import kr.or.ddit.feed.vo.VtRsltVO;
+
+public interface VtRsltService {
+	//투표 내용 등록하기
+	public int insertRslt(VtRsltVO vtRsltVO);
+	
+	//투표 선택 수정 
+	public int updateRslt(VtRsltVO vtRsltVO);
+	
+	//투표 결과 출력
+	public List<Map<String, Object>> rsltList(VtRsltVO vtRsltVO);
+	
+	//투표 수 카운트
+	public int getRslt(String optnNo);
+	
+	//투표 전체 결과 조회
+	public List<VtRsltVO> resultVote();
+
+
+}

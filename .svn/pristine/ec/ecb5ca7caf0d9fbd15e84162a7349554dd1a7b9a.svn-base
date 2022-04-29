@@ -1,0 +1,34 @@
+package kr.or.ddit.project.service.impl;
+
+import java.util.List;
+
+import javax.inject.Inject;
+
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.project.mapper.ProjectMapper;
+import kr.or.ddit.project.service.ProjectService;
+import kr.or.ddit.project.vo.ProjectVO;
+import kr.or.ddit.user.vo.MemberVO;
+
+@Service
+public class ProjectServiceImpl implements ProjectService {
+
+	@Inject ProjectMapper mapper;
+	
+	@Override
+	public List<MemberVO> getAllMbr(String pjtNo) {
+		return mapper.getAllMbr(pjtNo);
+	}
+
+	@Override
+	public List<ProjectVO> getMyPjtList(String mbrId) {
+		return mapper.getMyPjtList(mbrId);
+	}
+
+	
+	
+	
+	
+	
+}

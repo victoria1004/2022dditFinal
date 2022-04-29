@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.feed.mapper.VtRsltMapper">
+
+<!-- 투표 항목 선택 -->
+	<insert id="insertRslt" parameterType="vtRsltVO">
+		INSERT INTO VT_RSLT (VT_NO, OPTN_NO, MBR_ID)
+		VALUES (#{vtNo}, #{optnNo}, #{mbrId})
+	</insert>
+
+<!-- 투표 선택 수정 -->
+	<update id="updateRslt" parameterType="vtRsltVO">
+		UPDATE VT_RSLT
+		SET OPTN_NO = #{optnNo}
+		WHERE MBR_ID = 'A001'
+	</update>
+
+<!-- 투표 결과 출력 -->
+	<select id="rsltList" parameterType="String" resultType="vtRsltVO">
+		SELECT VT_NO, OPTN_NO, MBR_ID
+		WHERE VT_NO = #{vtNo}
+	</select>
+
+</mapper>

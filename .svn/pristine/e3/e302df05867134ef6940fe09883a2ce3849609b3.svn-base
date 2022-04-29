@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.feed.mapper.VtRsltMapper">
+
+<!-- 투표 결과 추가 -->
+<insert id="insertRslt" parameterType="vtRsltVO">
+	INSERT INTO VT_RSLT (VT_NO, OPTN_NO, MBR_ID )
+	VALUES (#{vtNo}, #{optnNo}, 'A001')
+</insert>
+
+</mapper>

@@ -1,0 +1,21 @@
+package kr.or.ddit.project.controller;
+
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+
+@RequestMapping("/project")
+@Controller
+public class GanttController {
+	
+	@GetMapping("/gantt.do")
+	public String ganttMain() {
+		return "project/gantt";
+	}
+	
+	
+	
+	
+	
+	
+}

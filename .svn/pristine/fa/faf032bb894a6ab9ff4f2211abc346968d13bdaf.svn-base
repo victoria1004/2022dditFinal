@@ -1,0 +1,353 @@
+<%@page import="kr.or.ddit.user.vo.MemberVO"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<link href="/resources/assets/css/elements/custom-pagination.css" rel="stylesheet" type="text/css">
+<link href="/resources/assets/css/scrollspyNav.css" rel="stylesheet" type="text/css">
+<link rel="stylesheet" type="text/css" href="/resources/plugins/bootstrap-touchspin/jquery.bootstrap-touchspin.min.css">
+
+<link href="/resources/assets/css/elements/search.css" rel="stylesheet" type="text/css">
+<link href="/resources/plugins/flatpickr/custom-flatpickr.css" rel="stylesheet" type="text/css" />
+<link href="/resources/plugins/flatpickr/flatpickr.css" rel="stylesheet" type="text/css" />
+<link href="/resources/plugins/noUiSlider/nouislider.min.css" rel="stylesheet" type="text/css">
+<link href="/resources/plugins/noUiSlider/custom-nouiSlider.css" rel="stylesheet" type="text/css">
+<link href="/resources/plugins/sweetalerts/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+<link href="/resources/plugins/sweetalerts/sweetalert.css" rel="stylesheet" type="text/css" />
+<link href="/resources/assets/css/components/custom-sweetalert.css" rel="stylesheet" type="text/css" />
+
+<style>
+.modalLabel{
+	width: 50%;
+}
+.per{
+	width: 49%;
+	display: inline-block;
+}
+.votePlus{
+	width: 45px;
+	padding: 7px 10px;
+}
+.voteMinus{
+	width: 45px;
+	padding: 7px 10px;
+}
+.Voteform-control{
+	width: 30%;
+}
+
+.disabled{
+	pointer-events: none;
+}
+</style>
+
+<script>
+$(function(){
+	
+	$(".bootstrap-touchspin-up").on("click", function(){
+		var num = parseInt($("#demo_vertical").val()) + 1;
+		$("#demo_vertical").val(num);
+	})
+	$(".bootstrap-touchspin-down").on("click", function(){
+		if(parseInt($("#demo_vertical").val()) == 1){
+			return;
+		}
+		var num = parseInt($("#demo_vertical").val()) - 1;
+		$("#demo_vertical").val(num);
+	})
+	
+	$(".modalClick").on("click", function(){
+		$("input[name=gdsNoModal]").val($(this).parents("tr").find("input[name=gdsNo]").val())
+		$.ajax({
+			url: "/gds/rentUserTb",
+			data: {"gdsNo" : $("input[name=gdsNoModal]").val()},
+			type: "post",
+			success: function(res){
+				str = "";
+				$.each(res, function(i, v){
+					str += "<tr><td class='text-center'>" + v.rntNo + "</td>";
+					str += "<td class='text-center'>" + v.mbrNm + "(" + v.mbrId + ")</td>";
+					str += "<td class='text-center'>" + v.rntCnt + "</td>";
+					str += "<td class='text-center'>" + v.rntDt + "</td>";
+					str += "<td class='text-center'><button class='btn btn-secondary rtn'>반납</button></td></tr>";
+				})
+				$("#rentUserTb tbody").html(str);
+			},
+			error : function(res){
+				alert("error");
+			}
+		})
+	})
+	
+	$(document).on("click", ".rtn", function(e){
+		
+		
+// 		var rntNo = $(this).closest("tr").children().first().val();
+		var rntNo = e.target.parentElement.parentElement.firstChild.innerHTML;
+		console.log(">>>>>>" + rntNo)
+		const swalWithBootstrapButtons = swal.mixin({
+			confirmButtonClass : 'btn btn-success btn-rounded',
+			cancelButtonClass : 'btn btn-danger btn-rounded mr-3',
+			buttonsStyling : false,
+		})
+
+		swalWithBootstrapButtons({
+			title : '비품을 반납처리 하시겠습니까?',
+			text : "",
+			type : 'warning',
+			showCancelButton : true,
+			confirmButtonText : 'OK',
+			cancelButtonText : 'Cancel',
+			reverseButtons : true,
+			padding : '2em'
+		}).then(function(result) {
+			if (result.value) {
+				$.ajax({
+					url: "/gds/rtnUser",
+					data: {"rntNo": rntNo},
+					type : "post",
+					success: function(){
+						$(this).parents("tr").children().eq(4).html("<span class='text-success'>반납 완료</span>")
+					}, 
+					error: function(){
+						alert("error")
+					}
+				})
+				swalWithBootstrapButtons('반납하셨습니다.', '', 'success')
+
+			} else if (
+			// Read more about handling dismissals
+			result.dismiss === swal.DismissReason.cancel) {
+				swalWithBootstrapButtons('반납이 취소되었습니다', '', 'error')
+			}
+		})
+	})
+	
+	
+	$("#rentBtn").on("click", function(){
+		const swalWithBootstrapButtons = swal.mixin({
+			confirmButtonClass : 'btn btn-success btn-rounded',
+			cancelButtonClass : 'btn btn-danger btn-rounded mr-3',
+			buttonsStyling : false,
+		})
+
+		swalWithBootstrapButtons({
+			title : '비품을 등록하시겠습니까?',
+			text : "",
+			type : 'warning',
+			showCancelButton : true,
+			confirmButtonText : 'OK',
+			cancelButtonText : 'Cancel',
+			reverseButtons : true,
+			padding : '2em'
+		}).then(function(result) {
+			if (result.value) {
+				$('form[name=regForm]').submit();
+				swalWithBootstrapButtons('등록하셨습니다.', '', 'success')
+				location.href="/gds/goodsAdmin.do";
+
+			} else if (
+			// Read more about handling dismissals
+			result.dismiss === swal.DismissReason.cancel) {
+				swalWithBootstrapButtons('등록이 취소되었습니다', '', 'error')
+			}
+		})
+	})
+	
+	$(document).on("click", ".deleteGoods", function(e){
+		var gdsNo = $(this).parents("tr").find("input[name=gdsNo]").val();
+		const swalWithBootstrapButtons = swal.mixin({
+			confirmButtonClass : 'btn btn-success btn-rounded',
+			cancelButtonClass : 'btn btn-danger btn-rounded mr-3',
+			buttonsStyling : false,
+		})
+
+		swalWithBootstrapButtons({
+			title : '비품을 삭제하시겠습니까?',
+			text : "",
+			type : 'warning',
+			showCancelButton : true,
+			confirmButtonText : 'OK',
+			cancelButtonText : 'Cancel',
+			reverseButtons : true,
+			padding : '2em'
+		}).then(function(result) {
+			if (result.value) {
+				swalWithBootstrapButtons('삭제하셨습니다.', '', 'success')
+				$.ajax({
+					url: "/gds/goodsDelete",
+					data: {"gdsNo": gdsNo},
+					type : "post",
+					success: function(){
+						location.href="/gds/gdsList.do";
+					}, 
+					error: function(){
+						alert("error")
+					}
+				})
+
+			} else if (
+			// Read more about handling dismissals
+			result.dismiss === swal.DismissReason.cancel) {
+				swalWithBootstrapButtons('삭제가 취소되었습니다', '', 'error')
+			}
+		})
+	})
+	
+	
+})
+</script>
+
+<div class="page-header">
+</div>
+<div class="layout-px-spacing">
+<div class="page-header">
+</div>	
+	<div id="tableHover" class="col-lg-12 col-12 layout-spacing">
+		<div class="statbox widget box box-shadow">
+		    <div class="widget-header">
+		        <div class="row">
+		            <div class="col-xl-12 col-md-12 col-sm-12 col-12">
+		                <h4>비품 대여 List</h4>
+		            </div>                 
+		        </div>
+		    </div>
+		    <div class="widget-content widget-content-area" style="height: 840px; padding-top: 10px;">
+		    <div class="col-md-6 col-sm-9 filtered-list-search" style="margin-bottom: 20px; max-width: 100%;">
+			    <button type="button" class="btn btn-outline-primary btn-rounded mb-2" data-toggle="modal" data-target="#addTaskModal">
+	          	<font><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-edit-2"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg></font>
+	          	</button>
+                 <form class="form-inline my-2 my-lg-0 justify-content-center" action="/gds/goodsAdmin.do" style="display: inline-block; float: right; width: 300px">
+                     <div class="w-100">
+                         <input type="text" name="keyWord" class="w-100 form-control product-search br-30" id="input-search" placeholder="Search Attendees...">
+                         <button class="btn btn-primary" type="submit"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-search"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg></button>
+                     </div>
+                 </form>
+             </div>
+		        <div class="table-responsive">
+		            <table class="table table-bordered table-hover mb-4">
+		                <thead>
+		                    <tr>
+		                        <th style="width: 100px;">순번</th>
+		                        <th>비품명</th>
+		                        <th style="width: 150px;">비품개수</th>
+		                        <th style="width: 180px;">대여자 목록</th>
+		                        <th style="width: 120px;">비품 삭제</th>
+		                    </tr>
+		                </thead>
+		                <tbody>
+			                <c:forEach var="GdsMngVO" items="${list.content}">
+			                    <tr>
+			                        <td class="text-center"><input type="hidden" name="gdsNo" value="${GdsMngVO.gdsNo }">${GdsMngVO.rnum }</td>
+			                        <td class="text-center">${GdsMngVO.gdsNm }</td>
+			                        <td class="text-center">${GdsMngVO.gdsStock - GdsMngVO.rntCnt} / ${GdsMngVO.gdsStock }</td>
+                        			<td class="text-center" style="padding: 12px;"><button class="btn btn-secondary modalClick" data-toggle="modal" data-target="#rentModalCenter">조회</button></td>
+                        			<td class="text-center" style="padding: 0">
+	                        			<div class="deleteGoods">
+	                                   	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2" ><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+	                                    </div>
+                                    </td>
+			                    </tr>
+			                </c:forEach>
+		                </tbody>
+		            </table>
+		        </div>
+		    <div class="row" style="position: absolute; bottom: 20px; width: 100%;"><div class="col-sm-12 col-md-5">
+	                    <div class="dataTables_info" id="style-2_info" role="status" aria-live="polite">Showing page ${list.currentPage } of ${list.endPage}</div></div>
+	                    <div class="col-sm-12 col-md-7"><div class="paginating-container pagination-default">
+					    <ul class="pagination">
+					        <li class="prev <c:if test='${list.startPage<6}'>disabled</c:if>"><a href="/gds/goodsAdmin.do?currentPage=${list.startPage-5}">Prev</a></li>
+					        <c:forEach var="pNo" begin="${list.startPage}" end="${list.endPage}" step="1">
+					        	<li class="<c:if test='${list.currentPage eq pNo}'>active</c:if>"><a href="/gds/goodsAdmin.do?currentPage=${pNo}&keyWord=${param.keyWord}" aria-controls="dataTable" data-dt-idx="1" tabindex="0">${pNo}</a></li>
+					        </c:forEach>
+					        <li class="next <c:if test='${list.endPage>=list.totalPages}'>disabled</c:if>"><a href="/gds/goodsAdmin.do?currentPage=${list.startPage+5}">Next</a></li>
+					    </ul>
+			</div></div></div>
+		    </div>
+		</div>
+	</div>
+</div>
+
+<!-- 모달 시작1 -->
+<div class="modal fade" id="rentModalCenter" tabindex="-1" role="dialog" aria-labelledby="rentModalCenterTitle" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 600px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="rentModalCenterTitle">대여자 목록</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <div class="modal-body">
+            <input type="hidden" name="gdsNoModal" value="" />
+            	<table id="rentUserTb" class="table table-bordered table-hover mb-4">
+            		<thead>
+            		<tr>
+            			<th>No</th>
+            			<th>이름(아이디)</th>
+            			<th>대여개수</th>
+            			<th>대여 일시</th>
+            			<th>반납</th>
+            		</tr>
+            		</thead>
+            		<tbody>
+            		</tbody>
+            	</table>
+            </div>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> 취소</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 모달 끝1 -->
+<!-- 모달 시작2 -->
+<div class="modal fade" id="addTaskModal" tabindex="-1" role="dialog" aria-labelledby="addTaskModalTitle" style="display: none;" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered" role="document" style="max-width: 400px;">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addTaskModalTitle">비품 등록</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-x"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                </button>
+            </div>
+            <form name="regForm" action="/gds/gdsRegister" method="post">
+            <div class="row no-gutters mb-3" style="margin: 5px 10px;" > 
+				<div class="col-lg-12">
+					<div class="input-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text" style="width: 80px;">비품명</span>
+						</div>
+						<input type="text" class="form-control text-center" name="goodsNm" >
+					</div>
+				</div>
+			</div>
+			<div class="row no-gutters mb-3" style="margin: 5px 10px;" >
+				<div class="col-lg-12">
+					<div class="input-group">
+						<div class="input-group-prepend">
+							<span class="input-group-text" style="width: 80px;">수량</span>
+						</div>
+						<input type="text" class="form-control text-center" name="goodsStock" >
+					</div>
+				</div>
+			</div>
+			</form>
+            <div class="modal-footer">
+                <button class="btn" data-dismiss="modal"><i class="flaticon-cancel-12"></i> 취소</button>
+                <button type="button" class="btn btn-primary" id="rentBtn">등록</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- 모달 끝2 -->
+<script src="/resources/plugins/bootstrap-touchspin/custom-bootstrap-touchspin.js"></script>
+<script src="/resources/assets/js/scrollspyNav.js"></script>
+<script src="/resources/plugins/flatpickr/flatpickr.js"></script>
+<script src="/resources/plugins/noUiSlider/nouislider.min.js"></script>
+<script src="/resources/plugins/flatpickr/custom-flatpickr.js"></script>
+<script src="/resources/plugins/sweetalerts/sweetalert2.min.js"></script>
+<script src="/resources/plugins/sweetalerts/custom-sweetalert.js"></script>
+<script>
+	var f1 = flatpickr(document.getElementById('basicFlatpickr'))
+</script>
+
+

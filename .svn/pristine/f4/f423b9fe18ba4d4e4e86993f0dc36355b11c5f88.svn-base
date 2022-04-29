@@ -1,0 +1,5 @@
+event.stopProparation() : div가 연속으로 안에 있을때 가장 안쪽 div에서 발생된 event가 버블링되어 상위 div에도 
+전파가 되기 때문에 그 버블링을 막아줌
+event.preventDefault() :  submit 버튼의 경우 클릭 시 바로 action으로 가기 때문에 그걸 막아준다.
+(기존 tag의 속성을 막아주는 역할을 함.)
+

@@ -1,0 +1,188 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.user.mapper.MbrMapper">
+	<!-- 아이디 중복확인 -->
+	<select id="checkId" parameterType="String" resultType="int">
+		select count(*)
+		  from member
+		 where mbr_id=#{mbrId}
+	</select>
+	
+	<!-- 회원등록 -->
+	<insert id="mbrInsert" parameterType="memberVO">
+		INSERT INTO member 
+				  ( mbr_id
+				  , mbr_ctgr_cd
+				  , mbr_pw
+				  , mbr_nm
+				  , mbr_gender
+				  , mbr_telno
+				  , mbr_dept
+				  , mbr_eml
+				  , mbr_img
+				  , mbr_intro
+				  , mbr_img_path
+				  , mbr_stts)
+			 VALUES 
+			 	   (#{mbrId}
+			 	  , #{mbrCtgrCd}
+			 	  , #{mbrPw}
+			 	  , #{mbrNm}
+			 	  , #{mbrGender}
+			 	  , #{mbrTelno}
+			 	  , #{mbrDept}
+			 	  , #{mbrEml}
+			 	  , #{mbrImg}
+			 	  , #{mbrIntro}
+			 	  , #{mbrImgPath}
+			 	  , #{mbrStts})
+	</insert>
+	
+	<!-- 회원정보 수정(이미지파일 있는 경우) -->
+	<update id="mbrUpdate" parameterType="memberVO">
+	   UPDATE member
+	    SET   mbr_pw =#{mbrPw}
+	        , mbr_nm =#{mbrNm}
+	        , mbr_gender =#{mbrGender}
+	        , mbr_telno =#{mbrTelno}
+	        , mbr_dept =#{mbrDept}
+	        , mbr_eml =#{mbrEml}
+	        , mbr_img =#{mbrImg}
+	        , mbr_intro =#{mbrIntro}
+	        , mbr_img_path =#{mbrImgPath}
+	  WHERE   mbr_id =#{mbrId}
+	</update>
+	
+	<!-- 회원정보 수정(이미지파일 없는 경우) -->
+	<update id="mbrNoImgUpdate" parameterType="memberVO">
+	   UPDATE member
+	    SET   mbr_pw =#{mbrPw}
+	        , mbr_nm =#{mbrNm}
+	        , mbr_gender =#{mbrGender}
+	        , mbr_telno =#{mbrTelno}
+	        , mbr_dept =#{mbrDept}
+	        , mbr_eml =#{mbrEml}
+	        , mbr_intro =#{mbrIntro}
+	  WHERE   mbr_id =#{mbrId}
+	</update>
+	
+	<!-- 회원 개인정보 조회 -->
+	<select id="mbrSelect" parameterType="String" resultType="memberVO">
+		SELECT
+			    mbr_id
+			   ,mbr_ctgr_cd
+			   ,mbr_pw
+			   ,mbr_nm
+			   ,mbr_gender
+			   ,mbr_telno
+			   ,mbr_dept
+			   ,mbr_eml
+			   ,mbr_img
+			   ,mbr_intro
+			   ,mbr_img_path
+			   ,mbr_stts
+			FROM
+			    member
+			WHERE
+			    mbr_id=#{mbrId}
+	</select>
+	
+	<!-- 개인  프로젝트 조회 -->
+	<select id="myProject" parameterType="String" resultType="HashMap">
+		SELECT  a.pjt_no
+			   ,a.pjt_ctgr_cd
+			   ,a.pjt_nm
+			   ,a.pjt_ol
+			   ,a.pjt_expl
+			   ,a.pjt_strt_ymd
+			   ,a.pjt_end_ymd
+			   ,a.pjt_rcrt_stts
+			   ,a.pjt_wrtr_nm
+			   ,b.mbr_id
+			   ,b.pjt_prtpnt_rl
+		 FROM  project a inner join pjt_prtpnt b on(a.pjt_no=b.pjt_no)
+		WHERE  b.MBR_ID=#{mbrId}
+	 order by  a.pjt_end_ymd asc
+	</select>
+	
+	<!-- 개인 일정 조회 -->
+	<select id="mySchedual" parameterType="String" resultType="HashMap">
+		SELECT  a.schdl_no
+			   ,a.pjt_no
+			   ,a.schdl_ctgr_cd
+			   ,a.schdl_ttl
+			   ,a.schdl_cn
+			   ,a.schdl_srt_dt
+			   ,a.schdl_nd_dt
+			   ,a.schdl_wrtr_nm
+			   ,b.mbr_id
+			   ,b.pjt_prtpnt_rl
+		  FROM  schdl a join pjt_prtpnt b on(a.pjt_no= b.pjt_no)
+		 where  mbr_id=#{mbrId}
+	</select>
+
+	<!-- 개인 일감 조회 -->
+	<select id="myTodo" parameterType="String" resultType="HashMap">
+		SELECT  td_no
+			   ,pjt_no
+			   ,td_cn
+			   ,td_strt_dt
+			   ,td_end_dt
+			   ,prgrs
+			   ,td_impr_cd
+			   ,td_wrtr_id
+			   ,td_pic_id
+			   ,td_ctgr_cd
+			   ,td_ttl
+			   ,td_stts
+			   ,td_wrt_dt
+			   ,td_parent
+			   ,td_child
+		  FROM  todo
+		 where  td_pic_id=#{mbrId}
+	  order by  TD_END_DT asc
+	</select>
+
+	<!-- 개인 이슈 조회 -->
+	<select id="myIssue" parameterType="String" resultType="HashMap">
+		SELECT  issue_no
+			   ,mrkr_no
+			   ,pjt_no
+			   ,td_no
+			   ,mbr_id
+			   ,issue_ttl
+			   ,issue_cn
+			   ,issue_ymd
+		  FROM  issue
+		 where  mbr_id=#{mbrId}
+	  order by  ISSUE_YMD desc
+	</select>
+	
+	<!-- 내 회의실 예약 -->
+	<select id="myMtr" parameterType="String" resultType="HashMap">  
+		SELECT  rsvt_no
+			   ,mtr_no
+			   ,mbr_id
+			   ,rsvt_strt_hr
+			   ,rsvt_ymd
+		  FROM  mtr_rsvt
+		 where  MBR_ID=#{mbrId}
+		   and  rsvt_ymd >= TO_CHAR(SYSDATE,'YYYY-MM-DD')
+	</select>
+	
+	<!-- 내 비품 대여 -->
+	<select id="myGoods" parameterType="String" resultType="HashMap">  	   
+		SELECT  rnt_no
+			   ,mbr_id
+			   ,gds_no
+			   ,rnt_dt
+			   ,rtn_prnmnt_dt
+			   ,rtn_dt
+			   ,rnt_cnt
+		  FROM  gds_rnt
+		 where  MBR_ID=#{mbrId}
+		   and  rtn_dt is null
+	</select>
+</mapper>  

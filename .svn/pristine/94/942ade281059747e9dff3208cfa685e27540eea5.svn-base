@@ -1,0 +1,24 @@
+//프로젝트의 모든 구성원 출력
+function getAllMbr(pjtNo){
+	
+	$.ajax({
+		
+		url : "/project/getAllMbr",
+		data : {pjtNo : pjtNo},
+		type : "post",
+		success : function(res){
+			$.each(res, function(i, v){
+				console.log(v.mbrId);
+				console.log(v.mbrNm);
+				
+				
+				
+				
+			})
+			//$("#pjtMbrList")
+		}
+		
+	})
+	
+	
+}

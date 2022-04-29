@@ -1,0 +1,24 @@
+package kr.or.ddit.chat.service.impl;
+
+import java.util.List;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.admin.vo.LogVO;
+import kr.or.ddit.chat.mapper.ChatMapper;
+import kr.or.ddit.chat.service.ChatRoomService;
+import kr.or.ddit.chat.vo.ChatRoomVO;
+
+@Service
+public class ChatRoomServiceImpl implements ChatRoomService{
+
+	@Autowired
+	ChatMapper chatMapper;
+	
+	@Override
+	public List<ChatRoomVO> roomList(String mbrId) {
+		return this.chatMapper.roomList(mbrId);
+	}
+
+}

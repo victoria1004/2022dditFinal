@@ -1,0 +1,94 @@
+개발환경 설정
+*설치 경로에 한글이 있으면 안 됨
+
+1. JDK(22) (high java 기준)
+JDK 1.8버전 설치
+JRE는 설치하지 않음
+고급 시스템 설정 - 환경 변수 - 시스템 변수 - 새로 만들기
+변수 이름 : JAVA_HOME, 변수 값 : JDK 1.8버전 설치 경로
+사용자 변수 - Path - 편집 - 새로 만들기 - %JAVA_HOME%\bin 입력
+cmd 창에 java -version, javac -version 입력 시 JDK 1.8이 표시되는지 확인
+
+2. Eclipse(26) (photon 버전 기준)
+복사 후 압축 해제(바로가기 생성)
+설정 파일 열어서 마지막 2줄(메모리 설정) 2048로 변경
+실행 후 워크스페이스 경로 설정
+Open Perspective - Java 선택
+Windows - Preferences - encoding 검색 후 전부 UTF-8로 설정
+font 검색 후 Colors and Fonts - Basic - Text Font - Edit - 크기 14로 설정
+
+(선택사항)
+General - Show heap status 체크
+spell 검색 후 Spelling - Enable spell checking 해제
+refresh 검색 후 Startup and Shutdown - Refresh workspace on startup 체크, 나머지 해제
+
+*다른 테마 사용 시 syntax 검색 - 사용 언어에 따라 color 변경
+
+*ojdbc6 추가 방법
+Project - Build Path - Configure Build Path - Libraries - Add External JARs
+- ojdbc6 경로 설정(오라클 설치 경로에 포함되어 있음)
+
+*이클립스 컴파일 환경 설정 (high java 기준)
+Preferences - Java - Compiler - Compiler compliance level : 1.8로 설정
+Installed JREs - Add - JDK 1.8 설치경로 추가 - default로 설정 - Apply
+(이클립스 구버전 사용시 맞는 JDK 버전으로 설정)
+
+3. Oracle(45) *설치파일 경로에 기본 테이블 추가하는 sql 있음
+(783번째 줄 위로 실행, 그 아래는 주소 추가 sql)
+서버 경로 지정, 패스워드 java로 설정
+클라이언트 경로 지정 후 설치(서버와 동일한 경로에 appClient 폴더 생성 후 설치)
+
+4. SQL Developer(27)
+바로 실행(바로가기 생성)
+JDK 1.8버전 설치 경로 지정
+환경설정 - 데이터베이스 - NLS - 날짜, 시간 형식 RR -> YYYY로 설정
+코드 편집기 - PL/SQL 구문 색상 - PL/SQL 주석 - 색 변경
+코드 편집기 - 글꼴 - 글꼴 크기 16으로 설정
+코드 편집기 - 행 여백 - 행 번호 표시
+
+(선택사항)
+코드 편집기 - PL/SQL 구문 색상 - Disconnected Join Graph 강조 표시 해제
+
+5. HTML(Notepad++)
+설정 - 새 문서 - 기본 언어 HTML로 설정(수동으로 언어 설정해도 됨)
+
+*자동 들여쓰기 안 될 경우 플러그인 - 플러그인 관리 - XML Tools 설치
+*실행에 Launch in Chrome 메뉴 없을 시 해결법
+실행 - 크롬 실행 경로 뒤에 $(FULL_CURRENT_PATH) 추가하고 저장
+이름 Launch in Chrome, 단축키 Ctrl + R로 설정(기존 단축키와 겹칠 경우 기존 단축키를 빼거나 변경)
+
+*서버 환경 구축 과정
+Apache Tomcat Server 7.0(13) 압축 풀기
+이클립스 워크스페이스 변경 후 설정 그대로
+설정에서 server 검색 - Runtime Environment - add - Apache Tomcat v7.0 선택 - Browse -
+압축 푼 경로 지정 - Finish
+Servers 탭에서 create a new server - Tomcat v7.0 Server 선택 - Finish
+server.xml Source로 열어서 65라인 - URIEncoding="UTF-8" port="80" 수정
+노트패드로 서버 경로 - conf - server.xml 71라인 - 동일하게 수정
+서버 설정 완료
+
+*서버 삭제 과정
+탐색기에서 Servers 우클릭 - Delete - 체크박스 체크하고 OK
+Servers 탭에서 Server 우클릭 - Delete - 체크박스 체크하고 OK
+설정 - server 검색 - Runtime Environment - Remove
+
+*HTML 프로젝트 생성 과정
+New Project - web 검색 - Dynamic Web Project - 이름 webpro - Finish
+WebContent 폴더에 css, html, images 폴더 복사
+이클립스 설정 - General - Web Browser - new
+Name : Chrome
+Location : 크롬 설치 경로에서 "" 제거
+Chrome으로 체크하고 OK
+
+*HTML 서버에 접속하는 방법
+IP주소:포트명(80번일때만 생략 가능)/프로젝트명/폴더명/파일명
+예) 192.168.42.3/webpro/1102/TimeTable
+
+*HTML 자동 서식 지정 방법(style, script 등)
+Preference - Templates 검색 - HTML5 찾아서 edit
+
+*JavaScript 자동완성 설정하기
+Preferences - JavaScript - Editor - Content Assist - Enable auto activation 체크
+Help - MarketPlace - tern 검색 - JavaScript Build Eclips Install
+Project Configure - Convert to Tern Project
+Browser, Browser Extension, jQuery, jQuery Extension, jQuery UI 체크

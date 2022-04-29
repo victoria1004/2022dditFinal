@@ -1,0 +1,21 @@
+package kr.or.ddit.project.mapper;
+
+import java.util.List;
+
+import kr.or.ddit.project.vo.KanbanCardVO;
+
+public interface KanbanCardMapper {
+
+	
+	//칸반 카드 보기
+	public List<KanbanCardVO> kanbanCardSelect();
+	
+	//칸반 카드 추가
+	public int kanbanCardInsert(KanbanCardVO kanbanCardVO);
+	
+	//칸반 카드 수정
+	public int kanbanCardUpdate(KanbanCardVO kanbanCardVO);
+	
+	//칸반 카드 삭제
+	public int kanbanCardDelete(String kbCardNo);
+}

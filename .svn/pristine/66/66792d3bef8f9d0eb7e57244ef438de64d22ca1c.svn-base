@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.project.mapper.ReportMapper">
+
+	<!-- 업무보고 목록 전체 조회-->
+	<select id="reportList" resultType="map">
+		SELECT A.PJT_NO, A.RPT_NO, A.RPT_TTL, A.RPT_CN, A.RPT_DT, A.RPT_FILE_NM, A.RPT_FILE_PATH, A.RPT_CTGR_NM, B.MBR_NM
+		FROM REPORT A, MEMBER B
+        WHERE A.RPT_WRTR_ID = B.MBR_ID ORDER BY A.RPT_NO ASC
+	</select>
+	
+	<!-- 업무보고 등록 -->
+	<insert id="reportInsert" parameterType="reportVO">
+		<selectKey order="BEFORE" keyProperty="rptNo" resultType="String">
+			SELECT NVL(MAX(TO_NUMBER(RPT_NO)),0)+1 FROM REPORT
+		</selectKey>
+		INSERT INTO REPORT(PJT_NO, RPT_NO, RPT_TTL, RPT_CN, RPT_DT, RPT_FILE_NM, RPT_FILE_PATH, RPT_WRTR_ID, RPT_CTGR_NM)
+		VALUES(#{pjtNo},#{rptNo},#{rptTtl},#{rptCn},TO_CHAR(SYSDATE, 'YYYY/MM/DD'),#{rptFileNm, jdbcType=VARCHAR},#{rptFilePath, jdbcType=VARCHAR},#{rptWrtrId},#{rptCtgrNm})
+	</insert>
+	
+	<!-- 업무보고 조회 -->
+	<select id="reportDetail" resultType="map" parameterType="String">
+		SELECT A.PJT_NO, A.RPT_NO, A.RPT_TTL, A.RPT_CN, A.RPT_DT, A.RPT_FILE_NM, A.RPT_FILE_PATH, A.RPT_CTGR_NM, B.MBR_NM
+		FROM REPORT A, MEMBER B
+        WHERE A.RPT_WRTR_ID = B.MBR_ID AND A.RPT_NO = ${rptNo}
+	</select>
+	
+	<!-- 업무보고 수정 -->
+	<update id="reportUpdate" parameterType="reportVO">
+		UPDATE REPORT
+		SET RPT_TTL = #{rptTtl}, RPT_CN = #{rptCn}, RPT_DT = TO_CHAR(SYSDATE, 'YYYY/MM/DD'), RPT_CTGR_NM = #{rptCtgrNm}
+		WHERE RPT_NO = #{rptNo}
+	</update>
+	
+	<!-- 업무보고 삭제 -->
+	<delete id="reportDelete" parameterType="String">
+		DELETE FROM REPORT WHERE RPT_NO = #{rptNo}
+	</delete>
+	
+
+</mapper>

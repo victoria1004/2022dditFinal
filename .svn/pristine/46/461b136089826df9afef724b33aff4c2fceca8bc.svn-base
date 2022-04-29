@@ -1,0 +1,254 @@
+<%@ taglib prefix="sec" uri="http://www.springframework.org/security/tags" %>
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<!DOCTYPE html>
+<html lang="en">
+<title>CALENDAR</title>
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
+    <title>CORK Admin Template - Calendar Application</title>
+    <link rel="icon" type="image/x-icon" href="/resources/assets/img/favicon.ico">
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,600,700&amp;display=swap" rel="stylesheet">
+    <link href="/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/resources/assets/css/plugins.css" rel="stylesheet" type="text/css">
+    <link href="/resources/assets/css/structure.css" rel="stylesheet" type="text/css" class="structure">
+    <!-- END GLOBAL MANDATORY STYLES -->
+
+    <!-- BEGIN PAGE LEVEL STYLE -->
+    <link href="/resources/plugins/fullcalendar/fullcalendar.css" rel="stylesheet" type="text/css">
+    <link href="/resources/plugins/fullcalendar/custom-fullcalendar.advance.css" rel="stylesheet" type="text/css">
+    <link href="/resources/plugins/flatpickr/flatpickr.css" rel="stylesheet" type="text/css">
+    <link href="/resources/plugins/flatpickr/custom-flatpickr.css" rel="stylesheet" type="text/css">
+    <link href="/resources/assets/css/forms/theme-checkbox-radio.css" rel="stylesheet" type="text/css">
+    
+    <link href="/resources/plugins/sweetalerts/sweetalert2.min.css" rel="stylesheet" type="text/css" />
+    <link href="/resources/plugins/sweetalerts/sweetalert.css" rel="stylesheet" type="text/css" />
+    
+    <script src="/resources/plugins/sweetalerts/sweetalert2.min.js"></script>
+    <script src="/resources/plugins/sweetalerts/custom-sweetalert.js"></script>
+    
+    <!-- END PAGE LEVEL STYLE -->
+    
+    <script src="/resources/assets/js/libs/jquery-3.1.1.min.js"></script>
+    <script src="/resources/plugins/jquery-ui/jquery-ui.min.js"></script>
+    <script src="/resources/bootstrap/js/popper.min.js"></script>
+    <script src="/resources/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/resources/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+    <script src="/resources/assets/js/app.js"></script>
+    <script src="/resources/assets/js/custom.js"></script>
+    <script src="/resources/plugins/fullcalendar/moment.min.js"></script>
+    <script src="/resources/plugins/flatpickr/flatpickr.js"></script>
+    <script src="/resources/plugins/fullcalendar/fullcalendar.min.js"></script>
+    <script src="/resources/plugins/fullcalendar/custom-fullcalendar.advance.js"></script>
+        
+    <script>
+   
+    
+    $(document).on("change","input[name=filter]",function(){
+		
+	    v_filter = $("input:checkbox[name=filter]:checked").val();
+		//console.log('v_filter:',v_filter);
+	   location.href="/project/calendar.do?filter=" +v_filter ;
+	})
+    
+       function checkOnly(e){
+    	   
+    	   /* console.log(e);   	   
+    	   console.log(document.querySelectorAll('input[type=checkbox]')); */
+    	   
+    	   
+    	   console.log(!e.checked)
+    	   if(e.checked){
+    		 document.querySelectorAll('input[type=checkbox]').forEach(f => f.checked=false);    
+    		 e.checked=true;
+    	   }
+       }
+    </script>
+    
+    
+    <style>
+        .widget-content-area { border-radius: 6px; margin-bottom: 10px; }
+        .daterangepicker.dropdown-menu {
+            z-index: 1059;
+        }
+        
+        #trash{
+        	width:100px;
+        	position:absolute;
+        	top:150px;
+        	right:30px;
+        }
+        
+    </style>
+
+</head>
+
+<body>
+<div class="layout-px-spacing">
+	<div class="page-header">
+	                         
+    </div>
+         <div class="row layout-top-spacing" id="cancel-row">
+             <div class="col-xl-12 col-lg-12 col-md-12">
+                 <div class="statbox widget box box-shadow">
+                 		
+                     <div class="widget-content widget-content-area">
+                     	<div id="trash">
+                 			<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-trash-2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path><line x1="10" y1="11" x2="10" y2="17"></line><line x1="14" y1="11" x2="14" y2="17"></line></svg>
+                 		</div>
+                         <div class="calendar-upper-section">
+                             <div class="row">
+                             	 
+	                                 <div class="col-md-8 col-12">
+	                                     <div class="labels">
+	                                         <label id="personal"><input type="checkbox" id="filter_p" name="filter" value="C01" onclick="checkOnly(this)"> 개인</label>
+	                                         <label id="conference"><input type="checkbox" id="filter_c" name="filter" value="C02" onclick="checkOnly(this)"> 회의</label>
+	                                         <label id="important"><input type="checkbox" id="filter_i" name="filter" value="C03" onclick="checkOnly(this)"> 중요</label>
+	                                     </div>
+	                                 </div>
+                                                     
+                                 <div class="col-md-4 col-12">
+                                     <form action="javascript:void(0);" class="form-horizontal mt-md-0 mt-3 text-md-right text-center">
+                                         <button id="myBtn" class="btn btn-primary"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-calendar mr-2"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line>
+                                         <line x1="8" y1="2" x2="8" y2="6">
+                                         </line><line x1="3" y1="10" x2="21" y2="10"></line>
+                                         </svg> 일정 추가하기</button>
+                                     </form>
+                                 </div>
+                             </div>
+                         </div>
+                         <div id="calendar" class="fc fc-unthemed fc-ltr">
+                        
+                         <div class="fc-view-container" style="">
+                         <div class="fc-view fc-month-view fc-basic-view" style="">
+                        </div></div></div>
+                     </div>
+                 </div>
+             </div>
+
+             <!-- The Modal -->
+             <div id="addEventsModal" class="modal animated fadeIn">
+
+                 <div class="modal-dialog modal-dialog-centered">
+                     
+                     <!-- Modal content -->
+                     <div class="modal-content">
+
+                         <div class="modal-body">
+
+                             <span class="close">×</span>
+
+                             <div class="add-edit-event-box">
+                                 <div class="add-edit-event-content">
+                                     <h5 class="add-event-title modal-title">일정 추가</h5>
+                                     <h5 class="edit-event-title modal-title">일정 수정</h5>
+
+                                     <form name="cal" action="/project/calendar.do" method="post" >
+
+                                         <div class="row">
+
+                                             <div class="col-md-12">
+                                                 <label for="start-date" class="">일정 이름</label>
+                                                 <div class="d-flex event-title">
+                                                     <input id="write-e" type="text" class="form-control" name="schdlTtl">
+                                                 </div>
+                                             </div>
+
+                                             <div class="col-md-6 col-sm-6 col-12">
+                                                 <div class="form-group start-date">
+                                                     <label for="start-date" class="">시작일</label>
+                                                     <div class="d-flex">
+                                                         <input id="start-date" class="form-control" type="text" name="schdlSrtDt">
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                             <div class="col-md-6 col-sm-6 col-12">
+                                                 <div class="form-group end-date">
+                                                     <label for="end-date" class="">종료일</label>
+                                                     <div class="d-flex">
+                                                         <input id="end-date" type="text" class="form-control" name="schdlNdDt">
+                                                     </div>
+                                                 </div>
+                                             </div>
+                                         </div>
+
+                                         <div class="row">
+                                             <div class="col-md-12">
+                                                 <label for="start-date" class="">일정 상세 내용</label>
+                                                 <div class="d-flex event-description">
+                                                     <textarea id="taskdescription" rows="3" class="form-control" name="schdlCn"></textarea>
+                                                 </div>
+                                             </div>
+                                         </div>
+
+                                         <div class="row">
+                                             <div class="col-md-12">
+                                                 <div class="event-badge">
+                                                     <p class="">일정 분류</p>
+
+                                                     <div class="d-sm-flex d-block">
+                                                         <div class="n-chk">
+                                                             <label class="new-control new-radio radio-primary">
+                                                               <input type="radio" id="marker" class="new-control-input" name="schdlCtgrCd" value="bg-primary">
+                                                               <span class="new-control-indicator"></span>개인
+                                                             </label>
+                                                         </div>
+
+                                                         <div class="n-chk">
+                                                             <label class="new-control new-radio radio-warning">
+                                                               <input type="radio" id="marker" class="new-control-input" name="schdlCtgrCd" value="bg-warning">
+                                                               <span class="new-control-indicator"></span>회의
+                                                             </label>
+                                                         </div>
+
+                                                         <div class="n-chk">
+                                                             <label class="new-control new-radio radio-danger">
+                                                               <input type="radio" id="marker" class="new-control-input" name="schdlCtgrCd" value="bg-danger">
+                                                               <span class="new-control-indicator"></span>중요
+                                                             </label>
+                                                         </div>
+                                                      
+                                                     </div>
+
+                                                 </div>
+                                             </div>
+                                         </div>
+                                         
+                                          <div class="modal-footer">
+                                          	 <button type="button" class="btn btn-outline-primary mb-2" id="delBtn">삭제</button>
+				                             <button id="discard" class="btn" data-dismiss="modal">취소</button>
+				                            
+				                             <button type="button" id="add-e" class="btn">확인1</button>				                           
+				                             <button id="edit-event" class="btn">확인</button>
+				                         </div>
+										<sec:csrfInput /> 
+                                     </form>
+                                 </div>
+                             </div>
+
+                         </div>
+
+                     </div>
+
+                 </div>
+
+             </div>
+
+         </div>
+
+         </div>
+         <div class="flatpickr-calendar hasTime animate" tabindex="-1"><div class="flatpickr-months"><span class="flatpickr-prev-month flatpickr-disabled"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 17 17"><g></g><path d="M5.207 8.471l7.146 7.147-0.707 0.707-7.853-7.854 7.854-7.853 0.707 0.707-7.147 7.146z"></path></svg></span><div class="flatpickr-month"><div class="flatpickr-current-month"><select class="flatpickr-monthDropdown-months" tabindex="-1"><option class="flatpickr-monthDropdown-month" value="2" tabindex="-1">March</option><option class="flatpickr-monthDropdown-month" value="3" tabindex="-1">April</option><option class="flatpickr-monthDropdown-month" value="4" tabindex="-1">May</option><option class="flatpickr-monthDropdown-month" value="5" tabindex="-1">June</option><option class="flatpickr-monthDropdown-month" value="6" tabindex="-1">July</option><option class="flatpickr-monthDropdown-month" value="7" tabindex="-1">August</option><option class="flatpickr-monthDropdown-month" value="8" tabindex="-1">September</option><option class="flatpickr-monthDropdown-month" value="9" tabindex="-1">October</option><option class="flatpickr-monthDropdown-month" value="10" tabindex="-1">November</option><option class="flatpickr-monthDropdown-month" value="11" tabindex="-1">December</option></select><div class="numInputWrapper"><input class="numInput cur-year" type="number" tabindex="-1" aria-label="Year" min="2022"><span class="arrowUp"></span><span class="arrowDown"></span></div></div></div><span class="flatpickr-next-month"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 17 17"><g></g><path d="M13.207 8.472l-7.854 7.854-0.707-0.707 7.146-7.146-7.146-7.148 0.707-0.707 7.854 7.854z"></path></svg></span></div><div class="flatpickr-innerContainer"><div class="flatpickr-rContainer"><div class="flatpickr-weekdays"><div class="flatpickr-weekdaycontainer">
+      <span class="flatpickr-weekday">
+        Sun</span><span class="flatpickr-weekday">Mon</span><span class="flatpickr-weekday">Tue</span><span class="flatpickr-weekday">Wed</span><span class="flatpickr-weekday">Thu</span><span class="flatpickr-weekday">Fri</span><span class="flatpickr-weekday">Sat
+      </span>
+      </div></div><div class="flatpickr-days" tabindex="-1"><div class="dayContainer"><span class="flatpickr-day prevMonthDay flatpickr-disabled" aria-label="February 27, 2022">27</span><span class="flatpickr-day prevMonthDay flatpickr-disabled" aria-label="February 28, 2022">28</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 1, 2022">1</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 2, 2022">2</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 3, 2022">3</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 4, 2022">4</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 5, 2022">5</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 6, 2022">6</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 7, 2022">7</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 8, 2022">8</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 9, 2022">9</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 10, 2022">10</span><span class="flatpickr-day today" aria-label="March 11, 2022" aria-current="date" tabindex="-1">11</span><span class="flatpickr-day " aria-label="March 12, 2022" tabindex="-1">12</span><span class="flatpickr-day " aria-label="March 13, 2022" tabindex="-1">13</span><span class="flatpickr-day " aria-label="March 14, 2022" tabindex="-1">14</span><span class="flatpickr-day " aria-label="March 15, 2022" tabindex="-1">15</span><span class="flatpickr-day " aria-label="March 16, 2022" tabindex="-1">16</span><span class="flatpickr-day " aria-label="March 17, 2022" tabindex="-1">17</span><span class="flatpickr-day " aria-label="March 18, 2022" tabindex="-1">18</span><span class="flatpickr-day " aria-label="March 19, 2022" tabindex="-1">19</span><span class="flatpickr-day " aria-label="March 20, 2022" tabindex="-1">20</span><span class="flatpickr-day " aria-label="March 21, 2022" tabindex="-1">21</span><span class="flatpickr-day " aria-label="March 22, 2022" tabindex="-1">22</span><span class="flatpickr-day " aria-label="March 23, 2022" tabindex="-1">23</span><span class="flatpickr-day " aria-label="March 24, 2022" tabindex="-1">24</span><span class="flatpickr-day " aria-label="March 25, 2022" tabindex="-1">25</span><span class="flatpickr-day " aria-label="March 26, 2022" tabindex="-1">26</span><span class="flatpickr-day " aria-label="March 27, 2022" tabindex="-1">27</span><span class="flatpickr-day " aria-label="March 28, 2022" tabindex="-1">28</span><span class="flatpickr-day " aria-label="March 29, 2022" tabindex="-1">29</span><span class="flatpickr-day " aria-label="March 30, 2022" tabindex="-1">30</span><span class="flatpickr-day " aria-label="March 31, 2022" tabindex="-1">31</span><span class="flatpickr-day nextMonthDay" aria-label="April 1, 2022" tabindex="-1">1</span><span class="flatpickr-day nextMonthDay" aria-label="April 2, 2022" tabindex="-1">2</span><span class="flatpickr-day nextMonthDay" aria-label="April 3, 2022" tabindex="-1">3</span><span class="flatpickr-day nextMonthDay" aria-label="April 4, 2022" tabindex="-1">4</span><span class="flatpickr-day nextMonthDay" aria-label="April 5, 2022" tabindex="-1">5</span><span class="flatpickr-day nextMonthDay" aria-label="April 6, 2022" tabindex="-1">6</span><span class="flatpickr-day nextMonthDay" aria-label="April 7, 2022" tabindex="-1">7</span><span class="flatpickr-day nextMonthDay" aria-label="April 8, 2022" tabindex="-1">8</span><span class="flatpickr-day nextMonthDay" aria-label="April 9, 2022" tabindex="-1">9</span></div></div></div></div><div class="flatpickr-time" tabindex="-1"><div class="numInputWrapper"><input class="numInput flatpickr-hour" type="number" aria-label="Hour" tabindex="-1" step="1" min="1" max="12"><span class="arrowUp"></span><span class="arrowDown"></span></div><span class="flatpickr-time-separator">:</span><div class="numInputWrapper"><input class="numInput flatpickr-minute" type="number" aria-label="Minute" tabindex="-1" step="5" min="0" max="59"><span class="arrowUp"></span><span class="arrowDown"></span></div><span class="flatpickr-am-pm" title="Click to toggle" tabindex="-1">PM</span></div></div>
+      <div class="flatpickr-calendar hasTime animate" tabindex="-1"><div class="flatpickr-months"><span class="flatpickr-prev-month flatpickr-disabled"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 17 17"><g></g><path d="M5.207 8.471l7.146 7.147-0.707 0.707-7.853-7.854 7.854-7.853 0.707 0.707-7.147 7.146z"></path></svg></span><div class="flatpickr-month"><div class="flatpickr-current-month"><select class="flatpickr-monthDropdown-months" tabindex="-1"><option class="flatpickr-monthDropdown-month" value="2" tabindex="-1">March</option><option class="flatpickr-monthDropdown-month" value="3" tabindex="-1">April</option><option class="flatpickr-monthDropdown-month" value="4" tabindex="-1">May</option><option class="flatpickr-monthDropdown-month" value="5" tabindex="-1">June</option><option class="flatpickr-monthDropdown-month" value="6" tabindex="-1">July</option><option class="flatpickr-monthDropdown-month" value="7" tabindex="-1">August</option><option class="flatpickr-monthDropdown-month" value="8" tabindex="-1">September</option><option class="flatpickr-monthDropdown-month" value="9" tabindex="-1">October</option><option class="flatpickr-monthDropdown-month" value="10" tabindex="-1">November</option><option class="flatpickr-monthDropdown-month" value="11" tabindex="-1">December</option></select><div class="numInputWrapper"><input class="numInput cur-year" type="number" tabindex="-1" aria-label="Year" min="2022"><span class="arrowUp"></span><span class="arrowDown"></span></div></div></div><span class="flatpickr-next-month"><svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 17 17"><g></g><path d="M13.207 8.472l-7.854 7.854-0.707-0.707 7.146-7.146-7.146-7.148 0.707-0.707 7.854 7.854z"></path></svg></span></div><div class="flatpickr-innerContainer"><div class="flatpickr-rContainer"><div class="flatpickr-weekdays"><div class="flatpickr-weekdaycontainer">
+      <span class="flatpickr-weekday">
+        Sun</span><span class="flatpickr-weekday">Mon</span><span class="flatpickr-weekday">Tue</span><span class="flatpickr-weekday">Wed</span><span class="flatpickr-weekday">Thu</span><span class="flatpickr-weekday">Fri</span><span class="flatpickr-weekday">Sat
+      </span>
+      </div></div><div class="flatpickr-days" tabindex="-1"><div class="dayContainer"><span class="flatpickr-day prevMonthDay flatpickr-disabled" aria-label="February 27, 2022">27</span><span class="flatpickr-day prevMonthDay flatpickr-disabled" aria-label="February 28, 2022">28</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 1, 2022">1</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 2, 2022">2</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 3, 2022">3</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 4, 2022">4</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 5, 2022">5</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 6, 2022">6</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 7, 2022">7</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 8, 2022">8</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 9, 2022">9</span><span class="flatpickr-day flatpickr-disabled" aria-label="March 10, 2022">10</span><span class="flatpickr-day today" aria-label="March 11, 2022" aria-current="date" tabindex="-1">11</span><span class="flatpickr-day " aria-label="March 12, 2022" tabindex="-1">12</span><span class="flatpickr-day " aria-label="March 13, 2022" tabindex="-1">13</span><span class="flatpickr-day " aria-label="March 14, 2022" tabindex="-1">14</span><span class="flatpickr-day " aria-label="March 15, 2022" tabindex="-1">15</span><span class="flatpickr-day " aria-label="March 16, 2022" tabindex="-1">16</span><span class="flatpickr-day " aria-label="March 17, 2022" tabindex="-1">17</span><span class="flatpickr-day " aria-label="March 18, 2022" tabindex="-1">18</span><span class="flatpickr-day " aria-label="March 19, 2022" tabindex="-1">19</span><span class="flatpickr-day " aria-label="March 20, 2022" tabindex="-1">20</span><span class="flatpickr-day " aria-label="March 21, 2022" tabindex="-1">21</span><span class="flatpickr-day " aria-label="March 22, 2022" tabindex="-1">22</span><span class="flatpickr-day " aria-label="March 23, 2022" tabindex="-1">23</span><span class="flatpickr-day " aria-label="March 24, 2022" tabindex="-1">24</span><span class="flatpickr-day " aria-label="March 25, 2022" tabindex="-1">25</span><span class="flatpickr-day " aria-label="March 26, 2022" tabindex="-1">26</span><span class="flatpickr-day " aria-label="March 27, 2022" tabindex="-1">27</span><span class="flatpickr-day " aria-label="March 28, 2022" tabindex="-1">28</span><span class="flatpickr-day " aria-label="March 29, 2022" tabindex="-1">29</span><span class="flatpickr-day " aria-label="March 30, 2022" tabindex="-1">30</span><span class="flatpickr-day " aria-label="March 31, 2022" tabindex="-1">31</span><span class="flatpickr-day nextMonthDay" aria-label="April 1, 2022" tabindex="-1">1</span><span class="flatpickr-day nextMonthDay" aria-label="April 2, 2022" tabindex="-1">2</span><span class="flatpickr-day nextMonthDay" aria-label="April 3, 2022" tabindex="-1">3</span><span class="flatpickr-day nextMonthDay" aria-label="April 4, 2022" tabindex="-1">4</span><span class="flatpickr-day nextMonthDay" aria-label="April 5, 2022" tabindex="-1">5</span><span class="flatpickr-day nextMonthDay" aria-label="April 6, 2022" tabindex="-1">6</span><span class="flatpickr-day nextMonthDay" aria-label="April 7, 2022" tabindex="-1">7</span><span class="flatpickr-day nextMonthDay" aria-label="April 8, 2022" tabindex="-1">8</span><span class="flatpickr-day nextMonthDay" aria-label="April 9, 2022" tabindex="-1">9</span></div></div></div></div><div class="flatpickr-time" tabindex="-1"><div class="numInputWrapper"><input class="numInput flatpickr-hour" type="number" aria-label="Hour" tabindex="-1" step="1" min="1" max="12"><span class="arrowUp"></span><span class="arrowDown"></span></div><span class="flatpickr-time-separator">:</span><div class="numInputWrapper"><input class="numInput flatpickr-minute" type="number" aria-label="Minute" tabindex="-1" step="5" min="0" max="59"><span class="arrowUp"></span><span class="arrowDown"></span></div><span class="flatpickr-am-pm" title="Click to toggle" tabindex="-1">PM</span></div></div>
+</body>
+</html>

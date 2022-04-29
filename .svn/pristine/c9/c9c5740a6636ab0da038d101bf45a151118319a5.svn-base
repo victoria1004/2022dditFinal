@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.project.mapper.ProjectMapper">
+	<!-- 프로젝트 모든 구성원 목록 -->
+	<select id="getAllMbr" parameterType="String" resultType="memberVO">
+		SELECT A.MBR_ID
+			, A.MBR_NM
+			, A.MBR_IMG
+			, A.MBR_EML
+			, A.MBR_STTS
+			, A.MBR_DEPT
+			, A.MBR_CTGR_CD
+		FROM MEMBER A, (SELECT MBR_ID
+	                    FROM PJT_PRTPNT 
+	                    WHERE PJT_NO = #{pjtNo}) B
+		WHERE A.MBR_ID = B.MBR_ID
+		<if test="mbrId != null and mbrId != ''">
+		ORDER BY DECODE(A.MBR_ID, #{mbrId}, 1)
+		</if>
+	</select>
+	
+	<!-- 사용자가 참여중인 프로젝트 리스트  -->
+	<select id="getMyPjtList" parameterType="String" resultType="projectVO">
+		SELECT D.PJT_NO
+			, D.PJT_NM
+			, D.PJT_CTGR_CD
+		FROM PROJECT D, (SELECT PJT_NO
+		                    FROM PJT_PRTPNT
+		                    WHERE MBR_ID = #{mbrId}) C
+		WHERE D.PJT_NO = C.PJT_NO
+		ORDER BY PJT_NO
+	</select>
+	
+	<!-- 프로젝트 번호로 프로젝트 객체 꺼내기 -->
+	<select id="getPjt" parameterType="String" resultType="projectVO">
+		SELECT PJT_NO
+			, PJT_CTGR_CD
+			, PJT_NM
+			, PJT_STRT_YMD
+			, PJT_END_YMD
+		FROM PROJECT 
+		WHERE PJT_NO = #{pjtNo}
+	</select>
+	
+	<!-- 프로젝트 모든 구성원 가져오기(신청승인 뷰에서) -->
+	<select id="allPrtpnt" parameterType="String" resultType="hashMap">
+         SELECT C.MBR_ID
+				, C.MBR_NM
+				, C.MBR_IMG
+				, C.MBR_EML
+				, C.MBR_TELNO
+				, C.MBR_STTS
+				, C.MBR_DEPT
+				, C.MBR_CTGR_CD
+	            , D.PJT_PRTPNT_RL
+                , D.PJT_NM
+		FROM MEMBER C, (SELECT A.MBR_ID, A.PJT_PRTPNT_RL, B.PJT_NM
+                        FROM PJT_PRTPNT A, PROJECT B 
+                        WHERE A.PJT_NO = B.PJT_NO 
+                        AND A.PJT_NO = #{pjtNo}) D
+		WHERE C.MBR_ID = D.MBR_ID
+	</select>
+	
+	
+	<!-- 신청 승인 시 프로젝트 구성원에 추가 -->
+	<insert id="beMyMember" parameterType="map">
+	  INSERT INTO PJT_PRTPNT (PJT_NO, MBR_ID, PJT_PRTPNT_RL)
+ 	       VALUES (#{pjtNo}, #{mbrId}, #{role})
+	</insert>
+	
+	<select id="selectPjtOl" parameterType="String" resultType="String">
+		SELECT 
+			PJT_OL
+		FROM PROJECT
+		WHERE PJT_NO = #{pjtNo}
+	</select>
+	
+	<select id="getPjtNm" parameterType="String" resultType="String">
+		SELECT 
+			PJT_NM
+		FROM PROJECT
+		WHERE PJT_NO = #{pjtNo}
+	</select>
+	
+</mapper>

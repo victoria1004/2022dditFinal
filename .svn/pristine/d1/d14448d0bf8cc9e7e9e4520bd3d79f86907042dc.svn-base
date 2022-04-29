@@ -1,0 +1,60 @@
+package kr.or.ddit.feed.controller;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.feed.service.PstService;
+import kr.or.ddit.feed.vo.PstCmntVO;
+
+@RequestMapping("/feed")
+@Controller
+public class PstCmntController {
+	private static final Logger logger = LoggerFactory.getLogger(PstCmntController.class);
+	
+	@Autowired
+	PstService pstService;
+	
+	//댓글 등록
+	@ResponseBody
+	@RequestMapping(value = "cmntInsert.do", method = RequestMethod.POST)
+	public int cmntInsert(@RequestParam String pstNo, @RequestParam String cmntCn) {
+		logger.info("cmnt pstNo", pstNo);
+		logger.info("cmnt cmntCn", cmntCn);
+		
+		PstCmntVO cmntVO = new PstCmntVO();
+		cmntVO.setPstNo(pstNo);
+		cmntVO.setCmntCn(cmntCn);
+		
+		return pstService.cmntInsert(cmntVO);
+	}
+	
+	//댓글 수정
+	@ResponseBody
+	@RequestMapping(value = "cmntUpdate.do", method = RequestMethod.POST)
+	public int cmntUpdate(@RequestParam String cmntNo, @RequestParam String cmntCn) {
+		logger.info(cmntNo);
+		logger.info(cmntCn);
+		
+		PstCmntVO cmntVO = new PstCmntVO();
+		cmntVO.setCmntNo(cmntNo);
+		cmntVO.setCmntCn(cmntCn);
+		
+		return pstService.cmntUpdate(cmntVO);
+	}
+	
+	//댓글 삭제
+	@ResponseBody
+	@RequestMapping(value = "cmntDelete.do", method = RequestMethod.POST)
+	public int cmntDelete(@RequestParam String cmntNo) {
+		logger.info(cmntNo);
+		
+		return pstService.cmntDelete(cmntNo);
+	}
+
+}

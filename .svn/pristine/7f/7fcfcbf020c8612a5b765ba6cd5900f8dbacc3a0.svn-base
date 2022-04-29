@@ -1,0 +1,91 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.reservation.mapper.MtrMapper">
+	<!-- 해당일 예약정보 조회 -->
+	<select id="todayRes" parameterType="String" resultType="HashMap">
+		SELECT
+		    A.RSVT_NO
+		   ,B.MTR_NM
+		   ,C.MBR_DEPT
+		   ,C.MBR_NM
+		   ,A.RSVT_STRT_HR
+		   ,A.RSVT_YMD
+		FROM
+		    MTR_RSVT A INNER JOIN MTR B ON(A.MTR_NO = B.MTR_NO)
+		    INNER JOIN MEMBER C ON(A.MBR_ID=C.MBR_ID)
+		WHERE A.RSVT_YMD=#{rsvtYmd}
+	</select>
+
+	<!-- 예약 등록 -->
+	<insert id="resInsert" parameterType="mtrRsvtVO">
+		<selectKey order="BEFORE" resultType="integer" keyProperty="rsvtNo">
+			SELECT NVL(MAX(RSVT_NO),0)+1 FROM MTR_RSVT
+		</selectKey>
+		INSERT INTO MTR_RSVT 
+			(RSVT_NO
+		   , MTR_NO
+		   , MBR_ID
+		   , RSVT_STRT_HR
+		   , RSVT_YMD)
+		VALUES
+			(#{rsvtNo}
+		   , #{mtrNo}
+		   , #{mbrId}
+		   , #{rsvtStrtHr}
+		   , #{rsvtYmd})
+	</insert>
+	
+	<!-- 예약정보 단건 조회 -->
+	<select id="resSelectOne" parameterType="mtrRsvtVO" resultType="mtrRsvtVO">
+		SELECT  RSVT_NO
+			  , MTR_NO
+			  , MBR_ID
+			  , RSVT_STRT_HR
+			  , RSVT_YMD
+		  FROM  MTR_RSVT
+		 WHERE  MTR_NO = #{mtrNo}
+		   AND  MBR_ID = #{mbrId}
+		   AND  RSVT_STRT_HR = #{rsvtStrtHr}
+		   AND  RSVT_YMD = #{rsvtYmd}
+	</select>
+	
+	<!-- 예약취소(예약정보 삭제) -->
+	<delete id="resDelete" parameterType="mtrRsvtVO">
+		DELETE FROM MTR_RSVT
+		 WHERE  MTR_NO = #{mtrNo}
+		   AND  MBR_ID = #{mbrId}
+		   AND  RSVT_STRT_HR = #{rsvtStrtHr}
+		   AND  RSVT_YMD = #{rsvtYmd}
+	</delete>
+	
+	<!-- 회의실 비품 구비현황 조회 -->
+	<select id="mtrStts" resultType="HashMap">
+		SELECT  A.MTR_NO
+			   ,A.MTR_GDS_NO
+			   ,B.MTR_GDS_NM
+			   ,C.MTR_NM
+		  FROM  MTR_STTS A JOIN MTR_GDS B ON(A.MTR_GDS_NO=B.MTR_GDS_NO)
+		  		JOIN MTR C ON(A.MTR_NO=C.MTR_NO)
+	</select>
+	
+	<!-- 회의실 비품 추가 -->
+	<insert id="mtrSttsInsert" parameterType="mtrVO">
+		INSERT INTO MTR_STTS (
+				    MTR_NO
+				   ,MTR_GDS_NO
+				) VALUES (
+				    #{mtrNo}
+				   ,#{mtrGdsNo}
+				)
+	</insert>
+	
+	<!-- 회의실 비품 삭제 -->
+	<delete id="mtrDelete" parameterType="mtrVO">
+		DELETE FROM  MTR_STTS
+      		  WHERE  MTR_NO = #{mtrNo}
+	    		AND  MTR_GDS_NO = #{mtrGdsNo}
+	</delete>
+	
+</mapper>

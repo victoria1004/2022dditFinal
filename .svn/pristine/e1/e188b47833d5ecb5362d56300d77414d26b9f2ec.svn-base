@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.user.mapper.AlarmMapper">
+
+	<!-- 알람테이블 -->
+	<resultMap type="alarmVO" id="alarmList">
+		<id property="alrmNo" column="ALRM_NO"/>
+		<result property="mbrId" column="MBR_ID"/>
+		<result property="alrmCtgrNo" column="ALRM_CTGR_CD"/>
+		<result property="alrmIdntyYn" column="ALRM_IDNTY_YN"/>
+		<result property="alrmSndId" column="ALRM_SND_ID"/>
+		<result property="alrmSndInfo" column="ALRM_SND_INFO"/>
+		<result property="alrmLocation" column="ALRM_LOCATION"/>
+		<collection property="ctgrList" resultMap="cmDvsnCtgrList"></collection>
+	</resultMap>
+	<!-- 중분류테이블 -->
+	<resultMap type="cmDvsnCtgrVO" id="cmDvsnCtgrList">
+		<id property="cmDvsnCtgrCd" column="CM_DVSN_CTGR_CD"/>
+		<result property="cmMjrCtgrCd" column="CM_MJR_CTGR_CD"/>
+		<result property="cmDvsnCtgrNm" column="CM_DVSN_CTGR_NM"/>
+	</resultMap>
+
+	<!-- 접속한 사용자가 안읽은 모든 메시지 가져오기 -->
+	<select id="getAllNotReadedMsg" parameterType="String" resultMap="alarmList">
+		SELECT A.ALRM_NO
+			, A.MBR_ID
+			, A.ALRM_CTGR_CD
+			, A.ALRM_IDNTY_YN
+			, A.ALRM_SND_ID
+			, A.ALRM_SND_INFO
+            , B.CM_DVSN_CTGR_NM
+            , A.ALRM_LOCATION
+		FROM ALARM A, CM_DVSN_CTGR B
+		WHERE A.ALRM_CTGR_CD = B.CM_DVSN_CTGR_CD 
+        AND A.MBR_ID = #{mbrId}
+		AND A.ALRM_IDNTY_YN = 'N'
+		ORDER BY A.ALRM_NO DESC
+	</select>
+	
+	<!-- 안읽은 메시지 카운트 -->
+	<select id="getAllNotReadedCount" parameterType="String" resultType="integer">
+		SELECT COUNT (*)
+		FROM ALARM
+		WHERE MBR_ID = #{mbrId}
+		AND ALRM_IDNTY_YN = 'N'
+	</select>
+	
+	<!-- 채팅,멘션,일감,메일,회의에 참여시 알림 insert -->
+	<insert id="insertAlarmMsg" parameterType="map">
+		<selectKey order="BEFORE" resultType="String" keyProperty="alrmNo">
+			SELECT TO_NUMBER(TO_CHAR(SYSDATE,'YYYYMMDD'))||'A'||ALARM_SEQ.NEXTVAL AS ALRM_NO
+			  FROM DUAL
+		</selectKey>
+		INSERT INTO ALARM
+		  (ALRM_NO, MBR_ID, ALRM_CTGR_CD, ALRM_IDNTY_YN, ALRM_SND_ID, ALRM_SND_INFO, ALRM_LOCATION)
+		VALUES (#{alrmNo}, #{mbrId}, #{alrmCtgrCd}, 'N', #{alrmSndId}, #{data}, #{location})
+	</insert>
+	
+	<!-- 알림메시지 확인 시 읽음으로 변경 -->	
+	<update id="updateAlarmMsg" parameterType="map">
+		UPDATE ALARM
+		   SET ALRM_IDNTY_YN = 'Y'
+		  WHERE MBR_ID = #{mbrId}
+		  AND ALRM_NO = #{alrmNo}
+	</update>
+	
+	
+	
+	
+	
+	
+</mapper>

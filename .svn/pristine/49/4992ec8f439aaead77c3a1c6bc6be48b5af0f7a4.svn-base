@@ -1,0 +1,48 @@
+package kr.or.ddit.chat.vo;
+
+public class ChatVO {
+	private String chatNo;
+	private String chatrmNo;
+	private String mbrId;
+	private String chatDt;
+	private String chatCn;
+	
+	public String getChatNo() {
+		return chatNo;
+	}
+	public void setChatNo(String chatNo) {
+		this.chatNo = chatNo;
+	}
+	public String getChatrmNo() {
+		return chatrmNo;
+	}
+	public void setChatrmNo(String chatrmNo) {
+		this.chatrmNo = chatrmNo;
+	}
+	public String getMbrId() {
+		return mbrId;
+	}
+	public void setMbrId(String mbrId) {
+		this.mbrId = mbrId;
+	}
+	public String getChatDt() {
+		return chatDt;
+	}
+	public void setChatDt(String chatDt) {
+		this.chatDt = chatDt;
+	}
+	public String getChatCn() {
+		return chatCn;
+	}
+	public void setChatCn(String chatCn) {
+		this.chatCn = chatCn;
+	}
+	@Override
+	public String toString() {
+		return "ChatVO [chatNo=" + chatNo + ", chatrmNo=" + chatrmNo + ", mbrId=" + mbrId + ", chatDt=" + chatDt
+				+ ", chatCn=" + chatCn + "]";
+	}
+	
+	
+	
+}

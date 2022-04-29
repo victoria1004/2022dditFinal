@@ -1,0 +1,349 @@
+package kr.or.ddit.user.controller;
+
+import java.io.File;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.net.URLEncoder;
+import java.util.List;
+import java.util.UUID;
+
+import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+
+import kr.or.ddit.project.service.TrsmFileService;
+import kr.or.ddit.project.vo.TrsmFileVO;
+import kr.or.ddit.user.service.AlarmService;
+import kr.or.ddit.user.service.EmailReceiverService;
+import kr.or.ddit.user.service.EmailService;
+import kr.or.ddit.user.service.LoginService;
+import kr.or.ddit.user.vo.EmailReceiverVO;
+import kr.or.ddit.user.vo.EmailVO;
+import kr.or.ddit.user.vo.MemberVO;
+
+@RequestMapping("/user")
+@Controller
+public class EmailController {
+	private static final Logger logger = LoggerFactory.getLogger(EmailController.class);
+	
+	@Autowired
+	EmailService emailService;
+	@Autowired
+	LoginService loginService;
+	@Autowired
+	AlarmService alarmService;
+	@Autowired
+	EmailReceiverService erService;
+	@Autowired
+	TrsmFileService trsmFileService;
+	
+	
+	//이메일 조회 화면 (메인)
+	@RequestMapping("/email.do")
+	public String emailSelect(Model model, EmailVO emailVO, HttpSession session, @RequestParam String mbrId) {
+		
+		logger.info("메일 볼 아이디 : " + mbrId);
+		
+		MemberVO memberVO = (MemberVO) session.getAttribute("member");
+		MemberVO member = this.loginService.loginPost(memberVO);
+		
+		//세션 속성명으로 member 사용하여 member객체 세팅
+		session.setAttribute("member", member);
+		String mbrEml = member.getMbrEml();
+		
+		//메일함 메인 조회
+		List<EmailVO> list = this.emailService.emailSelect(mbrEml);
+		logger.info(mbrId + "의 메일 list : " + list );
+		model.addAttribute("mailList" , list);
+		
+		//중요메일함 조회
+		List<EmailVO> importantList = this.emailService.emailImportant(mbrEml);
+		logger.info("중요메일함" + importantList);
+		model.addAttribute("importantList", importantList);
+		
+		//임시보관함 조회
+		List<EmailVO> draftList = this.emailService.draftList(mbrEml);
+		logger.info("임시보관 : "+ draftList);
+		model.addAttribute("draftList", draftList);
+		
+		//보낸메일함 조회 
+		List<EmailVO> sentList = this.emailService.emailSend(mbrEml);
+		logger.info("보낸메일함 메일들 : " + sentList);
+		model.addAttribute("sentList", sentList);
+		
+		//휴지통 조회
+		List<EmailVO> trashList = this.emailService.emailTrash(mbrEml);
+		logger.info("휴지통 : " + trashList );
+		model.addAttribute("trashList", trashList);
+		
+		//첨부파일 조회
+		//메일번호찾기
+		List<TrsmFileVO> trsmList = this.emailService.emailFile();
+		logger.info("첨부파일 조회 : " + trsmList );
+		model.addAttribute("trsmList", trsmList);
+		
+		//프로필사진 가져오기
+		List<MemberVO> memImg = this.emailService.memImg();
+		logger.info("22222222222 " + memImg);
+		model.addAttribute("memImg", memImg);
+		
+		return "user/email";
+		
+	}
+	
+	//이메일 보내기(등록)
+	@RequestMapping(value = "/email/insert", method = { RequestMethod.POST })
+	@ResponseBody
+	public String emailInsert(@ModelAttribute EmailVO emailVO, HttpSession session, 
+								@ModelAttribute EmailReceiverVO emailReceiverVO, Model model, String mbrId) {
+		
+		MemberVO memberVO = (MemberVO) session.getAttribute("member");
+		MemberVO member = this.loginService.loginPost(memberVO);
+		//메일 가져오기
+		String sndrEmalAddr = member.getMbrEml();
+		String sndrEmlNm = member.getMbrNm();
+		//logger.info("메일 가져왔냐 : " + sndrEmalAddr);
+		emailVO.setSndrEmlAddr(sndrEmalAddr);
+		int result = emailService.emailInsert(emailVO);
+		logger.info("메일 보내기 내용 : " + emailVO.toString());
+		logger.info("메일 보내기 성공 : " + result);
+		
+		//EML_RCVR 테이블에 넣기
+		//메일번호 가져오기
+		String emlNo = emailService.emlNoSelect();
+		logger.info("이메일 번호 가져오기 : "+ emlNo);
+		
+		//이메일 가져와서 찾기
+		String rcvrEmlAddr = emailVO.getRcvrEmlAddr();
+		logger.info("2번째 테이블에 넣을 아이디 찾을 이메일 - " + rcvrEmlAddr);
+		
+		//이메일로 아이디 찾기 
+		String sendmbrId = emailService.mbrIdSelect(rcvrEmlAddr);
+		logger.info("이메일로 아이디 찾았냐 : " + sendmbrId);
+		
+		
+		//이메일로 이름 찾기
+		String sendmbrNm = emailService.mbrNmSelect(rcvrEmlAddr);
+		logger.info("이메일로 이름 찾았냐 : " + sendmbrNm);
+				
+				
+		emailReceiverVO = new EmailReceiverVO();
+		emailReceiverVO.setEmlNo(emlNo);
+		emailReceiverVO.setMbrId(sendmbrId);
+		logger.info("이메일 2번째 테이블 : "+emailReceiverVO.toString());
+		
+		//알림보내기
+		logger.info("알람에 넣을거 ㅅ " + sndrEmlNm +"A04"+ sendmbrId + sendmbrNm);
+		alarmService.insertAlarmMsg(sendmbrNm, "A04", sendmbrId, sndrEmlNm);
+		
+		//EML_RCVR 테이블에 Insert 
+		int erInsert = erService.emailReceiverInsert(emailReceiverVO);
+		
+		//////////////////////////////////////////////////////////////////
+	
+		return sendmbrId;
+	}
+	
+	
+	
+	//////////여기부터 첨부파일
+	@ResponseBody
+	@PostMapping("/email/insertFile")
+	public String trsmFileEmailInsert(@RequestParam("uploadFile") MultipartFile[] uploadfile, @ModelAttribute TrsmFileVO trsmfileVO, Model model) {
+		
+		//업로드시 사용 폴더
+		String uploadFolder = "D:/A_TeachingMaterial/7.LastProject/workspace/doIT/src/main/webapp/resources/TrsmFile";
+
+		//첨부파일
+		logger.info("uploadfile 왔냐 - " + uploadfile);
+		
+		TrsmFileVO trsmFileVO = new TrsmFileVO();
+		
+		//메일번호 가져오기
+		String emlNo = emailService.emlNoSelect();
+		logger.info("이메일 번호 가져오기 - "+ emlNo);
+		trsmFileVO.setEmlNo(emlNo);
+		
+		for(MultipartFile multipartFile : uploadfile) {
+			logger.info("------------------------------------------");
+			logger.info("이메일에서 첨부파일명 : " + multipartFile.getOriginalFilename());
+			logger.info("이메일 첨부파일크기 : " + multipartFile.getSize());
+			
+			UUID uuid = UUID.randomUUID();
+			String fileName = uuid.toString() + "_" + multipartFile.getOriginalFilename();
+			String relName = multipartFile.getOriginalFilename();
+			
+			//업로드할 경로
+			File saveFile = new File(uploadFolder, fileName);
+			
+			try {
+				//파일 이름 넣기
+				trsmFileVO.setTrsmFileNm(relName);
+				//파일 경로 넣기
+				trsmFileVO.setTrsmFileAddr(saveFile.getPath());
+				
+				multipartFile.transferTo(saveFile);
+				
+				//DB넣기
+				logger.info("파일VO : " +trsmFileVO.toString());
+				
+				int res = emailService.trsmFileEmailInsert(trsmFileVO);
+				
+				if(res > 0) {
+					logger.info("이메일 첨부파일 저장 성공");
+				}else {
+					logger.info("이메일 첨부파일 저장 실패");
+				}
+				
+			} catch (Exception e) {
+				logger.info(e.getMessage());
+			}
+		}	
+			
+		
+		return "user/email";
+				
+	}
+	
+	
+	//첨부파일 다운로드
+    @GetMapping(value = "/email/download", produces = MediaType.APPLICATION_OCTET_STREAM_VALUE)
+    public ResponseEntity<Resource> download(String fileNo){
+    	
+    	logger.info("파일이름 - " + fileNo);
+    	
+    	TrsmFileVO vo = emailService.emailFileDownload(fileNo);
+    	
+    	String fileAddr = vo.getTrsmFileAddr();
+    	
+    	Resource file = new FileSystemResource(fileAddr);
+    	
+    	logger.info("resource - " + file);
+    	
+    	if(file.exists() == false) {
+    		return new ResponseEntity<Resource>(HttpStatus.NOT_FOUND);
+    	}
+    	
+    	//uuid로 들어간 이름
+    	String resourceName = file.getFilename();
+    	logger.info("uuid로 들어간 이름 - " + resourceName);
+    	
+    	//uuid 제거
+    	String originalName = resourceName.substring(resourceName.indexOf("_") +1);
+    	logger.info("uuid 뺀 이름 -" + originalName);
+    	
+    	HttpHeaders headers = new HttpHeaders();
+    	
+    	try {
+			String downloadName = null;
+			downloadName = URLEncoder.encode(originalName,"UTF-8");
+			headers.add("Content-Disposition", "attachment; filename=" + new String(downloadName.getBytes("UTF-8"), "ISO-8859-1"));
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+    	
+        return new ResponseEntity<>(file, headers, HttpStatus.OK);
+    }
+	
+	
+
+	//중요메일함으로 보내기
+	@ResponseBody
+	@PostMapping("/email/important")
+	public String importantEmail(@ModelAttribute EmailVO emailVO, String emlNo) {
+		
+		logger.info("메일번호 받기 - " + emlNo);
+		int result = emailService.importantEmail(emlNo);
+		
+		return "user/email";
+	}
+	
+	
+	//이메일 임시보관
+	@ResponseBody
+	@PostMapping("/email/save")
+	public String emailSave(@ModelAttribute EmailVO emailVO, HttpSession session, @ModelAttribute EmailReceiverVO emailReceiverVO) {
+		
+		MemberVO memberVO = (MemberVO) session.getAttribute("member");
+		MemberVO member = this.loginService.loginPost(memberVO);
+		
+		//메일 가져오기
+		String sndrEmalAddr = member.getMbrEml();
+		//logger.info("메일 가져왔냐 : " + sndrEmalAddr);
+		emailVO.setSndrEmlAddr(sndrEmalAddr);
+		emailVO.setEmlCtgr("작성임시보관");
+		int result = emailService.emailSave(emailVO);
+		//logger.info("메일 보내기 성공 : " + result);
+		
+		
+		return "user/email";
+	}
+	
+	
+	//이메일 휴지통으로 이동
+	@ResponseBody
+	@PostMapping("/email/TrashUpdate")
+	public String emailTrashUpdate(@ModelAttribute EmailVO emailVO, String emlNo) {
+		
+		logger.info("메일 번호 받았냐 : "+emlNo);
+		int res = emailService.emailTrashUpdate(emlNo);
+		
+		return "user/email";
+	}
+		
+	//휴지통에서 이메일 완전삭제
+	@ResponseBody
+	@PostMapping("/email/TrashDelete")
+	public String trashDelete(@RequestParam String emlNo) {
+		
+		int result = emailService.trashDelete(emlNo);
+				
+		//logger.info("result: " + result);
+		
+		return "user/email";
+	}
+	
+	
+	//이메일 읽음으로 변경
+	@ResponseBody
+	@PostMapping("/email/emailY")
+	public String emailReadY (String emlNo) {
+		
+		int result = emailService.emailReadY(emlNo); 
+		
+		return "user/email";
+	}
+	
+	//이메일 안읽음으로 변경
+	@ResponseBody
+	@PostMapping("/email/emailN")
+	public String emailReadN (String emlNo) {
+		
+		int result = emailService.emailReadN(emlNo); 
+		
+		return "user/email";
+	}
+	
+	
+	
+}

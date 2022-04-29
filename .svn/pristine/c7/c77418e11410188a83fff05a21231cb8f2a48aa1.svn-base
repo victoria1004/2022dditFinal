@@ -1,0 +1,67 @@
+package kr.or.ddit.project.vo;
+
+public class TrsmFileVO {
+
+	private String fileNo;			//파일번호
+	private String trsmFileAddr;	//전송파일경로
+	private String trsmFileNm;		//전송파일이름
+	private String trsmFileCtgrNm;	//전송분류명(T,M,P)
+	private String tdNo;			//일감번호
+	private String emlNo;			//메일번호
+	private String pstNo;			//피드번호
+	
+	
+	public String getFileNo() {
+		return fileNo;
+	}
+	public void setFileNo(String fileNo) {
+		this.fileNo = fileNo;
+	}
+	public String getTrsmFileAddr() {
+		return trsmFileAddr;
+	}
+	public void setTrsmFileAddr(String trsmFileAddr) {
+		this.trsmFileAddr = trsmFileAddr;
+	}
+	public String getTrsmFileNm() {
+		return trsmFileNm;
+	}
+	public void setTrsmFileNm(String trsmFileNm) {
+		this.trsmFileNm = trsmFileNm;
+	}
+	public String getTrsmFileCtgrNm() {
+		return trsmFileCtgrNm;
+	}
+	public void setTrsmFileCtgrNm(String trsmFileCtgrNm) {
+		this.trsmFileCtgrNm = trsmFileCtgrNm;
+	}
+	public String getTdNo() {
+		return tdNo;
+	}
+	public void setTdNo(String tdNo) {
+		this.tdNo = tdNo;
+	}
+	public String getEmlNo() {
+		return emlNo;
+	}
+	public void setEmlNo(String emlNo) {
+		this.emlNo = emlNo;
+	}
+	public String getPstNo() {
+		return pstNo;
+	}
+	public void setPstNo(String pstNo) {
+		this.pstNo = pstNo;
+	}
+	
+	
+	@Override
+	public String toString() {
+		return "TrsmFileVO [fileNo=" + fileNo + ", trsmFileAddr=" + trsmFileAddr + ", trsmFileNm=" + trsmFileNm
+				+ ", trsmFileCtgrNm=" + trsmFileCtgrNm + ", tdNo=" + tdNo + ", emlNo=" + emlNo + ", pstNo=" + pstNo
+				+ "]";
+	}
+	
+	
+	
+}

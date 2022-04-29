@@ -1,0 +1,37 @@
+//프로젝트의 모든 구성원 출력
+function getAllMbr(pjtNo){
+	
+	$.ajax({
+		
+		url : "/project/getAllMbr",
+		data : {pjtNo : pjtNo},
+		type : "post",
+		success : function(res){
+		
+		var str = '<div class="table-responsive"><table class="table"><tbody><tr>';
+
+			$.each(res, function(i, v){
+			
+				console.log(i, v);
+			
+		        str += '<td><div class="td-content profileDiv"></div></td>';
+		        if (v.mbrImg == null){
+		        str += '<td><img src="/resources/profileImage/profileimage.png" style="width:40px; height:40px;" alt="'+v.mbrNm+'"></td>';
+		        } else {
+		        str += '<td><img src="/resources/profileImage/'+v.mbrImg+'" style="width:40px; height:40px;" alt="'+v.mbrNm+'"></td>';
+		        }
+		        str += '<td><div class="td-content customer-name profileDiv">'+v.mbrNm+'</div></td>';
+		        str += '<td><div class="td-content profileDiv"><span class="badge outline-badge-primary">Shipped</span></div></td>';
+                
+				})
+                str += '</tr></tbody></table></div>';
+				$("#pjtMbrList").append(str);
+
+		}, error : function(){
+			
+		}
+		
+	})
+	
+	
+}

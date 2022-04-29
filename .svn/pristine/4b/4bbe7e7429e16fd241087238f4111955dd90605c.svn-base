@@ -1,0 +1,31 @@
+package kr.or.ddit.reservation.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.reservation.mapper.MtrMapper;
+import kr.or.ddit.reservation.service.MtrService;
+import kr.or.ddit.reservation.vo.MtrRsvtVO;
+
+@Service
+public class MtrServiceImpl implements MtrService {
+
+	@Autowired
+	MtrMapper mtrMapper;
+	
+	@Override
+	public List<Map<String,Object>> todayRes(String rsvtYmd) {
+		List<Map<String,Object>> mtrRsvtList = this.mtrMapper.todayRes(rsvtYmd); 
+		return mtrRsvtList;
+	}
+
+	@Override
+	public int resInsert(MtrRsvtVO mtrrVO) {
+		int result = this.mtrMapper.resInsert(mtrrVO);
+		return result;
+	}
+	
+}

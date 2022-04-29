@@ -1,0 +1,80 @@
+package kr.or.ddit.project.vo;
+
+import org.springframework.web.multipart.MultipartFile;
+
+public class ReportVO {
+	
+	String pjtNo; //프로젝트번호
+	String rptNo; //게시글번호
+	String rptTtl; //게시글제목
+	String rptCn; //게시글 내용
+	String rptDt; //게시글 날짜
+	String rptFileNm; //첨부파일명
+	String rptFilePath; //첨부파일 경로
+	String rptWrtrId; // 작성자 아이디
+	String rptCtgrNm; //일간 주간 구분
+	
+	public String getPjtNo() {
+		return pjtNo;
+	}
+	public void setPjtNo(String pjtNo) {
+		this.pjtNo = pjtNo;
+	}
+	public String getRptNo() {
+		return rptNo;
+	}
+	public void setRptNo(String rptNo) {
+		this.rptNo = rptNo;
+	}
+	public String getRptTtl() {
+		return rptTtl;
+	}
+	public void setRptTtl(String rptTtl) {
+		this.rptTtl = rptTtl;
+	}
+	public String getRptCn() {
+		return rptCn;
+	}
+	public void setRptCn(String rptCn) {
+		this.rptCn = rptCn;
+	}
+	public String getRptDt() {
+		return rptDt;
+	}
+	public void setRptDt(String rptDt) {
+		this.rptDt = rptDt;
+	}
+	public String getRptFileNm() {
+		return rptFileNm;
+	}
+	public void setRptFileNm(String rptFileNm) {
+		this.rptFileNm = rptFileNm;
+	}
+	public String getRptFilePath() {
+		return rptFilePath;
+	}
+	public void setRptFilePath(String rptFilePath) {
+		this.rptFilePath = rptFilePath;
+	}
+	public String getRptWrtrId() {
+		return rptWrtrId;
+	}
+	public void setRptWrtrId(String rptWrtrId) {
+		this.rptWrtrId = rptWrtrId;
+	}
+	public String getRptCtgrNm() {
+		return rptCtgrNm;
+	}
+	public void setRptCtgrNm(String rptCtgrNm) {
+		this.rptCtgrNm = rptCtgrNm;
+	}
+	
+	@Override
+	public String toString() {
+		return "ReportVO [pjtNo=" + pjtNo + ", rptNo=" + rptNo + ", rptTtl=" + rptTtl + ", rptCn=" + rptCn + ", rptDt="
+				+ rptDt + ", rptFileNm=" + rptFileNm + ", rptFilePath=" + rptFilePath + ", rptWrtrId=" + rptWrtrId
+				+ ", rptCtgrNm=" + rptCtgrNm + "]";
+	}
+	
+	
+}

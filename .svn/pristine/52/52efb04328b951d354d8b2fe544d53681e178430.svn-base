@@ -1,0 +1,253 @@
+package kr.or.ddit.feed.controller;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import com.google.gson.Gson;
+
+import kr.or.ddit.feed.service.LikesService;
+import kr.or.ddit.feed.service.PstService;
+import kr.or.ddit.feed.service.VoteService;
+import kr.or.ddit.feed.service.VtFrmtService;
+import kr.or.ddit.feed.service.VtRsltService;
+import kr.or.ddit.feed.vo.LikesVO;
+import kr.or.ddit.feed.vo.PstCmntVO;
+import kr.or.ddit.feed.vo.PstVO;
+import kr.or.ddit.feed.vo.VoteVO;
+import kr.or.ddit.feed.vo.VtFrmtVO;
+
+@RequestMapping("/feed")
+@Controller
+public class PstController {
+	private static final Logger logger = LoggerFactory.getLogger(PstController.class);
+
+	@Autowired
+	PstService pstService;
+	@Autowired
+	LikesService likesService;
+	@Autowired
+	VoteService voteService;
+	@Autowired
+	VtFrmtService vtFrmtService;
+	@Autowired
+	VtRsltService VtRsltService;
+	
+	// 피드 목록
+	@RequestMapping("/main.do")
+	public String select(Model model, @RequestParam(defaultValue = "1") String pjtNo, @RequestParam(defaultValue = "A001") String mbrId) {
+//		logger.info("등록");
+		logger.info("pjtNo : " + pjtNo);
+		logger.info("mbrId : " + mbrId);
+		
+		List<PstVO> list = pstService.select(pjtNo);
+		logger.info(">>>>" + list.size());
+		
+		//좋아요 확인
+		List<LikesVO> like = likesService.findLikes(mbrId);
+		logger.info("like",like);
+		
+		for(int i = 0 ; i < list.size(); i++) {
+			//피드별 좋아요 개수
+			int count = likesService.selectLikes(list.get(i).getPstNo());
+			list.get(i).setCount(count);
+			list.get(i).setYn(false);
+			for(int j = 0; j<like.size(); j++) {
+				if(list.get(i).getPstNo().equals(like.get(j).getPstNo())) {
+					list.get(i).setYn(true);
+					break;
+				}
+			}
+		}
+		//피드별 댓글 목록 출력
+		List<PstCmntVO> cmnt = pstService.cmntList();
+		
+		for(int i = 0; i < list.size(); i++) {
+			list.get(i).setCmntYn(false);
+			for(int j = 0; j<cmnt.size(); j++) {
+				if(list.get(i).getPstNo().equals(cmnt.get(j).getPstNo())){
+					list.get(i).setCmntYn(true);
+					break;
+				}
+			}
+		}
+		
+		model.addAttribute("list", list);
+		model.addAttribute("like", like);
+		model.addAttribute("cmnt", cmnt);
+
+		return "feed/main";
+
+	}
+
+	// 피드 등록
+	@RequestMapping("/insert.do")
+	public String insert(Model model, HttpServletRequest req) {
+		try {
+			req.setCharacterEncoding("UTF-8");
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		logger.info("insert----------------------------------");
+//		logger.info("등록");
+		model.addAttribute("pstVO", new PstVO());
+		model.addAttribute("voteVO", new VoteVO());
+		model.addAttribute("vtFrmtVO", new VtFrmtVO());
+		// forwarding
+		return "feed/main";
+	}
+	
+	@ResponseBody
+	@RequestMapping(value = "/insertpost.do", method = RequestMethod.POST, produces = "application/text; charset=UTF-8")
+	public void insertPost(@RequestParam Map<String, Object> data){
+			
+		//json 객체를 java 객체로 변환해준다.
+		Gson gson = new Gson();
+		List<String> strList = gson.fromJson((String) data.get("data"), List.class);
+		
+		//피드내용 담을 변수
+		String str = "";
+		//익명여부 담을 변수
+		String ann = "";
+		//마감일 담을 변수
+		String ddate = "";
+		//투표항목 담을 리스트
+		List<String> vote = new ArrayList<String>();
+		
+		for(int i=0; i<2; i++) {
+			System.out.println("결과 : " + strList.get(i));
+			str = strList.get(0);
+			ann = strList.get(1);
+			ddate = strList.get(2);
+		}
+		//투표 항목 담기
+		for(int k=3; k<strList.size(); k++) {
+			vote.add(strList.get(k));
+		}
+		
+		//피드 내용 추출하기
+		String arr[] = str.split("&");
+		
+		for(int j=0; j<arr.length; j++) {
+			System.out.println("arr["+j+"] : " + arr[j].split("=")[1]);
+		}
+		
+		//피드 부분을 담을 객체
+		PstVO pstVO = new PstVO();
+		
+		//피드 내용 넣기
+		try {
+			//한글 깨짐 방지
+			String deCn = URLDecoder.decode(arr[1].split("=")[1], "UTF-8");
+			pstVO.setPstCn(deCn);
+			
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
+		//공지여부 넣기
+		pstVO.setNtcYn(arr[2].split("=")[1]);
+		
+		int insertPst = pstService.insert(pstVO);
+		
+		//방금 등록된 피드번호 가져오기
+		String pstNo = pstService.selectPstNo();
+		logger.info("insert된 pstNo"+pstNo);
+		
+//		//마감일, 익명여부를 담을 객체
+		VtFrmtVO vtFrmtVO = new VtFrmtVO();
+		vtFrmtVO.setVtDt(ddate);
+		vtFrmtVO.setAnnYn(ann);
+		vtFrmtVO.setPstNo(pstNo);
+		
+		int insertFrmt = vtFrmtService.insertVtFrmt(vtFrmtVO);
+		
+		//방금 등록된 투표번호 가져오기
+		String vtNo = vtFrmtService.selectVtNo();
+		logger.info("insert된 vtNo"+vtNo);
+		
+		//투표 항목을 담을 객체
+		VoteVO voteVO = new VoteVO();
+		voteVO.setVtNo(vtNo);
+		
+		for(int l = 0; l < vote.size(); l++) {
+			voteVO.setVtItm(vote.get(l));
+			int insertVote = voteService.insertVote(voteVO);
+		}
+		
+//			return "feed/main";
+	}
+	
+	
+	
+//	@RequestMapping(value = "/insert.do", method = RequestMethod.POST)
+//	public String insertPost(PstVO pstVO) {
+//		logger.info("insertPost----------------------------------");
+//		try {
+//			pstVO.setPstCn(new String(pstVO.getPstCn().getBytes("8859_1"), "UTF-8"));
+//		} catch (UnsupportedEncodingException e) {
+//			e.printStackTrace();
+//		}
+//		logger.info("pstCn : " + pstVO.getPstCn());
+//		logger.info("ntcYn : " + pstVO.getNtcYn());
+//		
+//		int insertRes = this.pstService.insert(pstVO);
+//		logger.info("insertres :" + insertRes);
+//
+//		if (insertRes < 0) { // 등록 실패 시
+//			return "feed/main";
+//		}
+//		return "redirect:/feed/main.do";
+//
+//	}
+
+	// 피드 수정하기
+	@ResponseBody
+	@RequestMapping(value = "/update.do", method = RequestMethod.POST)
+	public String updatePost(@RequestParam String pstCn, @RequestParam String pstNo, @RequestParam String ntcYn) {
+		logger.info("------------------------------");
+//		logger.info("수정");
+		logger.info("update pstCn : " + pstCn);
+		logger.info("update pstNo : " + pstNo);
+		logger.info("update ntcYn : " + ntcYn);
+		
+		PstVO pstVO = new PstVO();
+		pstVO.setPstNo(pstNo);
+		pstVO.setPstCn(pstCn);
+		pstVO.setNtcYn(ntcYn);;
+
+		int updateRes = this.pstService.update(pstVO);
+		if (updateRes < 0) { // 수정 실패 시
+			return "feed/main";
+		}
+		return "redirect:/feed/main.do";
+	}
+
+	// 피드 삭제하기
+	@RequestMapping(value = "/delete.do", method = RequestMethod.POST)
+	public String delete(@RequestParam String pstNo) {
+//		logger.info("삭제");		
+		logger.info("delete pstNo : " + pstNo);
+
+		int deleteRes = this.pstService.delete(pstNo);
+		if (deleteRes < 0) { // 삭제 실패 시
+			return "feed/main";
+		}
+		return "redirect:/feed/main.do";
+
+	}
+
+}

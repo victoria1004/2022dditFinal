@@ -1,0 +1,50 @@
+package kr.or.ddit.feed.service.impl;
+
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.feed.mapper.VtFrmtMapper;
+import kr.or.ddit.feed.mapper.VtRsltMapper;
+import kr.or.ddit.feed.service.VtRsltService;
+import kr.or.ddit.feed.vo.VtRsltVO;
+
+@Service
+public class VtRsltServiceImpl implements VtRsltService{
+	private static final Logger logger = LoggerFactory.getLogger(VtRsltServiceImpl.class);
+	
+	@Autowired
+	private VtRsltMapper vtRsltMapper;
+	
+	//투표 내용 등록하기
+	public int insertRslt(VtRsltVO vtRsltVO) {
+		return vtRsltMapper.insertRslt(vtRsltVO);
+	}
+	
+	//투표 선택 수정 
+	@Override
+	public int updateRslt(VtRsltVO vtRsltVO) {
+		return vtRsltMapper.updateRslt(vtRsltVO);
+	}
+	
+	//투표 결과 출력
+	@Override
+	public List<Map<String, Object>> rsltList(VtRsltVO vtRsltVO) {
+		return vtRsltMapper.rsltList(vtRsltVO);
+	}
+	
+	//투표 수 카운트
+	@Override
+	public int getRslt(String optnNo) {
+		return vtRsltMapper.getRslt(optnNo);
+	}
+	//투표 전체 결과 조회
+	@Override
+	public List<VtRsltVO> resultVote() {
+		return vtRsltMapper.resultVote();
+	}
+}

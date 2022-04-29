@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.user.mapper.GetUserMapper">
+
+	<!-- 모든 멤버 리스트를 가져온다. -->
+	<select id="getAllUsers" parameterType="String" resultType="memberVO">
+		SELECT MBR_ID
+			, MBR_CTGR_CD
+			, MBR_NM
+			, MBR_DEPT
+			, MBR_IMG_PATH
+			, MBR_IMG 
+		FROM MEMBER
+		WHERE MBR_CTGR_CD IN ('M01','M02')
+		<if test="keyword != null and keyword != ''">
+		AND MBR_NM LIKE '%'||#{keyword}||'%'
+		</if>
+		ORDER BY (CASE WHEN MBR_CTGR_CD = 'M01' THEN 1 ELSE 2 END) ASC
+	</select>
+	
+	<!-- 이거 영태꺼임!! -->
+	<select id="getUser" parameterType="String" resultType="memberVO">
+		SELECT MBR_ID
+			, MBR_NM
+			, MBR_DEPT
+			, MBR_IMG_PATH
+			, MBR_IMG 
+		FROM MEMBER
+		WHERE MBR_CTGR_CD IN ('M01','M02')
+		AND MBR_ID = #{mbrId}
+	</select>
+	
+	<!-- 미승인 멤버 목록 가져오기 -->
+	<select id="getM03Users" parameterType="String" resultType="memberVO">
+	   SELECT MBR_ID
+		   , MBR_CTGR_CD
+		   , MBR_NM
+		   , MBR_GENDER
+		   , MBR_TELNO
+		   , MBR_DEPT
+		   , MBR_EML
+		   , MBR_IMG
+        FROM MEMBER
+        WHERE MBR_CTGR_CD = 'M03'
+         <if test="keyword != null and keyword != ''">
+         	AND MBR_NM LIKE '%'||#{keyword}||'%'
+         </if>
+   		ORDER BY (CASE WHEN MBR_CTGR_CD = 'M01' THEN 1 ELSE 2 END) ASC
+	</select>
+	<!-- 승인 멤버 목록 가져오기 -->
+	<select id="getM02Users" parameterType="String" resultType="memberVO">
+	   SELECT MBR_ID
+		   , MBR_CTGR_CD
+		   , MBR_NM
+		   , MBR_GENDER
+		   , MBR_TELNO
+		   , MBR_DEPT
+		   , MBR_EML
+		   , MBR_IMG
+        FROM MEMBER
+        WHERE MBR_CTGR_CD IN ('M01','M02')
+         <if test="keyword != null and keyword != ''">
+         	AND MBR_NM LIKE '%'||#{keyword}||'%'
+         </if>
+         ORDER BY (CASE WHEN MBR_CTGR_CD = 'M01' THEN 1 ELSE 2 END) ASC
+	</select>
+	
+	<!-- 사용자 승인/미승인 업데이트 -->
+	<update id="updateUsersStts" parameterType="map">
+		UPDATE MEMBER 
+		   SET MBR_CTGR_CD = #{mbrCtgrCd}
+		  WHERE MBR_ID = #{mbrId}
+	</update>
+	
+	
+	
+</mapper>

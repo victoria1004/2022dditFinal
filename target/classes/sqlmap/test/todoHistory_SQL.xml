@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.project.mapper.TodoHistoryMapper">
+<!-- 일감 수정 시 이력에 기록 -->	
+<insert id="insertHistory" parameterType="todoHistoryVO">
+	<selectKey resultType="String" keyProperty="historyNo" order="BEFORE">
+		SELECT TO_NUMBER(TO_CHAR(SYSDATE,'YYYYMMDD'))||'H'||HIST_SEQ.NEXTVAL AS HISTORY_NO
+			  FROM DUAL
+	</selectKey>
+	INSERT 
+	INTO TODO_HISTORY
+		(HISTORY_NO, COLUMN_NM, PRTPNT_ID, BEFORE_CN, AFTER_CN, CHG_DT, TD_NO)
+	VALUES (#{historyNo}, #{columnNm}, #{prtpntId}, #{beforeCn}, #{afterCn}, SYSDATE, #{tdNo})
+</insert>
+	
+<select id="getMyHistory" parameterType="String" resultType="hashMap">
+SELECT K.HISTORY_NO, K.COLUMN_NM, K.BEFORE_MEM, L.MBR_NM AS AFTER_MEM, K.BEFORE_CN, K.AFTER_CN, K.BEFORE_NM, K.AFTER_NM, K.CHG_DT, K.TD_NO, K.PRTPNT_ID       
+  FROM(SELECT I.HISTORY_NO, I.COLUMN_NM, J.MBR_NM AS BEFORE_MEM, I.BEFORE_CN, I.AFTER_CN, I.BEFORE_NM, I.AFTER_NM, I.CHG_DT, I.TD_NO, I.PRTPNT_ID 
+        FROM  (SELECT G.HISTORY_NO, G.COLUMN_NM, G.BEFORE_CN, G.AFTER_CN, G.BEFORE_NM, G.AFTER_NM, G.CHG_DT, G.TD_NO, H.MBR_NM AS PRTPNT_ID
+                    FROM (SELECT E.HISTORY_NO, E.COLUMN_NM, E.PRTPNT_ID, E.BEFORE_CN, E.AFTER_CN, F.BEFORE_CN AS BEFORE_NM, F.AFTER_CN AS AFTER_NM, E.CHG_DT, E.TD_NO   
+                             FROM TODO_HISTORY E, (SELECT C.HISTORY_NO, C.COLUMN_NM, C.PRTPNT_ID, C.BEFORE_CN, C.CHG_DT, C.TD_NO, D.AFTER_CN
+                                                                 FROM  (SELECT A.HISTORY_NO, A.COLUMN_NM, A.PRTPNT_ID, A.AFTER_CN, B.CM_DVSN_CTGR_NM AS BEFORE_CN, A.CHG_DT, A.TD_NO 
+                                                                        FROM TODO_HISTORY A INNER JOIN CM_DVSN_CTGR B
+                                                                        ON (A.BEFORE_CN = B.CM_DVSN_CTGR_CD)) C INNER JOIN (SELECT A.HISTORY_NO, B.CM_DVSN_CTGR_NM AS AFTER_CN 
+                                                                                                                            FROM TODO_HISTORY A INNER JOIN CM_DVSN_CTGR B
+                                                                                                                            ON (A.AFTER_CN = B.CM_DVSN_CTGR_CD)) D
+                                                                  ON (C.HISTORY_NO = D.HISTORY_NO)) F
+                            WHERE E.HISTORY_NO = F.HISTORY_NO(+)) G, MEMBER H
+                    WHERE G.PRTPNT_ID=H.MBR_ID) I, MEMBER J
+        WHERE I.BEFORE_CN=J.MBR_ID(+))K, MEMBER L
+WHERE K.AFTER_CN=L.MBR_ID(+)
+AND K.TD_NO= #{tdNo}
+ORDER BY K.CHG_DT DESC
+</select>	
+
+
+
+
+
+
+
+	
+	
+</mapper>

@@ -1,0 +1,853 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8" session="false"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+<%@ taglib prefix="form" uri="http://www.springframework.org/tags/form" %>    
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, shrink-to-fit=no">
+    <title>doIT - 로그인 페이지</title>
+    <link rel="icon" type="image/x-icon" href="/resources/assets/img/favicon.ico">
+    <link href="/resources/assets/css/loader.css" rel="stylesheet" type="text/css" />
+    <script src="/resources/assets/js/loader.js"></script>
+    <script src="/resources/assets/js/jquery-3.6.0.js"></script>
+    <script src="/resources/assets/js/components/session-timeout/bootstrap-session-timeout.js"></script>
+    <link href="/resources/assets/css/users/user-profile.css" rel="stylesheet" type="text/css" />
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <!-- BEGIN GLOBAL MANDATORY STYLES -->
+    <link href="https://fonts.googleapis.com/css?family=Quicksand:400,500,600,700&amp;display=swap" rel="stylesheet">
+    <link href="/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">
+    <link href="/resources/assets/css/plugins.css" rel="stylesheet" type="text/css">
+    <link href="/resources/assets/css/structure.css" rel="stylesheet" type="text/css" class="structure">
+    <link href="/resources/assets/css/authentication/form-1.css" rel="stylesheet" type="text/css">
+    <!-- END GLOBAL MANDATORY STYLES -->
+    <!--  BEGIN CUSTOM STYLE FILE  -->
+    <link href="/resources/assets/css/scrollspyNav.css" rel="stylesheet" type="text/css" />
+    <link href="/resources/assets/css/components/custom-modal.css" rel="stylesheet" type="text/css" />
+    <!--  END CUSTOM STYLE FILE  -->
+    <link rel="stylesheet" type="text/css" href="/resources/assets/css/forms/theme-checkbox-radio.css">
+    <link rel="stylesheet" type="text/css" href="/resources/assets/css/forms/switches.css">
+<style type="text/css">
+/* *{
+	border: 1px solid pink;
+} */
+/*sweet alert*/
+#idDiv{
+	display: inline-block;
+    width: 288px;
+    margin-right: 5px;
+}
+#genderlab{
+	display : inline-block;
+	margin-right: 10px;
+}
+#insertForm{
+	width: 88%;
+    margin-left: 6%;
+}
+.swal-text{
+    font-weight: 700;
+    font-size: 18px;
+    color: #3b3f5c;
+}
+.swal-button{
+	background-color: #1b55e2;
+	color: #fff;
+    font-weight: 600;
+}
+/* 토글 영역 */
+#pwP, #svP{
+	font-weight: 600;
+    color: #3b3f5c;
+    margin-bottom: 0;
+}
+/*모달 영역
+#myModal1 *{
+	border: 1px solid pink;
+}
+*/
+.modal-title{
+	margin: 13px 0px 0px 8px;
+}
+.modalA{
+	margin-left: 10%;
+}
+#joinModal{
+	max-width:1000px; 
+}
+.test1{
+	margin: 0px;
+	padding: 0px!important;
+}
+.test1 span{
+	width: auto;
+	max-width: 80%;
+	height: 20px;
+	color: red;
+}
+.test2{
+	padding: 8px 0px 0px 35px!important;
+}
+.test3{
+	font-size: 1.2em;
+	color: #3b3f5c;
+	font-family: 'Quicksand', sans-serif;
+	padding: 16px 0px 0px 35px;
+}
+#profile{
+	width: auto;
+	min-width: 110px;
+}
+/*로그인 관련*/
+.button1{
+	margin-left: 20%;
+}
+.spanA{
+	font-size: 1.2em;
+	color: #1b55e2;
+	font-family: 'Quicksand', sans-serif;
+}
+#division{
+	margin-left: 47%;
+	margin-top: 20px;
+	margin-bottom: 3%;
+}
+#git{
+	color: #e7515a;
+	background: white;
+	border-color: #e7515a;
+}
+#fb{
+	margin-left: 18%;
+	color: #1b55e2;
+	background: white;
+	border-color: #1b55e2;
+}
+</style>  
+</head>
+<body class="form">
+
+    <div class="form-container">
+        <div class="form-form">
+            <div class="form-form-wrap">
+                <div class="form-container">
+                    <div class="form-content">
+
+						<img src="/resources/assets/img/logo.png" style="width: 410px" height="200px">
+                        <form:form class="text-left" modelAttribute="memberVO" method="post" action="/loginPost.do" id="idLogin">
+                        <br><br>&nbsp;
+                             <div class="form">
+
+                                <div id="userId-field" class="field-wrapper input">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+		                     		<form:input path="mbrId" class="form-control" placeholder="ID를 입력하세요" />
+                                </div>
+
+                                <div id="password-field" class="field-wrapper input mb-2">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+		                     		<form:input class="form-control" path="mbrPw" placeholder="비밀번호를 입력하세요" type="passWord" id="pwInput" />
+                                </div>
+                             </div>
+                        </form:form>                        
+                                <div class="d-sm-flex justify-content-between">
+                                        <p class="d-inline-block" id="pwP">비밀번호 표시/숨김</p>
+                                        <label class="switch s-primary">
+                                            <input type="checkbox" id="toggle-password" class="d-none" onclick="toggle(this)">
+                                            <span class="slider round" id="pwSlider"></span>
+                                        </label>
+                                        <div Style="width:50px;"></div>
+                                        <p class="d-inline-block" id="svP">아이디 저장</p>
+                                        <label class="switch s-primary">
+                                            <input type="checkbox" id="toggle-loggedin" class="d-none">
+                                            <span class="slider round"></span>
+                                        </label>
+                                </div>
+                                <br>
+                                <div class="field-wrapper button1">
+                                    <button class="btn btn-primary" id="loginBtn" type="button">ID로그인</button>
+                                    <button class="btn btn-secondary" id="QRBtn" type="button">QR로그인</button>
+                                </div>
+                                <br>
+
+                                <!-- <div class="field-wrapper text-center keep-logged-in">
+                                    <div class="n-chk new-checkbox checkbox-outline-primary">
+                                        <label class="new-control new-checkbox checkbox-outline-primary">
+                                          <input type="checkbox" class="new-control-input">
+                                          <span class="new-control-indicator"></span>Keep me logged in
+                                        </label>
+                                    </div>
+                                </div> -->
+
+                                <div class="modalA">
+                                	<span><a href="#" data-toggle="modal" data-target="#myModal1" class="forgot-pass-link spanA">회원가입</a>&nbsp;/</span>
+                                	<span><a href="#" data-toggle="modal" data-target="#myModal2" class="forgot-pass-link spanA">아이디찾기</a>&nbsp;/</span>
+                                	<span><a href="#" data-toggle="modal" data-target="#myModal3" class="forgot-pass-link spanA">비밀번호찾기</a></span>
+                                </div>
+
+                        <p class="terms-conditions">© 2021 All Rights Reserved. <a href="index.html">doIT</a> is a product of Designreset. <a href="javascript:void(0);">Cookie Preferences</a>, <a href="javascript:void(0);">Privacy</a>, and <a href="javascript:void(0);">Terms</a>.</p>
+                            </div>
+
+    <!-- 회원 가입 모달 -->
+	<div class="modal fade" id="myModal1" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header" style="border: none;">
+					<img src="/resources/assets/img/logo.png" style="width: 100px;">
+					<h3 class="modal-title">회원 가입</h3>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+				</div>
+				<div class="modal-body" style="margin-top: -20px;">
+                   <form class="mt-0" id="insertForm" name="insertForm" action="/mbrinsert.do" method="post">
+                   		<div class="form-group field-wrapper input test1" id="userImg">
+	                      <div class="form-group field-wrapper input test1">
+					        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-camera"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></svg>
+					        <strong class="text-muted d-block mb-2 test3">프로필 이미지</strong>
+					      </div>
+							<div class="form-group">
+								<div class="imgs_wrap" id="profile"></div>
+						    </div>
+							<div class="form-group">
+								<input type="file" accept="image/*" id="input_imgs" name="mbrProfile">
+							</div>
+					     </div>
+	                      <div class="form-group field-wrapper input test1" id="idDiv">
+	                      	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+	                      	<input type="text" class="form-control mb-2 test2" id="mbrId1" name="mbrId" placeholder="회원 아이디">
+	                      </div>
+	                      	<button class="btn btn-info mb-2" id="idBtn" type="button">ID 중복검사</button>
+	                      	<span id="idSpan"></span>
+	                      <div class="form-group field-wrapper input test1">
+	                       	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-lock"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+	                       	<input type="password" class="form-control mb-2 test2" id="mbrPw1" name="mbrPw" placeholder="비밀번호"><br/>
+	                      </div>
+	                      <div class="form-group field-wrapper input test1">
+	                       	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-check"><polyline points="20 6 9 17 4 12"></polyline></svg>
+	                       	<input type="password" class="form-control mb-2 test2" name="mbrPw1_2" placeholder="비밀번호 확인"><br/>
+	                       	<span id="pwSpan"></span>
+	                      </div>
+	                      <div class="form-group field-wrapper input test1">
+	                      	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-smile"><circle cx="12" cy="12" r="10"></circle><path d="M8 14s1.5 2 4 2 4-2 4-2"></path><line x1="9" y1="9" x2="9.01" y2="9"></line><line x1="15" y1="9" x2="15.01" y2="9"></line></svg>
+	                      	<input type="text" class="form-control mb-2 test2" name="mbrNm" placeholder="회원 이름"><br/>
+	                       	<span id="nmSpan"></span>
+	                      </div>
+	                      <div class="form-group field-wrapper input test1">
+	                       	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-at-sign"><circle cx="12" cy="12" r="4"></circle><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"></path></svg>
+	                       	<input type="text" class="form-control mb-2 test2" name="mbrEml" placeholder="Email 주소"><br/>
+	                       	<span id="miSpan"></span>
+	                      </div>
+	                      <div class="form-group field-wrapper input test1">
+	                       	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-phone"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+	                       	<input type="text" class="form-control mb-2 test2" name="mbrTelno" placeholder="회원 연락처"><br/>
+	                       	<span id="tlSpan"></span>
+	                      </div>
+	                      <div class="form-group field-wrapper input test1">
+		                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-users"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+	                       	  <input type="text" class="form-control mb-2 test2" name="mbrDept" placeholder="소속"><br/>
+	                      </div>
+	                      <div class="form-group field-wrapper input test1">
+                      	  	  <div class="form-group field-wrapper input test1" id="genderlab">
+                               	  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-heart"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                               	  <strong class="text-muted d-block mb-2 test3">성별</strong>
+                              </div>	
+	                          <div class="custom-control custom-radio custom-control-inline">
+							        <input type="radio" id="customRadioInline1" name="mbrGender" class="custom-control-input" value="M">
+							        <label class="custom-control-label" for="customRadioInline1">남성</label>
+							        </div>
+							  <div class="custom-control custom-radio custom-control-inline">
+							        <input type="radio" id="customRadioInline2" name="mbrGender" class="custom-control-input" value="F">
+							        <label class="custom-control-label" for="customRadioInline2">여성</label>
+							  </div>
+	                          
+						  </div>
+	                      <div class="col-md-11">
+                              <div class="form-group">
+	                      	  	  <div class="form-group field-wrapper input test1" style="margin-left:-15px;">
+				                      <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-pen-tool"><path d="M12 19l7-7 3 3-7 7-3-3z"></path><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"></path><path d="M2 2l7.586 7.586"></path><circle cx="11" cy="11" r="2"></circle></svg>
+                                  	  <strong class="text-muted d-block mb-2 test3">소개글</strong>
+                                  </div>	
+                                  	<textarea class="form-control" id="aboutBio" name="mbrIntro" rows="5" wrap="hard"></textarea>
+                              </div>
+                          </div>
+                   </form>
+			</div>
+			<div class="modal-footer" style="border: none;  margin-top: -20px;">
+				<button type="button" class="btn btn-primary" id="joinSubmit">가입신청</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">취소</button>
+			</div>
+	     </div>
+	   </div>
+	</div>
+	
+	<!-- ID찾기 모달  -->
+	<div class="modal fade" id="myModal2" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<img src="/resources/assets/img/logo.png" style="width: 100px" height="60px">
+					<h3 class="modal-title">find ID</h3>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+				</div>
+			<div class="modal-body">
+				<div class="modal-body">
+                   <form class="mt-0">
+                      <div class="form-group field-wrapper input test1">
+                      	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                      	<input type="text" class="form-control mb-2" id="Username1" placeholder="Username"><br />
+                       	<span id="nmSpan2"></span>
+                      	
+                      </div>
+                      <div class="form-group field-wrapper input test1">
+                       	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-at-sign"><circle cx="12" cy="12" r="4"></circle><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"></path></svg>
+                       	<input type="email" class="form-control mb-2" id="Email2" placeholder="Email"><br />
+                       	<span id="miSpan2"></span><br />
+                       	<span id="findIdSpan"></span>
+                      </div>
+                      
+                   </form>
+                 </div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="findIdBtn">찾기</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+			</div>
+	     </div>
+	   </div>
+	</div>
+	
+	
+	<!-- PW찾기 모달  -->
+	<div class="modal fade" id="myModal3" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<img src="/resources/assets/img/logo.png" style="width: 100px" height="60px">
+					<h3 class="modal-title">find Password</h3>
+					<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">×</span></button>
+				</div>
+			<div class="modal-body">
+				<div class="modal-body">
+                   <form class="mt-0">
+                      <div class="form-group field-wrapper input test1">
+                      	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                      	<input type="text" class="form-control mb-2" id="UserID3" placeholder="UserID"><br />
+                       	<span id="idSpan3"></span>
+                      </div>
+                      <div class="form-group field-wrapper input test1">
+                      	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-user"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                      	<input type="text" class="form-control mb-2" id="Username3" placeholder="Username"><br />
+                       	<span id="nmSpan3"></span>
+                      </div>
+                      <div class="form-group field-wrapper input test1">
+                       	<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-at-sign"><circle cx="12" cy="12" r="4"></circle><path d="M16 8v5a3 3 0 0 0 6 0v-1a10 10 0 1 0-3.92 7.94"></path></svg>
+                       	<input type="email" class="form-control mb-2" id="Email3" placeholder="Email"><br />
+                       	<span id="miSpan3"></span><br />
+                       	<span id="findPwSpan"></span>
+                      </div>
+                      
+                   </form>
+                   <!-- <div id="division" class="division">
+                         <span>OR</span>
+                   </div>
+                   <div class="social">
+                       <a href="javascript:void(0);" class="btn social-fb" id="fb"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-facebook"><path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"></path></svg> <span class="brand-name">Facebook</span></a>
+                       <a href="javascript:void(0);" class="btn social-github" id="git"><svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-github"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg> <span class="brand-name">Github</span></a>
+                   </div> -->
+                 </div>
+			</div>
+			<div class="modal-footer">
+				<button type="button" class="btn btn-primary" id="findPwBtn">확인</button>
+				<button type="button" class="btn btn-default" data-dismiss="modal">닫기</button>
+			</div>
+	     </div>
+	   </div>
+	</div>
+
+
+                    </div>                    
+                </div>
+            </div>
+        <div class="form-image" style="background-color: lightblue; border-radius: 45% 0% 0% 45%;">
+        	<!-- 배경이미지 png로 720*720 -->
+        	<div class="login-image">
+        		<img alt="" src="/resources/assets/img/illustration.bbfd1da0.png" style="margin-top:40%; margin-left:30%">
+        	</div>
+        </div>
+
+</div>
+
+    <!-- BEGIN GLOBAL MANDATORY SCRIPTS -->
+    <script src="/resources/assets/js/libs/jquery-3.1.1.min.js"></script>
+    <script src="/resources/bootstrap/js/popper.min.js"></script>
+    <script src="/resources/bootstrap/js/bootstrap.min.js"></script>
+    <!-- END GLOBAL MANDATORY SCRIPTS -->
+    <script src="/resources/assets/js/authentication/form-1.js"></script>
+    <script src="/resources/assets/js/custom.js"></script>
+    <script src="/resources/plugins/sweetalerts/sweetalert2.min.js"></script>
+    <script src="/resources/plugins/sweetalerts/custom-sweetalert.js"></script>
+
+<script type="text/javascript">
+
+$(function(){
+	//로그인(버튼)
+	$("#loginBtn").on("click", function(){
+		$("#idLogin").submit();
+	});
+	
+	//로그인(Enter)
+	$("#pwInput").on("keyup",function(key){
+	    if(key.keyCode==13) {
+	    	$("#idLogin").submit();
+	    }
+	});
+	
+	//회원가입
+	//id입력 시 정규식검증
+	  $('#mbrId1').on('keyup', function(){
+	  	//$('#idSpan').html(' ');
+	  	$('#idSpan').empty();
+	  	idval = $('#mbrId1').val().trim();
+	  	
+	  	idreg = /^[a-zA-Z][a-zA-Z0-9]{3,11}$/
+	  	
+	  	if(!(idreg.test(idval))){
+	  		$(this).css('border', '1px solid red');
+	  		//중복검사버튼 비활성
+	  		$('#idBtn').prop('disabled', true);
+	  		//메시지 안내
+	  		$('#idSpan').html('ID는 영문+숫자 4~12자 범위로 입력해주세요.')
+	  	}else{
+	  		$(this).css('border', '1px solid blue');
+	  		//중복검사버튼 활성
+	  		$('#idBtn').prop('disabled', false);
+	  	}
+	});
+	
+	  //아이디 중복검사
+	  	$('#idBtn').on('click',function(){
+	  		idval = $('#mbrId1').val().trim();
+	  		//alert(idval);
+	  		if(idval.length < 1){
+	  			//alert("ID를 입력하세요");
+	  			swal("","ID를 입력하세요");
+	  			return false;
+	  		}
+	  		 		
+	  		//서버로 전송하기
+	  		$.ajax({
+	  			type : 'post',
+	  			dataType : "json",
+	  			data : {"mbrId" : idval,"mbrId2" : idval, "mbrId3" : [{"test":idval}]},
+	  			url : '/mbr/checkId.do',
+	  			success : function(res){
+	  				console.log("checkId.do : ", JSON.parse(res));
+	  				if(res==0){
+		  				//$('#spanid').html(res.sw).css('color','green');
+		  				$('#idSpan').html('사용 가능한 ID입니다.')
+	  				}else{
+	  					//전송버튼 비활성
+						$('#joinSubmit').prop('disabled', true);
+	  					$('#idSpan').html('사용 불가능한 ID입니다.')
+	  				}
+	  			},
+	  			error : function(xhr){
+	  				swal("","전송 오류 발생");
+	  				console.log(xhr.status);
+	  				//alert("상태:"+xhr.status);//404,500,200
+	  			},
+	  			dataType : 'json'
+	  		})
+	  	})
+		  
+		//이름 입력 시 정규식검증
+		$('input[name="mbrNm"]').on('keyup', function(){
+			$('#nmSpan').empty();
+			nameval = $('input[name="mbrNm"]').val().trim();
+			namereg = /^[가-힣]{2,5}$/
+			
+				if(!(namereg.test(nameval))){
+					$(this).css('border', '1px solid red');
+					//전송버튼 비활성
+					$('#joinSubmit').prop('disabled', true);
+					//메시지 안내
+			  		$('#nmSpan').html('이름은 한글3~6자 범위로 입력해주세요.')
+				}else{
+					$(this).css('border', '1px solid blue');
+					//전송버튼 활성
+					$('#joinSubmit').prop('disabled', false);
+				}
+		});
+	  
+	  //이메일 입력 시 정규식검증
+		  $('input[name="mbrEml"]').on('keyup', function(){
+			  $('#miSpan').empty();
+			  mailval = $('input[name="mbrEml"]').val().trim(); 
+			  mailreg = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+			  
+			  if(!(mailreg.test(mailval))){
+					$(this).css('border', '1px solid red');
+					$('#joinSubmit').prop('disabled', true);
+					//메시지 안내
+			  		$('#miSpan').html('이메일 주소 형식에 맞게 입력해주세요.')
+				}else{
+					$(this).css('border', '1px solid blue');
+					$('#joinSubmit').prop('disabled', false);
+				}
+		  });
+		  
+		  //비밀번호 입력
+		   $('#mbrPw1').on('keyup', function(){
+			  $('#pwSpan').empty();
+			  passval = $('#mbrPw1').val().trim();
+			  passreg = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/;
+			  
+			  if(!(passreg.test(passval))){
+					$(this).css('border', '1px solid red');
+					$('#joinSubmit').prop('disabled', true);
+					//메시지 안내
+			  		$('#pwSpan').html('특수문자,영문,숫자를 조합하여 8자 이상 입력해주세요.')
+				}else{
+					$(this).css('border', '1px solid blue');
+					$('#joinSubmit').prop('disabled', false);
+				}
+		  }); 
+		 //비밀번호 확인 입력
+		  $('input[name="mbrPw1_2"]').on('keyup', function(){
+			  $('#pwSpan').empty();
+			  passval2 = $('input[name="mbrPw1_2"]').val().trim();
+			  if(passval != passval2){
+					//전송버튼 비활성
+					$('#joinSubmit').prop('disabled', true);
+					//메시지 안내
+			  		$('#pwSpan').html('비밀번호가 일치하지 않습니다.')
+				}else{
+					$('#joinSubmit').prop('disabled', false);
+					//$('input[name="mbrPw1_2"]').empty();
+				}
+			 
+		  });
+		
+		  
+	  //전화번호 입력 시 정규식검증
+		 $('input[name="mbrTelno"]').on('keyup', function(){
+			 $('#tlSpan').empty();
+			 nameval = $('input[name="mbrTelno"]').val().trim();
+			 namereg = /^01([0|1|6|7|8|9])-?([0-9]{3,4})-?([0-9]{4})$/; 
+			
+				if(!(namereg.test(nameval))){
+					$(this).css('border', '1px solid red');
+					//전송버튼 비활성
+					$('#joinSubmit').prop('disabled', true);
+					//메시지 안내
+			  		$('#tlSpan').html('연락처 형식에 맞게 입력해주세요.(-포함)')
+				}else{
+					$(this).css('border', '1px solid blue');
+					//전송버튼 활성
+					$('#joinSubmit').prop('disabled', false);
+				}
+		}); 
+	
+	
+});
+function toggle(element){ //패스워드 보이기/숨기기
+	//console.log(element.checked);
+	 if (element.checked) {        
+		 mbrPw.type = 'text';      
+     } else {                    
+    	 mbrPw.type = 'password';   
+     }
+	
+}
+$(function(){ //프로필이미지 미리보기
+	$("#input_imgs").on("change", handleImgFileSelect);
+});
+
+function handleImgFileSelect(e){
+	//이벤트가 일어난 파일객체의 이미지 파일들을 가져옴
+	var files = e.target.files;
+	//파일들을 배열로 만들어 관리
+	var filesArr = Array.prototype.slice.call(files);
+	//f : 각각의 파일 객체
+	filesArr.forEach(function(f){
+		if(!f.type.match("image.*")){
+			//alert("이미지 파일만 가능합니다");
+			swal("","이미지 파일만 가능합니다");
+			//업로드 종료(실패)
+			return;
+		}
+		//각 이미지를 reader로 읽어들임
+		var reader = new FileReader();
+		reader.onload = function(e){
+			//$("#img").attr("src",e.target.result);
+			var img_html = "<img src=\""+e.target.result+"\" style='width:100px;' />";
+			$(".imgs_wrap").html(img_html);
+		}
+		reader.readAsDataURL(f);
+	});//end for each
+}
+$(function(){
+	$("#joinSubmit").on("click", memberJoin);
+	
+// 	$(document).on("click", "#joinSubmit", function(){	
+// 		$("#insertForm").find("input").val("");
+// 	});
+	
+});
+function memberJoin(){
+	    
+    var formData = new FormData(document.getElementById("insertForm"));
+	
+	 $.ajax({
+		type:'POST',
+		data : formData,
+		url:"/mbr/mbrinsert.do",
+		processData: false,
+	    contentType: false,
+	    dataType:'json',
+		success : function(data) {
+			/* alert("데이터 전송이 완료되었습니다.");
+			console.log(data);
+			console.log(data.sta);
+			console.log(data.msg); */
+			
+			if(data.sta=="success"){
+				//alert("가입 신청이 완료되었습니다.\n가입 승인 후 로그인해 주세요.");
+				swal({
+				  title: "",
+				  html: "가입 신청이 완료되었습니다.<br>가입 승인 후 로그인해주세요.",
+				  //icon: '${type}',
+				  button: '${button}'
+			})
+			}else{
+				//alert("가입 신청에 실패했습니다.\n다시 신청해 주세요.");
+				swal({
+				  title: "",
+				  html: "가입 신청에 실패했습니다.<br>다시 신청해주세요.",
+				  //icon: '${type}',
+				  button: '${button}'
+			})
+			}
+		},
+		error: function(jqXHR, textStatus, errorThrown) {
+			swal("","전송 오류가 발생했습니다.");
+			console.log(textStatus);
+			console.log(errorThrown);
+			//alert("ERROR : " + textStatus + " : " + errorThrown);
+		}
+	}); 
+	$('#myModal1').modal('hide');
+};
+
+$(function(){
+	$('.modal').on('hidden.bs.modal', function (e) {
+		//alert("modal close");
+		$(this).find('form')[0].reset();
+		//$(this).find('form')[0].css({"border-bottom": "1px solid #e0e6ed;"});
+		$(this).find(".test1 input").css({"border-left": "0", "border-right": "0", "border-top": "0"});
+		$(this).find(".test1 input").css({"border-bottom": "1px solid #e0e6ed"});
+		$(this).find("#profile").empty();
+		$(this).find(".input span").empty();
+	});
+	
+});
+
+$(function(){
+	//아이디 찾기
+  	//이름 입력 시 정규식검증
+		$('#Username1').on('keyup', function(){
+			$('#nmSpan2').empty();
+			nameval2 = $('#Username1').val().trim();
+			namereg = /^[가-힣]{2,5}$/
+			
+				if(!(namereg.test(nameval2))){
+					$(this).css('border', '1px solid red');
+					//확인버튼 비활성
+					$('#findIdBtn').prop('disabled', true);
+					//메시지 안내
+			  		$('#nmSpan2').html('이름은 한글3~6자 범위로 입력해주세요.')
+				}else{
+					$(this).css('border', '1px solid blue');
+					//확인버튼 활성
+					$('#findIdBtn').prop('disabled', false);
+				}
+		});
+	  
+	  //이메일 입력 시 정규식검증
+		  $('#Email2').on('keyup', function(){
+			  $('#miSpan').empty();
+			  mailval2 = $('#Email2').val().trim(); 
+			  mailreg = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+			  
+			  if(!(mailreg.test(mailval2))){
+					$(this).css('border', '1px solid red');
+					$('#findIdBtn').prop('disabled', true);
+					//메시지 안내
+			  		$('#miSpan2').html('이메일 주소 형식에 맞게 입력해주세요.')
+				}else{
+					$(this).css('border', '1px solid blue');
+					$('#findIdBtn').prop('disabled', false);
+				}
+		  });
+  	$('#findIdBtn').on('click',function(){
+  			nameval2 = $('#Username1').val().trim();
+  			mailval2 = $('#Email2').val().trim(); 
+  		if(nameval2.length < 1){
+  			//alert("이름을 입력하세요");
+  			swal("","이름을 입력하세요.");
+  			return false;
+  		}
+  		if(mailval2.length < 1){
+  			swal("","이메일주소를 입력하세요");
+  			return false;
+  		}
+  		 		
+  		//서버로 전송하기
+  		$.ajax({
+  			type : 'post',
+  			dataType : "json",
+  			data : {"mbrNm" : nameval2, "mbrEml" : mailval2},
+  			url : '/findId.do',
+  			success : function(res){
+  				console.log(res);
+  				if(res.sta=="fail"){
+	  				console.log("111")
+  					//$('#spanid').html(res.sw).css('color','green');
+	  				$('#findIdSpan').html('가입되지 않은 회원정보입니다.')
+  				}else{
+	  				console.log("222")
+  					var findMbrId = res.mbrId;
+  					$('#findIdSpan').html(' 회원님의 ID는 '+ findMbrId +' 입니다.')
+  				}
+  			},
+  			error : function(xhr){
+  				//alert("상태:"+xhr.status);//404,500,200
+  				swal("","전송 오류가 발생했습니다.");
+	  			console.log(xhr.status);
+  			},
+  			dataType : 'json'
+  		})
+  	})
+});
+
+$(function(){
+	//비밀번호 찾기
+  	//id입력 시 정규식검증
+	  $('#UserID3').on('keyup', function(){
+	  	//$('#idSpan').html(' ');
+	  	$('#idSpan3').empty();
+	  	idval3 = $('#UserID3').val().trim();
+	  	
+	  	idreg = /^[a-zA-Z][a-zA-Z0-9]{3,11}$/
+	  	
+	  	if(!(idreg.test(idval3))){
+	  		$(this).css('border', '1px solid red');
+	  		//확인버튼 비활성
+	  		$('#findPwBtn').prop('disabled', true);
+	  		//메시지 안내
+	  		$('#idSpan3').html('ID는 영문+숫자 4~12자 범위로 입력해주세요.')
+	  	}else{
+	  		$(this).css('border', '1px solid blue');
+	  		//확인버튼 활성
+	  		$('#findPwBtn').prop('disabled', false);
+	  	}
+	});
+	//이름 입력 시 정규식검증
+		$('#Username3').on('keyup', function(){
+			$('#nmSpan3').empty();
+			nameval3 = $('#Username3').val().trim();
+			namereg = /^[가-힣]{2,5}$/
+			
+				if(!(namereg.test(nameval3))){
+					$(this).css('border', '1px solid red');
+					//확인버튼 비활성
+					$('#findPwBtn').prop('disabled', true);
+					//메시지 안내
+			  		$('#nmSpan3').html('이름은 한글3~6자 범위로 입력해주세요.')
+				}else{
+					$(this).css('border', '1px solid blue');
+					//확인버튼 활성
+					$('#findPwBtn').prop('disabled', false);
+				}
+		});
+	  
+	  //이메일 입력 시 정규식검증
+		  $('#Email3').on('keyup', function(){
+			  $('#miSpan3').empty();
+			  mailval3 = $('#Email3').val().trim(); 
+			  mailreg = /^[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*@[0-9a-zA-Z]([-_.]?[0-9a-zA-Z])*.[a-zA-Z]{2,3}$/i;
+			  
+			  if(!(mailreg.test(mailval3))){
+					$(this).css('border', '1px solid red');
+					$('#findPwBtn').prop('disabled', true);
+					//메시지 안내
+			  		$('#miSpan3').html('이메일 주소 형식에 맞게 입력해주세요.')
+				}else{
+					$(this).css('border', '1px solid blue');
+					$('#findPwBtn').prop('disabled', false);
+				}
+		  });
+  	$('#findPwBtn').on('click',function(){
+  		if(idval3.length < 1){
+  			//alert("아이디를 입력하세요");
+  			swal("","아이디를 입력하세요");
+  			return false;
+  		}
+  		if(nameval3.length < 1){
+  			//alert("이름을 입력하세요");
+  			swal("","이름을 입력하세요.");
+  			return false;
+  		}
+  		if(mailval3.length < 1){
+  			//alert("이메일을 입력하세요");
+  			swal("","이메일 주소를 입력하세요.");
+  			return false;
+  		}
+  		 		
+  		//입력받은 정보 전송하기
+  		$.ajax({
+  			type : 'post',
+  			dataType : "json",
+  			data : {"mbrId" : idval3, "mbrNm" : nameval3, "mbrEml" : mailval3},
+  			url : '/findPw.do',
+  			success : function(res){
+  				console.log(res);
+  				if(res.sta=="fail"){
+	  				console.log("111")
+  					//$('#spanid').html(res.sw).css('color','green');
+	  				$('#findPwSpan').html('가입되지 않은 회원정보입니다.')
+  				}else{
+	  				console.log("222")
+	  				var findMbrEml = res.mbrEml;
+	  				var findMbrId = res.mbrId;
+	  				$.ajax({
+	  					type : 'post',
+	  					dataType : 'text',
+	  					data : {"mbrEml" : findMbrEml, "mbrId" : findMbrId},
+	  					url : '/mailSend.do',
+	  					success : function(res2){
+	  						console.log("res2");
+	  						console.log(res2);
+		  					var toAddress = res2;
+	  						$('#findPwSpan').html(toAddress+'로 임시 비밀번호를 발송했습니다.\n 창을 닫고 새 비밀번호로 다시 로그인해주세요.')
+	  					},error : function(xhr2){
+	  						swal("","전송 오류가 발생했습니다.");
+	  		  				console.log(xhr.status);
+	  		  				//alert("상태:"+xhr.status);//404,500,200
+	  		  			}
+	  				});
+  				}
+  			},
+  			error : function(xhr){
+  				swal("","전송 오류가 발생했습니다.");
+  				console.log(xhr.status);
+  				//alert("상태:"+xhr.status);//404,500,200
+  			},
+  			dataType : 'json'
+  		}); //ajax
+  		
+  	})
+});
+</script>
+</body>
+</html>

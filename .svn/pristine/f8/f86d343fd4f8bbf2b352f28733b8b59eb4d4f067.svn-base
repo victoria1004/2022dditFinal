@@ -1,0 +1,11 @@
+package kr.or.ddit.feed.mapper;
+
+
+import kr.or.ddit.feed.vo.VtRsltVO;
+
+public interface VtRsltMapper {
+	
+	//투표 내용 등록하기
+	public int insertRslt(VtRsltVO vtRsltVO);
+
+}

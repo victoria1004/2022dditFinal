@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.feed.mapper.LikesMapper">
+<!-- 좋아요 추가 -->
+<insert id="insertLikes" parameterType="likesVO">
+	INSERT INTO LIKES(PST_NO, MBR_ID) VALUES(#{pstNo},#{mbrId})
+</insert>
+
+<!-- 좋아요 삭제 -->
+<delete id="deleteLikes" parameterType="likesVO">
+	DELETE FROM LIKES WHERE PST_NO = #{pstNo} AND MBR_ID = #{mbrId} 
+</delete>
+
+<!-- 피드별 좋아요 개수-->
+<select id="selectLikes" resultType="int" parameterType="String">
+	SELECT COUNT(*) FROM LIKES WHERE PST_NO = #{pstNo}
+</select>
+
+<!-- 좋아요 확인 -->
+<select id="findLikes" resultType="likesVO" parameterType="String">
+	SELECT PST_NO, MBR_ID FROM LIKES WHERE MBR_ID = #{mbrId}
+</select>
+
+<!-- 나의 좋아요 -->
+<select id="checkLikes" resultType="int" parameterType="likesVO">
+	SELECT COUNT(*) FROM LIKES WHERE PST_NO = #{pstNo} AND MBR_ID = #{mbrId}
+</select>
+
+</mapper>

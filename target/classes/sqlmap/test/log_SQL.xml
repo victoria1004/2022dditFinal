@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="kr.or.ddit.admin.mapper.LogMapper">
+	<select id="logList" parameterType="hashMap" resultType="kr.or.ddit.admin.vo.LogVO">
+		SELECT T.RNUM
+			, T.MBR_ID
+			, T.LOG_ADDR
+			, T.LOG_IP_ADDR
+			, T.LOG_DT
+			, T.LOG_NM
+		FROM (
+		    SELECT ROW_NUMBER() OVER (ORDER BY TO_NUMBER(LOG_NO)) RNUM
+		    	, MBR_ID
+		    	, LOG_ADDR
+		    	, LOG_NM
+		    	, LOG_IP_ADDR
+		    	, LOG_DT
+		    FROM   LOG
+		    WHERE  1 = 1
+		    <if test="keyWord!=null and keyWord!=''">
+		    AND    (MBR_ID LIKE '%' || #{keyWord} || '%' OR
+		            LOG_NM   LIKE '%' || #{keyWord} || '%' OR
+		            LOG_IP_ADDR    LIKE '%' || #{keyWord} || '%')
+		    </if>
+		    AND    (LOG_NM LIKE '등록' 
+		    		OR LOG_NM LIKE '수정' 
+		    		OR LOG_NM LIKE '삭제')
+		    ORDER BY 1 DESC
+		) T
+	</select>
+	
+	<select id="getTotal" parameterType="hashMap" resultType="int">
+		SELECT COUNT(*)
+		FROM   LOG
+		WHERE  1 = 1
+	    <if test="keyWord!=null and keyWord!=''">
+	    AND    (MBR_ID LIKE '%' || #{keyWord} || '%' OR
+	            LOG_NM   LIKE '%' || #{keyWord} || '%' OR
+	            LOG_IP_ADDR    LIKE '%' || #{keyWord} || '%')
+	    </if>
+	    AND    (LOG_NM LIKE '등록' OR LOG_NM LIKE '수정' OR LOG_NM LIKE '삭제')
+	</select>
+	
+	<select id="totalList" resultType="kr.or.ddit.admin.vo.LogVO">
+		SELECT LOG_NO
+			, MBR_ID
+			, LOG_NM
+			, LOG_ADDR
+			, LOG_IP_ADDR
+			, LOG_DT
+		FROM LOG
+		WHERE LOG_NM LIKE '등록' 
+			OR LOG_NM LIKE '수정' 
+			OR LOG_NM LIKE '삭제'
+	</select>
+</mapper>

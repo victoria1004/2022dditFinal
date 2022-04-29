@@ -1,0 +1,13 @@
+package kr.or.ddit.feed.service;
+
+import kr.or.ddit.feed.vo.VtFrmtVO;
+
+public interface VtFrmtService {
+	
+	//투표 형식 등록
+	public int insertVtFrmt(VtFrmtVO vtFrmtVO);
+	
+	//투표 번호 뽑기
+	public String selectVtNo();
+
+}

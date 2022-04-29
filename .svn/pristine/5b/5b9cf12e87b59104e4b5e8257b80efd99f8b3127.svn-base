@@ -1,0 +1,100 @@
+<%@ page language="java" contentType="text/html; charset=UTF-8"
+    pageEncoding="UTF-8"%>
+<link href="/resources/bootstrap/css/bootstrap.min.css" rel="stylesheet" type="text/css">    
+<link href="/resources/assets/css/plugins.css" rel="stylesheet" type="text/css">
+<link href="/resources/assets/css/structure.css" rel="stylesheet" type="text/css" class="structure">
+<link href="/resources/plugins/drag-and-drop/dragula/dragula.css" rel="stylesheet" type="text/css">
+<link href="/resources/plugins/drag-and-drop/dragula/example.css" rel="stylesheet" type="text/css">
+<link href="/resources/assets/css/jsa/approvedUser.css" rel="stylesheet" type="text/css" class="structure">
+<script src="/resources/assets/js/jquery-3.6.0.js"></script>
+<script src="/resources/assets/js/jsa/approvedUser.js"></script>
+<script>
+$(function(){
+	getM02Users();
+	getM03Users();
+	
+	
+	
+})
+
+
+
+</script>
+
+
+
+
+    
+<div class="statbox widget box box-shadow">
+    <div class="widget-header">
+        <div class="row">
+            <div class="col-xl-12 col-md-12 col-sm-12 col-12">
+                <h4></h4>
+            </div>           
+        </div>
+    </div>
+    <div class="widget-content widget-content-area">
+
+        <div class="parent ex-1">
+            <div class="row">
+                <div class="col-sm-6">
+                    <div id="left-defaults" class="dragula">
+
+<!--                         <div class="media  d-md-flex d-block text-sm-left text-center"> -->
+<!--                             <img alt="avatar" src="assets/img/profile-6.jpeg" class="img-fluid "> -->
+<!--                             <div class="media-body"> -->
+<!--                                 <div class="d-xl-flex d-block justify-content-between"> -->
+<!--                                     <div class=""> -->
+<!--                                         <h6 class="">Project Lead Pickup</h6> -->
+<!--                                         <p class="">Mary McDonald</p> -->
+<!--                                     </div> -->
+<!--                                 </div> -->
+<!--                             </div> -->
+<!--                         </div> -->
+
+
+                    </div>
+                </div>
+                <div class="col-sm-6">
+                    <div id="right-defaults" class="dragula">
+                    
+<!--                         <div class="media  d-md-flex d-block text-sm-left text-center"> -->
+<!--                             <img alt="avatar" src="assets/img/profile-7.jpeg" class="img-fluid "> -->
+<!--                             <div class="media-body"> -->
+<!--                                 <div class="d-xl-flex d-block justify-content-between"> -->
+<!--                                     <div class=""> -->
+<!--                                         <h6 class="">Need to be approved</h6> -->
+<!--                                         <p class="">Shaun Park</p> -->
+<!--                                     </div> -->
+<!--                                 </div> -->
+<!--                             </div> -->
+<!--                         </div> -->
+
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<script src="/resources/assets/js/libs/jquery-3.1.1.min.js"></script>
+<script src="/resources/bootstrap/js/popper.min.js"></script>
+<script src="/resources/bootstrap/js/bootstrap.min.js"></script>
+<script src="/resources/plugins/perfect-scrollbar/perfect-scrollbar.min.js"></script>
+<script src="/resources/assets/js/app.js"></script>
+<script>
+        $(document).ready(function() {
+            App.init();
+        });
+</script>
+<script src="/resources/plugins/highlight/highlight.pack.js"></script>
+<script src="/resources/assets/js/custom.js"></script>
+<script src="/resources/plugins/drag-and-drop/dragula/dragula.min.js"></script>
+<script src="/resources/plugins/drag-and-drop/dragula/custom-dragula.js"></script>
+    
+    
+
+

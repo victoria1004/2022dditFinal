@@ -1,0 +1,84 @@
+package kr.or.ddit.project.vo;
+
+import org.apache.commons.lang3.builder.ToStringBuilder;
+import org.apache.commons.lang3.builder.ToStringStyle;
+
+public class TodoVO {
+
+	private String tdNo;
+	private String pjtNo;
+	
+	private String knbnCtgrNo;
+	private String tdTtl;
+	private String tdCn;
+	private String tdStrtDt;
+	private String tdEndDt;
+	private String prgrs;
+	private String mrkrNo;
+	
+	
+	public String getTdNo() {
+		return tdNo;
+	}
+	public void setTdNo(String tdNo) {
+		this.tdNo = tdNo;
+	}
+	public String getPjtNo() {
+		return pjtNo;
+	}
+	public void setPjtNo(String pjtNo) {
+		this.pjtNo = pjtNo;
+	}
+	
+	public String getKnbnCtgrNo() {
+		return knbnCtgrNo;
+	}
+	public void setKnbnCtgrNo(String knbnCtgrNo) {
+		this.knbnCtgrNo = knbnCtgrNo;
+	}
+	public String getTdTtl() {
+		return tdTtl;
+	}
+	public void setTdTtl(String tdTtl) {
+		this.tdTtl = tdTtl;
+	}
+	public String getTdCn() {
+		return tdCn;
+	}
+	public void setTdCn(String tdCn) {
+		this.tdCn = tdCn;
+	}
+	public String getTdStrtDt() {
+		return tdStrtDt;
+	}
+	public void setTdStrtDt(String tdStrtDt) {
+		this.tdStrtDt = tdStrtDt;
+	}
+	public String getTdEndDt() {
+		return tdEndDt;
+	}
+	public void setTdEndDt(String tdEndDt) {
+		this.tdEndDt = tdEndDt;
+	}
+	public String getPrgrs() {
+		return prgrs;
+	}
+	public void setPrgrs(String prgrs) {
+		this.prgrs = prgrs;
+	}
+	public String getMrkrNo() {
+		return mrkrNo;
+	}
+	public void setMrkrNo(String mrkrNo) {
+		this.mrkrNo = mrkrNo;
+	}
+	
+	
+	@Override
+	   public String toString() {
+	      return ToStringBuilder.reflectionToString(this, ToStringStyle.JSON_STYLE);
+	   }
+	
+	
+	
+}

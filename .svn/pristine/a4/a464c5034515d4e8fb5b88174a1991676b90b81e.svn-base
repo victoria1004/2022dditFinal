@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.feed.mapper.VtFrmtMapper">
+
+<!-- 투표형식 추가 -->
+<insert id="insertVtFrmt" parameterType="vtFrmtVO">
+	<selectKey order="BEFORE" keyProperty="vtNo" resultType="String">
+		SELECT NVL(MAX(TO_NUMBER(VT_NO)),0)+1 FROM VT_FRMT
+	</selectKey>
+	INSERT INTO VT_FRMT(VT_NO, PST_NO, VT_DT, ANN_YN)
+	VALUES (#{vtNo}, #{pstNo}, #{vtDt}, #{annYn})
+</insert>
+
+<!-- insert된 투표 번호 뽑아오기 -->
+<select id="selectVtNo" resultType="String">
+	SELECT MAX(TO_NUMBER(VT_NO)) FROM VT_FRMT
+</select>
+
+</mapper>

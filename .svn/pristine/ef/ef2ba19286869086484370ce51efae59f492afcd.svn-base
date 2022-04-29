@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.reservation.mapper.MtrMapper">
+	<!-- 해당일 예약정보 조회 -->
+	<select id="todayRes" parameterType="String" resultType="HashMap">
+		SELECT
+		    A.RSVT_NO
+		   ,B.MTR_NM
+		   ,C.MBR_DEPT
+		   ,C.MBR_NM
+		   ,A.RSVT_STRT_HR
+		   ,A.RSVT_YMD
+		FROM
+		    MTR_RSVT A INNER JOIN MTR B ON(A.MTR_NO = B.MTR_NO)
+		    INNER JOIN MEMBER C ON(A.MBR_ID=C.MBR_ID)
+		WHERE A.RSVT_YMD=#{rsvtYmd}
+	</select>
+
+	<!-- 예약 등록 -->
+	<insert id="resInsert" parameterType="mtrRsvtVO">
+		<selectKey order="BEFORE" resultType="integer" keyProperty="rsvtNo">
+			SELECT NVL(MAX(RSVT_NO),0)+1 FROM MTR_RSVT
+		</selectKey>
+		INSERT INTO MTR_RSVT 
+			(RSVT_NO
+		   , MTR_NO
+		   , MBR_ID
+		   , RSVT_STRT_HR
+		   , RSVT_YMD)
+		VALUES
+			(#{rsvtNo}
+		   , #{mtrNo}
+		   , #{mbrId}
+		   , #{rsvtStrtHr}
+		   , #{rsvtYmd})
+	</insert>
+</mapper>

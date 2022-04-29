@@ -1,0 +1,108 @@
+package kr.or.ddit.util;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.socket.CloseStatus;
+import org.springframework.web.socket.TextMessage;
+import org.springframework.web.socket.WebSocketSession;
+import org.springframework.web.socket.handler.TextWebSocketHandler;
+
+import com.google.gson.Gson;
+
+import kr.or.ddit.user.controller.AlarmController;
+import kr.or.ddit.user.vo.AlarmVO;
+import kr.or.ddit.user.vo.MemberVO;
+
+@Component
+public class EchoHandler extends TextWebSocketHandler {
+    
+  // 로그인 한 전체
+  List<WebSocketSession> sessions = new ArrayList<WebSocketSession>();
+  // 1대1
+  Map<String, WebSocketSession> userSessionsMap = new HashMap<String, WebSocketSession>();
+   
+  @Autowired
+  AlarmController controller;
+   
+   
+
+  // 서버에 접속이 성공 했을때
+  @Override
+  public void afterConnectionEstablished(WebSocketSession session) throws Exception {
+      //접속한 전체 유저 아이디
+      sessions.add(session);
+      //로그인한 개별 유저 아이디를 가져온다.
+      String senderID = getId(session);
+      //userSessionsMap 에 개별유저아이디를 넣는다.
+      userSessionsMap.put(senderID, session);
+  }
+
+  // 소켓에 메세지를 보냈을때
+  @Override
+  protected void handleTextMessage(WebSocketSession session, TextMessage message) throws Exception {
+     String userId=getId(session);
+     Map<String, Object> httpSession = session.getAttributes();
+     MemberVO vo = (MemberVO) httpSession.get("member"); 
+     if(vo!=null) {
+   
+      //접속한 해당 유저 읽지않은 알림 데이터 전체 카운트 만 가져올 경우  
+      //int countInform=informService.countInform(userId);
+       int countMsg = controller.getAllNotReadedCount(vo.getMbrId());
+    	 
+      //1.해당 유저 알림데이터 전체 가져오기
+    	List<AlarmVO> msg = controller.getAllNotReadedMsg(vo.getMbrId());
+      //for(InformDTO informDTO :getInform) {
+          //System.out.println("getInform : "+informDTO.toString());  
+      //}
+       
+      //2.해당 유저 알림데이터 마지막 데이터만 가져올 경우
+     // InformDTO selectLsatInform= informService.selectLsatInform(userId);
+       
+      WebSocketSession webSocketSession = userSessionsMap.get(userId);
+               
+      Gson gson = new Gson();
+      //1.해당 유저 알림데이터 전체 가져오기일 경우 JSON 으로 전환 후 TextMessage 변환
+      //TextMessage textMessage = new TextMessage(gson.toJson(getInform));        
+      TextMessage textMessage = new TextMessage(gson.toJson(msg));        
+       
+      //2.해당 유저 알림데이터 전체 가져오기일 경우  JSON 으로 전환 후 TextMessage 변환
+//      TextMessage textMessage = new TextMessage(gson.toJson(selectLsatInform));
+//      webSocketSession.sendMessage(textMessage);
+       
+        }
+  }
+
+  // 연결 해제될때
+  @Override
+  public void afterConnectionClosed(WebSocketSession session, CloseStatus status) throws Exception {
+      //System.out.println("afterConnectionClosed " + session + ", " + status);
+      //소켓 연결이 끊겼을 때 개별 접속아이디 해체 저리한다.
+      userSessionsMap.remove(session.getId());
+      //소켓 연결이 끊겼을 때 전체 접속자 아이디 해체 저리한다.
+      sessions.remove(session);
+  }
+   
+
+  // 웹소켓 id 가져오기
+  private String getId(WebSocketSession session) {
+
+      Map<String, Object> httpSession = session.getAttributes();
+      MemberVO member = (MemberVO) httpSession.get("member");       
+      String loginId = member.getMbrId();       
+      if (loginId == null) {
+          //System.out.println("로그인 loginID 가 널일경우  :" + session.getId());
+          //랜덤 아이디 생성, 사이트 접속한 사람 전체
+          //ex ) vawpuj5h, 5qw40sff
+          return session.getId();
+      } else {
+          return loginId;
+      }
+  }
+  
+  
+}

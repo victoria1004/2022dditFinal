@@ -1,0 +1,20 @@
+package kr.or.ddit.project.mapper;
+
+
+import java.util.List;
+
+import org.apache.ibatis.annotations.Mapper;
+
+import kr.or.ddit.project.vo.DevelopmentEnvmVO;
+
+
+@Mapper
+public interface ProjectMakingMapper {
+	//회원 아이디로 소속 찾기
+	public String getInfo(String mbrId);
+	
+	//모든 개발언어 로고 가져오기
+	public List<DevelopmentEnvmVO> getLogo();
+	
+	
+}

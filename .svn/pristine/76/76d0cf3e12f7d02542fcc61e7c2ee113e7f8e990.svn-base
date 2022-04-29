@@ -1,0 +1,55 @@
+package kr.or.ddit.reservation.controller;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+import org.apache.commons.collections4.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.reservation.service.MtrService;
+import kr.or.ddit.reservation.vo.MtrRsvtVO;
+import kr.or.ddit.user.controller.LoginController;
+
+
+@Controller
+public class MtrController {
+	
+	private static final Logger logger = 
+			LoggerFactory.getLogger(LoginController.class);
+	
+	@Autowired
+	MtrService mtrService;
+	
+	//Get방식 예약페이지 연결
+	@GetMapping("/mtr.do")
+	public String meetingRoom() {
+		return "reservation/mtrReservation";
+	}
+	
+	//해당일 예약정보 보내기
+	@PostMapping("/resSelect.do")
+	public @ResponseBody Map<String, Object> resSelect(@RequestParam HashMap<String, Object> params) {
+		//받은 날짜 확인
+		logger.info("rsvt_ymd : {}", params);
+		
+		//받은 날짜
+		String rsvtYmd = MapUtils.getString(params, "rsvt_ymd");
+		System.out.println(rsvtYmd);
+		
+		//해당일 예약정보 조회
+		List<MtrRsvtVO> mtrRsvtList = this.mtrService.todayRes(rsvtYmd);
+		
+		//예약번호별로 예약정보 담을 맵 생성
+		Map<String, Object> result = new HashMap<>();
+		
+		return result;
+	}
+}

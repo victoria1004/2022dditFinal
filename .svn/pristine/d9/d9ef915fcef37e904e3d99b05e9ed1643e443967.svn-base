@@ -1,0 +1,36 @@
+package kr.or.ddit.user.service.impl;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import kr.or.ddit.user.mapper.MbrMapper;
+import kr.or.ddit.user.service.MbrService;
+import kr.or.ddit.user.vo.MemberVO;
+@Service
+public class MbrServiceImpl implements MbrService{
+
+	@Autowired
+	MbrMapper mbrMapper;
+	
+	private static final Logger logger = 
+			LoggerFactory.getLogger(LoginServiceImpl.class);
+	
+	//아이디 중복확인
+	@Override
+	public int checkId(String mbrId) {
+		logger.info("mbrId : " + mbrId);
+		int result = this.mbrMapper.checkId(mbrId);
+		return result;
+	}
+	
+	//회원 등록
+	@Override
+	public int mbrInsert(MemberVO memberVO) {
+		logger.info("MemberVO"+memberVO.toString());
+		int result = this.mbrMapper.mbrInsert(memberVO);
+		return result;
+	}
+
+}

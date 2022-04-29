@@ -1,0 +1,152 @@
+package kr.or.ddit.user.controller;
+
+import java.util.List;
+
+import javax.servlet.http.HttpSession;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.project.service.TrsmFileService;
+import kr.or.ddit.user.service.AlarmService;
+import kr.or.ddit.user.service.EmailReceiverService;
+import kr.or.ddit.user.service.EmailService;
+import kr.or.ddit.user.service.LoginService;
+import kr.or.ddit.user.vo.EmailReceiverVO;
+import kr.or.ddit.user.vo.EmailVO;
+import kr.or.ddit.user.vo.MemberVO;
+
+@RequestMapping("/user")
+@Controller
+public class EmailController {
+	private static final Logger logger = LoggerFactory.getLogger(EmailController.class);
+	
+	@Autowired
+	EmailService emailService;
+	@Autowired
+	LoginService loginService;
+	@Autowired
+	AlarmService alarmService;
+	@Autowired
+	EmailReceiverService erService;
+	@Autowired
+	TrsmFileService trsmFileService;
+	
+	
+	//이메일 조회 화면 (메인)
+	@RequestMapping("/email.do")
+	public String emailSelect(Model model, EmailVO emailVO, HttpSession session, @RequestParam String mbrId) {
+		
+		logger.info("메일 볼 아이디 : " + mbrId);
+		
+		MemberVO memberVO = (MemberVO) session.getAttribute("member");
+		MemberVO member = this.loginService.loginPost(memberVO);
+		
+		//세션 속성명으로 member 사용하여 member객체 세팅
+		session.setAttribute("member", member);
+		String mbrEml = member.getMbrEml();
+		
+		//메일함 메인
+		List<EmailVO> list = this.emailService.emailSelect(mbrEml);
+		logger.info(mbrId + "의 메일 list : " + list );
+		model.addAttribute("mailList" , list);
+		
+		//보낸메일함
+		List<EmailVO> sentList = this.emailService.emailSend(mbrEml);
+		logger.info("보낸메일함 메일들 : " + sentList);
+		model.addAttribute("sentList", sentList);
+		
+		//휴지통 조회
+		List<EmailVO> trashList = this.emailService.emailTrash(mbrEml);
+		logger.info("휴지통 : " + trashList );
+		model.addAttribute("trashList", trashList);
+		
+		//임시보관함 조회
+		List<EmailVO> draftList = this.emailService.draftList(mbrEml);
+		logger.info("임시보관 : "+ draftList);
+		model.addAttribute("draftList", draftList);
+		
+		return "user/email";
+		
+	}
+	
+	
+	//이메일 보내기(등록)
+	@ResponseBody
+	@PostMapping("/email/insert")
+	public String emailInsert(@ModelAttribute EmailVO emailVO, HttpSession session, @ModelAttribute EmailReceiverVO emailReceiverVO) {
+		
+		MemberVO memberVO = (MemberVO) session.getAttribute("member");
+		MemberVO member = this.loginService.loginPost(memberVO);
+		
+		//메일 가져오기
+		String sndrEmalAddr = member.getMbrEml();
+		//logger.info("메일 가져왔냐 : " + sndrEmalAddr);
+		emailVO.setSndrEmlAddr(sndrEmalAddr);
+		int result = emailService.emailInsert(emailVO);
+		//logger.info("메일 보내기 성공 : " + result);
+		
+		//EML_RCVR 테이블에 넣기
+		//메일번호 가져오기
+		String emlNo = emailService.emlNoSelect();
+		//logger.info("이메일 번호 가져오기 : "+ emlNo);
+		
+		//이메일 가져와서 찾기
+		String mbrId = emailService.mbrIdSelect();
+		//logger.info("이메일로 아이디 찾았냐 : "+mbrId);
+		
+		emailReceiverVO = new EmailReceiverVO();
+		emailReceiverVO.setEmlNo(emlNo);
+		emailReceiverVO.setMbrId(mbrId);
+		
+		//EML_RCVR Insert 
+		int erInsert = erService.emailReceiverInsert(emailReceiverVO);
+		//logger.info("두개 인서트 : " + erInsert);
+		
+		
+		
+		return "user/email";
+	}
+	
+	//이메일 휴지통으로 이동
+	@ResponseBody
+	@PostMapping("/email/TrashUpdate")
+	public String emailTrashUpdate(@ModelAttribute EmailVO emailVO, String emlNo) {
+		
+		logger.info("메일 번호 받았냐 : "+emlNo);
+		int res = emailService.emailTrashUpdate(emlNo);
+		
+		return "user/email";
+	}
+		
+	
+	//이메일 임시보관
+	@ResponseBody
+	@PostMapping("/email/save")
+	public String emailSave(@ModelAttribute EmailVO emailVO, HttpSession session, @ModelAttribute EmailReceiverVO emailReceiverVO) {
+		
+		MemberVO memberVO = (MemberVO) session.getAttribute("member");
+		MemberVO member = this.loginService.loginPost(memberVO);
+		
+		//메일 가져오기
+		String sndrEmalAddr = member.getMbrEml();
+		//logger.info("메일 가져왔냐 : " + sndrEmalAddr);
+		emailVO.setSndrEmlAddr(sndrEmalAddr);
+		emailVO.setEmlCtgr("작성임시보관");
+		int result = emailService.emailSave(emailVO);
+		//logger.info("메일 보내기 성공 : " + result);
+		
+		
+		return "user/email";
+	}
+	
+	
+}

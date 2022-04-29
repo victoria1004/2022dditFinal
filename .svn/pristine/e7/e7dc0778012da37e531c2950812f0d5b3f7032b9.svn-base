@@ -1,0 +1,18 @@
+package kr.or.ddit.feed.mapper;
+
+
+import java.util.List;
+
+import kr.or.ddit.feed.vo.VtRsltVO;
+
+public interface VtRsltMapper {
+	
+	//투표 내용 등록하기
+	public int insertRslt(VtRsltVO vtRsltVO);
+	
+	//투표 선택 수정 
+	public int updateRslt(VtRsltVO vtRsltVO);
+	
+	//투표 결과 출력
+	public List<VtRsltVO> rsltList(String vtNo);
+}

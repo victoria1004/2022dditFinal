@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" 
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="kr.or.ddit.user.mapper.AlarmMapper">
+	<!-- 접속한 사용자가 안읽은 모든 메시지 가져오기 -->
+	<select id="getAllNotReadedMsg" parameterType="String" resultType="alarmVO">
+		SELECT ALRM_NO
+			, MBR_ID
+			, ALRM_CTGR_CD
+			, ALRM_IDNTY_YN
+			, ALRM_RCV_NO
+			, ALRM_SND_ID
+		FROM ALARM
+		WHERE MBR_ID = #{mbrId}
+		AND ALRM_IDNTY_YN != 'Y'
+		ORDER BY ALRM_RCV_NO DESC
+	</select>
+	
+	<!-- 안읽은 메시지 카운트 -->
+	<select id="getAllNotReadedCount" parameterType="String" resultType="integer">
+		SELECT COUNT (*)
+		FROM ALARM
+		WHERE MBR_ID = #{mbrId}
+		AND ALRM_IDNTY_YN != 'Y'
+	</select>
+	
+	<!-- 채팅,멘션,일감,메일,회의에 참여시 알림 insert -->
+	<insert id="insertAlarmMsg" parameterType="map">
+		<selectKey order="BEFORE" resultType="integer" keyProperty="alrmNo">
+			SELECT NVL(MAX(ALRM_NO),0)+1 FROM ALARM
+		</selectKey>
+		INSERT INTO ALARM
+		  (ALRM_NO, MBR_ID, ALRM_CTGR_CD, ALRM_SND_ID)
+		VALUES (#{alrmNo}, #{mbrId}, #{alrmCtgrCd}, #{alrmSndId})
+	</insert>
+	
+	<!-- 알림메시지 확인 시 읽음으로 변경 -->	
+	<update id="updateAlarmMsg" parameterType="map">
+		UPDATE ALARM
+		   SET ALRM_IDNTY_YN = 'Y'
+		  WHERE MBR_ID = #{mbrId}
+		  AND ALRM_NO = #{alrmNo}
+	</update>
+	
+	
+	
+	
+	
+	
+</mapper>

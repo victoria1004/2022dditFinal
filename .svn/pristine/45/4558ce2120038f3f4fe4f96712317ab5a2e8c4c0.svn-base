@@ -1,0 +1,21 @@
+.bodyDiv {
+	width : 1200px;
+	border: 1px solid red;
+	margin-top:100px;
+	display: flex;
+}
+
+.leftDiv {
+	border:1px solid blue;
+	width:100%;
+	height:auto;
+}
+
+.rightDiv {
+	border : 1px sold yellow;
+	display : flex;
+	flex-direction: column;
+	width:500px;
+	height:auto;
+	position:relative;
+}

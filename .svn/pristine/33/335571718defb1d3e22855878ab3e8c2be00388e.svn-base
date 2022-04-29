@@ -1,0 +1,26 @@
+package kr.or.ddit.project.vo;
+
+
+public class AlrmCtgrVO {
+	private String alrmCtgrNo;
+	private String alrmCtgrNm;
+	
+	public String getAlrmCtgrNo() {
+		return alrmCtgrNo;
+	}
+	public void setAlrmCtgrNo(String alrmCtgrNo) {
+		this.alrmCtgrNo = alrmCtgrNo;
+	}
+	public String getAlrmCtgrNm() {
+		return alrmCtgrNm;
+	}
+	public void setAlrmCtgrNm(String alrmCtgrNm) {
+		this.alrmCtgrNm = alrmCtgrNm;
+	}
+	@Override
+	public String toString() {
+		return "AlarmCategoryVO [alrmCtgrNo=" + alrmCtgrNo + ", alrmCtgrNm=" + alrmCtgrNm + "]";
+	}
+	
+	
+}

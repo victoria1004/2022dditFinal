@@ -1,0 +1,140 @@
+//프로젝트의 모든 구성원 출력
+function getAllMbr(pjtNo, userList){
+	
+	$.ajax({
+		
+		url : "/project/getAllMbr",
+		data : {pjtNo : pjtNo},
+		type : "post",
+		dataType : "json",
+		success : function(res){
+			//console.log("접속한 목록", userList);
+			$("#pjtMbrList").empty();
+			
+			var str = '';
+			$.each(res, function(i, v){	
+				//console.log("i",i);
+				str += '<div class="table-responsive"><table class="table"><tbody><tr>';
+				
+				var flag = false;
+				for(var k = 0; k < userList.length; k++){
+					if (v.mbrId == userList[k]){
+					flag = true;
+					}
+				}
+				
+				if(flag){ //온라인인 경우
+					str += '<td><span style="display:none;" class="mbrIdspan">'+v.mbrId+'</span>&nbsp;&nbsp;&nbsp;</td><td><div class="avatar avatar-sm avatar-indicators avatar-online" style="border-radius : 50%;">';
+				} else {
+					str += '<td><span style="display:none;" class="mbrIdspan">'+v.mbrId+'</span>&nbsp;&nbsp;</td><td><div class="avatar avatar-sm avatar-indicators avatar-offline" style="border-radius : 50%;">';
+				}
+
+				if (v.mbrImg == null){
+		        str += '<img src="/resources/profileImage/profileimage.png" style="width:40px; height:40px; border-radius : 50%;" alt="'+v.mbrNm+'"></div></td>';
+		        } else {
+		        str += '<img src="/resources/profileImage/'+v.mbrImg+'" style="width:40px; height:40px; border-radius : 50%;" alt="'+v.mbrNm+'"></div></td>';
+		        }
+				str += '<td><div class="td-content customer-name profileDiv" style="text-align:center;"><span class="prtpntDept">'+ v.mbrDept + '</span><span class="prtpntNm">' + v.mbrNm+'</span></div></td>';
+		        str += '<td>';
+		        
+		        if (flag){ //온라인인 경우 상태 표시
+			        if(v.mbrStts == '1'){
+			        	str += '<span id="badge2" class="badge badge-pills outline-badge-primary">접속 중</span></td><td>';
+			        } else if(v.mbrStts == '2'){
+			        	str += '<span class="badge badge-pills outline-badge-primary">회의 중</span></td><td>';
+			        } else if(v.mbrStts == '3'){
+			        	str += '<span id="badge3"  class="badge badge-pills outline-badge-primary">다른 용무 중</span></td><td>';
+			        } else if(v.mbrStts == '4'){
+			        	str += '<span id="badge4"  class="badge badge-pills outline-badge-primary">방해금지</span></td><td>';
+			        }
+		        } else {
+		        	str += '<td>&nbsp;&nbsp;</td>';
+		        }
+		        str += '</td>';
+                str += '</tr></tbody></table></div>';
+			}) //each
+			$("#pjtMbrList").append(str);
+		} //success
+	})
+}
+
+
+//접속한 사용자가 참여 중인 프로젝트 목록
+function getMyPjtList(mbrId){
+	
+	let data = {"mbrId":mbrId};
+	$.ajax({
+	
+		url : "/project/getMyPjtList?mbrId="+mbrId,
+		type : "get",
+		dataType : "json",
+		success : function(res){	
+			var str = "";
+			var getLocal = $.cookie('pjtNo');
+			if (getLocal == 'null'){ //기존 메뉴인 경우
+				getLocal = $.cookie('menu');
+			}
+			console.log("클릭!~~~~~", getLocal );
+			$.each(res, function(i, v){		
+				//console.log("클릭", getLocal, v.pjtNo);
+				str += '<li id="' + v.pjtNo + '" title="'+v.pjtNo+'" class="menu">';
+	            str += '<a onclick="menuClass(\''+v.pjtNo+'\', \'/project/main.do\')"  href="#" data-active="false" class="menu-toggle">';
+	            str += '<div class="base-menu"><div class="base-icons">';
+	            str += '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-airplay"><path d="M5 17H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-1"></path><polygon points="12 15 17 21 7 21 12 15"></polygon></svg>';              
+	            str += '</div><span>' + v.pjtNm +'</span></div></a>';
+	            str += '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="feather feather-chevron-left"><polyline points="15 18 9 12 15 6"></polyline></svg>';
+	            str += '</li>';
+ 
+			});
+			$(".menu-categories").append(str);
+			$('#'+getLocal).addClass("clickMenu");
+		}
+	});
+}
+
+function menuClass(pjtNo, url, menu){
+
+	//쿠키 쓰기
+	$.cookie('pjtNo', pjtNo, {path: '/'});
+	// 페이지 이동 
+	if(pjtNo == 'null'){ //기존 메뉴용 세팅
+		$.cookie('menu', menu, {path: '/'});
+		window.location.href= url;
+	} else{
+		window.location.href= url+'?pjtNo='+pjtNo;
+	}
+	
+	
+	
+	
+}
+
+
+
+
+function getUserProfile(mbrId){
+	//console.log("찍히니???", mbrId);
+	
+	$.ajax({
+		
+		url : "/user/getMyInfo",
+		data : {mbrId : mbrId},
+		type : "post",
+		dataType : "json",
+		success:function(res){
+			//console.log(res);
+			if(res.mbrImg == null){
+			$(".rounded-circle").attr("src", "/resources/profileImage/profileimage.png");
+			}else{
+			$(".rounded-circle").attr("src", "/resources/profileImage/"+res.mbrImg);
+			}
+			$(".nameP").text(res.mbrNm);
+			$(".mt-2").text(res.mbrIntro);
+			$("#profileModal").modal("show");
+		}
+		
+		
+	});
+		
+}
+		

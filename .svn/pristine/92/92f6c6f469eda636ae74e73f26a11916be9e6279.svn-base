@@ -1,0 +1,76 @@
+package kr.or.ddit.project.controller;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.ResponseBody;
+
+import kr.or.ddit.project.service.ProjectUpdateService;
+import kr.or.ddit.project.vo.LayoutVO;
+import kr.or.ddit.project.vo.MarkerVO;
+import kr.or.ddit.project.vo.ProjectLanguageVO;
+import kr.or.ddit.project.vo.ProjectVO;
+
+
+@Controller
+@RequestMapping("/project")
+public class ProjectUpdateController {
+	@Autowired
+	ProjectUpdateService service;
+	private static final Logger logger= LoggerFactory.getLogger(ProjectUpdateController.class);
+
+	//프로젝트 번호에 해당하는 프로젝트 객체 가져오기
+	@RequestMapping("/projectUpdate.do")
+	public String projectUpdate(Model model) {
+		ProjectVO projectVO = service.getPjt("4"); //나중에 세션에서 프젝 번호 가져오기
+		logger.info("projectVO: "+ projectVO);
+		model.addAttribute("projectVO", projectVO);
+		return "project/projectUpdate";
+	}
+	
+	//프로젝트 번호에 해당하는 모듈 가져오기
+	@ResponseBody
+	@RequestMapping(value="/getModule.do", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<String> getModule(){
+		List<String> modules = new ArrayList<String>();
+		
+		List<LayoutVO> moduleList = service.getModule("4"); //나중에 세션에서 프젝 번호 가져오기
+		for(LayoutVO module: moduleList) {
+			modules.add(module.getLytNo());
+		}
+		logger.info(modules.toString());
+		return modules;
+	}
+	
+	//프로젝트 번호에 해당하는 마커 가져오기
+	@ResponseBody
+	@RequestMapping(value="/getMarker.do", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<MarkerVO> getMarker(){
+		
+		List<MarkerVO> markerList=service.getMarker("4");  //나중에 세션에서 프젝 번호 가져오기
+		
+		return markerList;
+	}
+	
+	//프로젝트 번호에 해당하는 개발언어 가져오기
+	@ResponseBody
+	@RequestMapping(value="/getLang.do", method = RequestMethod.POST, produces = MediaType.APPLICATION_JSON_VALUE)
+	public List<String> getLang(){
+		List<String> langList = new ArrayList<String>();
+		List<ProjectLanguageVO> langs=service.getLang("4");
+		
+		for(ProjectLanguageVO langVO:langs) {
+			langList.add(langVO.getDvlLng());
+		}
+		
+		return langList;
+	}
+}

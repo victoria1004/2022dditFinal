@@ -1,0 +1,7 @@
+package kr.or.ddit.user.service.impl;
+
+import kr.or.ddit.user.service.EmailService;
+
+public class EmailServiceImpl implements EmailService {
+
+}
